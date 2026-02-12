@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
 import {
   Home,
   Search,
@@ -7,11 +6,14 @@ import {
   Database,
   FileSpreadsheet,
   ShieldCheck,
-  ChevronLeft,
-  ChevronRight,
-  Zap,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const navItems = [
   { title: "Home", path: "/", icon: Home },
@@ -23,20 +25,14 @@ const navItems = [
 ];
 
 export function AppSidebar() {
-  const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
 
   return (
     <aside
-      className={cn(
-        "flex flex-col border-r border-border bg-card sticky top-12 transition-all duration-300",
-        collapsed ? "w-14" : "w-56"
-      )}
+      className="flex flex-col items-center border-r border-border bg-card w-14 sticky top-12 py-3 gap-1"
       style={{ height: "calc(100vh - 3rem)" }}
     >
-
-      {/* Navigation */}
-      <nav className="flex-1 py-3 space-y-1 px-2">
+      <nav className="flex-1 flex flex-col items-center gap-1">
         {navItems.map((item) => {
           const isActive =
             item.path === "/"
@@ -44,30 +40,38 @@ export function AppSidebar() {
               : location.pathname.startsWith(item.path);
 
           return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              <item.icon className="h-4 w-4 shrink-0" />
-              {!collapsed && <span>{item.title}</span>}
-            </NavLink>
+            <Tooltip key={item.path} delayDuration={0}>
+              <TooltipTrigger asChild>
+                <RouterNavLink
+                  to={item.path}
+                  className={cn(
+                    "flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200",
+                    isActive
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  <item.icon className="h-[18px] w-[18px]" />
+                </RouterNavLink>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={8}>
+                {item.title}
+              </TooltipContent>
+            </Tooltip>
           );
         })}
       </nav>
 
-      {/* Collapse toggle */}
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className="flex items-center justify-center h-10 border-t border-border text-muted-foreground hover:text-foreground transition-colors"
-      >
-        {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-      </button>
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <button className="flex items-center justify-center w-10 h-10 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+            <Settings className="h-[18px] w-[18px]" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="right" sideOffset={8}>
+          Settings
+        </TooltipContent>
+      </Tooltip>
     </aside>
   );
 }
