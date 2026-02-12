@@ -42,6 +42,9 @@
     --sidebar-accent-foreground: 0 76% 40%;
     --sidebar-border: 220 13% 93%;
     --sidebar-ring: 0 76% 50%;
+    
+    --premium-highlight: 271 91% 65%;
+    --enterprise-highlight: 45 93% 47%;
   }
 
   .dark {
@@ -82,5 +85,130 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* AI Feature Animations */
+@keyframes ai-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); }
+  50% { box-shadow: 0 4px 20px rgba(168, 85, 247, 0.25); }
+}
+
+@keyframes premium-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); }
+  50% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.2); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes backgroundGlow {
+  0%, 100% { opacity: 0.03; }
+  50% { opacity: 0.06; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes countUp {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes premiumShine {
+  0% { left: -75%; }
+  20% { left: 125%; }
+  100% { left: 125%; }
+}
+
+@keyframes premiumGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+  }
+  50% {
+    box-shadow: 0 0 12px 2px rgba(220, 38, 38, 0.25);
+  }
+}
+
+.premium-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.premium-shine::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-20deg);
+  animation: premiumShine 5s infinite;
+  pointer-events: none;
+}
+
+.premium-upgrade-btn {
+  background: linear-gradient(135deg, hsl(0, 76%, 45%) 0%, hsl(0, 76%, 55%) 100%);
+  border: none;
+  color: white;
+  animation: premiumGlow 3s ease-in-out infinite;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.premium-upgrade-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.ai-feature-card:hover {
+  animation: ai-glow 2s ease-in-out infinite;
+}
+
+.ai-badge {
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.4);
+}
+
+.premium-tab {
+  animation: premium-glow 3s ease-in-out infinite;
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+.background-glow {
+  animation: backgroundGlow 20s ease-in-out infinite;
+}
+
+.pulse-once {
+  animation: pulse 1.5s ease-in-out 1;
+}
+
+.count-up {
+  animation: countUp 0.8s ease-out;
+}
+
+@media (max-width: 768px) {
+  .ai-feature-card:hover {
+    animation: none;
+  }
+  .premium-tab {
+    animation: none;
   }
 }
