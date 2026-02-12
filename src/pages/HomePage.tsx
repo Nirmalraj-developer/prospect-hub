@@ -1,42 +1,43 @@
 import { useNavigate } from "react-router-dom";
-import { Search, Database, FileSpreadsheet, ShieldCheck } from "lucide-react";
+import { Search, Database, FileSpreadsheet, ShieldCheck, TrendingUp, Users, Globe, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const actions = [
   {
+    title: "Buy Data",
+    description: "Browse ready-made datasets across industries and countries to accelerate your outreach.",
+    icon: Database,
+    action: "Browse Data",
+    path: "/prospect-search",
+  },
+  {
     title: "Find Prospects",
-    description: "Build targeted prospect lists using filters or AI-powered prompts.",
+    description: "Build targeted prospect lists using filters or AI to reach key decision-makers.",
     icon: Search,
     action: "Build a List",
     path: "/prospect-search",
   },
   {
     title: "Enrich My Data",
-    description: "Upload your file and enrich it with verified, real-time data.",
-    icon: Database,
+    description: "Upload your file and enrich it with verified firmographics, technographics, and contact data.",
+    icon: TrendingUp,
     action: "Upload & Enrich",
     path: "/data-enrichment",
   },
   {
     title: "Custom Data Request",
-    description: "Tell us your requirement and we'll build the dataset for you.",
+    description: "Tell us your requirement and we'll build the dataset tailored to your ICP.",
     icon: FileSpreadsheet,
     action: "Create Request",
     path: "/custom-data",
   },
-  {
-    title: "Validate Emails",
-    description: "Verify email addresses and suppress invalid contacts from your lists.",
-    icon: ShieldCheck,
-    action: "Start Validation",
-    path: "/validations/email",
-  },
 ];
 
 const stats = [
-  { value: "4.1M+", label: "Verified Records" },
-  { value: "100%", label: "Data Accuracy" },
+  { value: "4.1M+", label: "B2B Contacts" },
+  { value: "100%", label: "Verified Emails" },
   { value: "Real-time", label: "Data Updates" },
+  { value: "150+", label: "Countries" },
 ];
 
 export default function HomePage() {
@@ -98,7 +99,7 @@ export default function HomePage() {
       </div>
 
       {/* Stats */}
-      <div className="flex justify-center gap-12">
+      <div className="flex justify-center gap-10">
         {stats.map((stat) => (
           <div key={stat.label} className="text-center">
             <div className="text-2xl font-bold text-foreground">{stat.value}</div>

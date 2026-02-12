@@ -29,19 +29,11 @@ export function AppSidebar() {
   return (
     <aside
       className={cn(
-        "flex flex-col border-r border-border bg-card h-screen sticky top-0 transition-all duration-300",
-        collapsed ? "w-16" : "w-60"
+        "flex flex-col border-r border-border bg-card sticky top-12 transition-all duration-300",
+        collapsed ? "w-14" : "w-56"
       )}
+      style={{ height: "calc(100vh - 3rem)" }}
     >
-      {/* Logo */}
-      <div className="flex items-center gap-2 px-4 h-14 border-b border-border">
-        <Zap className="h-6 w-6 text-primary shrink-0" />
-        {!collapsed && (
-          <span className="text-lg font-bold text-foreground tracking-tight">
-            InFynd
-          </span>
-        )}
-      </div>
 
       {/* Navigation */}
       <nav className="flex-1 py-3 space-y-1 px-2">
