@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import { PlanTier, FEATURES, hasAccess, PLAN_INFO, PLAN_FEATURES } from "@/lib/plans";
 import { usePlan } from "@/contexts/PlanContext";
+import { AIInsightWidget } from "@/components/AIInsightWidget";
 
 const ICON_MAP: Record<string, any> = {
   Search, Bookmark, Download, Sparkles, TrendingUp, Database, FileSpreadsheet, Users, Share2, Palette, Shield, CheckCircle, CheckCheck, ShieldOff
@@ -50,9 +51,44 @@ export default function HomePage() {
     navigate(feature.route);
   };
 
-  const getDisplayFeatures = () => {
-    const featureIds = PLAN_FEATURES[selectedPlan];
-    return featureIds.map(id => FEATURES.find(f => f.id === id)!).filter(Boolean);
+  const getFeatureCTA = (featureId: string) => {
+    const ctaMap: Record<string, string> = {
+      'find-leads': 'Start Prospect Search',
+      'saved-lists': 'View Saved Lists',
+      'request-custom-list': 'Submit ICP Request',
+      'export-leads': 'Export Contacts',
+      'ai-lead-finder': 'Run AI Targeting',
+      'ai-role-targeting': 'Run AI Targeting',
+      'ai-market-targeting': 'Generate Market Targets',
+      'enrich-leads': 'Enrich Data',
+      'email-validation': 'Validate Emails',
+      'advanced-targeting': 'Configure Filters',
+      'team-access-5': 'Manage Team Access',
+      'bulk-email-validation': 'Run Bulk Validation',
+      'suppression-management': 'Manage Suppression List',
+      'crm-sync': 'Sync to CRM',
+      'team-access-10': 'Manage Team Access',
+      'shared-lists': 'Access Shared Lists',
+      'white-label-platform': 'Configure Branding'
+    };
+    return ctaMap[featureId] || 'Launch Tool';
+  };
+
+  const getAllFeatures = () => {
+    const allPlans: PlanTier[] = ['pro', 'premium', 'enterprise'];
+    const allFeatures: Array<{ plan: PlanTier; feature: any }> = [];
+    
+    allPlans.forEach(plan => {
+      const featureIds = PLAN_FEATURES[plan];
+      featureIds.forEach(id => {
+        const feature = FEATURES.find(f => f.id === id);
+        if (feature && !allFeatures.some(f => f.feature.id === feature.id)) {
+          allFeatures.push({ plan, feature });
+        }
+      });
+    });
+    
+    return allFeatures;
   };
 
   const getIncludedText = (plan: PlanTier) => {
@@ -83,11 +119,11 @@ export default function HomePage() {
   };
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] flex flex-col relative">
+    <div className="h-[calc(100vh-3.5rem)] flex flex-col relative bg-gradient-to-br from-[#FFF5F2] to-white">
       {/* Animated Background Glow */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-500/10 to-blue-500/10 rounded-full blur-3xl background-glow" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-primary/5 to-purple-500/5 rounded-full blur-3xl background-glow" style={{ animationDelay: '10s' }} />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-[#FF3030]/5 to-[#FF9882]/5 rounded-full blur-3xl background-glow" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-[#FFE3D5]/30 to-[#FF9882]/10 rounded-full blur-3xl background-glow" style={{ animationDelay: '10s' }} />
       </div>
 
       <div className="relative flex flex-col h-full">
@@ -127,162 +163,103 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+          <AIInsightWidget />
         </div>
-
-        {/* Plan Selector */}
-        <div className="flex justify-center mb-3">
-          <div className="inline-flex bg-muted/50 rounded-xl p-1 gap-1.5">
-            <button
-              onClick={() => setSelectedPlan('pro')}
-              className={`relative px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${
-                selectedPlan === 'pro'
-                  ? 'bg-white text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Pro
-            </button>
-            
-            <button
-              onClick={() => setSelectedPlan('premium')}
-              className={`relative px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${
-                selectedPlan === 'premium'
-                  ? 'bg-gradient-to-br from-purple-500 to-purple-600 text-white shadow-lg'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {selectedPlan !== 'premium' && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-primary text-white text-xs rounded-md whitespace-nowrap shadow-large animate-pulse">
-                  Popular
-                </div>
-              )}
-              <div className="flex items-center gap-1">
-                <Star className="h-2.5 w-2.5" />
-                Premium
-              </div>
-            </button>
-            
-            <button
-              onClick={() => setSelectedPlan('enterprise')}
-              className={`relative px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${
-                selectedPlan === 'enterprise'
-                  ? 'bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-lg'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <div className="flex items-center gap-1">
-                <Crown className="h-2.5 w-2.5" />
-                Enterprise
-              </div>
-            </button>
-          </div>
-        </div>
-
-        {/* Thin Included Features Strip */}
-        {selectedPlan !== 'pro' && (
-          <div className={`mb-2 px-3 py-1.5 rounded-lg border text-center ${
-            selectedPlan === 'premium' 
-              ? 'bg-purple-50/50 border-purple-200' 
-              : 'bg-amber-50/50 border-amber-200'
-          }`}>
-            <span className="text-xs font-semibold text-foreground">
-              ✓ {getIncludedText(selectedPlan)}
-            </span>
-          </div>
-        )}
 
         {/* Section Header */}
         <div className="mb-3">
           <p className="text-xs text-muted-foreground">
-            {selectedPlan !== currentPlan && selectedPlan !== 'pro'
-              ? `Upgrade to ${PLAN_INFO[selectedPlan].name} to unlock ${selectedPlan === 'premium' ? 'advanced AI capabilities and team collaboration' : 'enterprise-grade features and priority support'}`
-              : 'Access your intelligence tools and accelerate your prospecting workflow'
-            }
+            Access your intelligence tools and accelerate your prospecting workflow
           </p>
         </div>
 
-        {/* Feature Grid - Flex 1 to fill remaining space */}
-        <div className="flex-1 grid grid-cols-3 gap-3 content-start overflow-hidden">
-          {getDisplayFeatures().map((feature, index) => {
-            const Icon = ICON_MAP[feature.icon];
-            const locked = !hasAccess(currentPlan, feature.requiresPlan);
-            const isAI = feature.isAI;
+        {/* Feature Grid - Single Scrollable Container */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="grid grid-cols-3 gap-3 pb-4">
+            {getAllFeatures().map(({ plan, feature }, index) => {
+              const Icon = ICON_MAP[feature.icon];
+              const locked = !hasAccess(currentPlan, feature.requiresPlan);
+              const isAI = feature.isAI;
 
-            return (
-              <div
-                key={feature.id}
-                onClick={() => handleFeatureClick(feature)}
-                className={`relative bg-white rounded-xl p-3.5 transition-all duration-300 cursor-pointer fade-in-up hover:-translate-y-1 hover:shadow-lg ${
-                  locked
-                    ? 'border border-border opacity-75 hover:border-border'
-                    : isAI
-                    ? 'border-2 border-purple-200 hover:border-purple-400'
-                    : 'border border-border hover:border-primary/40'
-                }`}
-                style={{ animationDelay: `${index * 80}ms` }}
-              >
-                {/* Icon */}
-                <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-2.5 transition-all ${
-                  locked
-                    ? 'bg-muted text-muted-foreground'
-                    : isAI
-                    ? 'bg-gradient-to-br from-purple-500 to-blue-500 text-white shadow-md'
-                    : 'bg-gradient-to-br from-primary/20 to-primary/10 text-primary'
-                }`}>
-                  <Icon className="h-5 w-5" />
-                </div>
-
-                {/* Content */}
-                <div>
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className={`text-sm font-bold flex-1 ${locked ? 'text-muted-foreground' : 'text-foreground'}`}>
-                      {feature.name}
-                    </h3>
-                    <div className="flex items-center gap-1.5 flex-shrink-0">
-                      {currentPlan === 'trial' && !locked && (
-                        <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-green-50 text-green-700 border border-green-200">
-                          <Clock className="h-2.5 w-2.5" />
-                          Trial
-                        </div>
-                      )}
-                      {isAI && (
-                        <div className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
-                          locked ? 'bg-muted text-muted-foreground border border-border' : 'bg-gradient-to-r from-purple-500 to-blue-500 text-white'
-                        }`}>
-                          <Sparkles className="h-2.5 w-2.5" />
-                          AI
-                        </div>
-                      )}
-                      {locked && (
-                        <Lock className="h-3 w-3 text-muted-foreground" />
-                      )}
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 mb-2.5">
-                    {feature.description}
-                  </p>
-                  
-                  {/* Subtle Launch Link */}
-                  {locked ? (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setUpgradeModal({ open: true, feature });
-                      }}
-                      className="text-xs text-primary hover:underline font-medium"
-                    >
-                      Upgrade to {PLAN_INFO[feature.requiresPlan].name} →
-                    </button>
-                  ) : (
-                    <div className="text-xs text-muted-foreground hover:text-foreground font-medium flex items-center gap-1 group">
-                      Launch
-                      <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
-                    </div>
+              return (
+                <div
+                  key={feature.id}
+                  onClick={() => handleFeatureClick(feature)}
+                  className={`relative bg-white border border-black/[0.06] rounded-2xl p-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-200 cursor-pointer fade-in-up ${
+                    locked
+                      ? 'opacity-75'
+                      : 'hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]'
+                  }`}
+                  style={{ animationDelay: `${index * 80}ms` }}
+                >
+                  {locked && (
+                    <div className="absolute inset-0 bg-[#FF3030]/[0.025] rounded-2xl pointer-events-none" />
                   )}
+                  
+                  {/* Icon */}
+                  <div className={`h-12 w-12 rounded-xl flex items-center justify-center mb-4 relative ${
+                    locked
+                      ? 'bg-muted text-muted-foreground'
+                      : isAI
+                      ? 'bg-[#FFE3D5] text-[#B71833]'
+                      : 'bg-[#FFE3D5] text-[#B71833]'
+                  }`}>
+                    <Icon className="h-6 w-6" />
+                  </div>
+
+                  {/* Content */}
+                  <div className="relative">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <h3 className={`text-[17px] font-semibold flex-1 ${locked ? 'text-muted-foreground' : 'text-[#1C1C1E]'}`}>
+                        {feature.name}
+                      </h3>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        {currentPlan === 'trial' && !locked && (
+                          <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-green-50 text-green-700 border border-green-200">
+                            <Clock className="h-2.5 w-2.5" />
+                            Trial
+                          </div>
+                        )}
+                        {isAI && (
+                          <div className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
+                            locked ? 'bg-muted text-muted-foreground border border-border' : 'bg-[#FFE3D5] text-[#B71833] border border-[#FF9882]'
+                          }`}>
+                            <Sparkles className="h-2.5 w-2.5" />
+                            AI
+                          </div>
+                        )}
+                        {locked && (
+                          <Lock className="h-3.5 w-3.5 text-muted-foreground" />
+                        )}
+                      </div>
+                    </div>
+                    <p className={`text-[13px] leading-relaxed line-clamp-2 mb-4 ${
+                      locked ? 'text-muted-foreground' : 'text-[rgba(60,60,67,0.7)]'
+                    }`}>
+                      {feature.description}
+                    </p>
+                    
+                    {/* CTA */}
+                    {locked ? (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setUpgradeModal({ open: true, feature });
+                        }}
+                        className="text-[13px] text-[#FF3030] hover:text-[#B71833] font-medium transition-colors"
+                      >
+                        Unlock with {PLAN_INFO[feature.requiresPlan].name} →
+                      </button>
+                    ) : (
+                      <button className="px-3 py-1.5 rounded-lg bg-[#FF3030] hover:bg-[#B71833] text-white text-xs font-medium transition-colors">
+                        {getFeatureCTA(feature.id)}
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
 

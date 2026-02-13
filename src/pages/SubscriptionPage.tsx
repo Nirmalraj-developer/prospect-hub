@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Check, ArrowLeft, Sparkles, Zap, Crown, Building2, ChevronDown } from "lucide-react";
+import { Check, ArrowLeft, Sparkles, Zap, Crown, Building2, ChevronDown, CheckCircle, X, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePlan } from "@/contexts/PlanContext";
-import { PLAN_INFO, PlanTier } from "@/lib/plans";
+import { PLAN_INFO, PlanTier, FEATURES } from "@/lib/plans";
 
 const PLAN_DETAILS = {
   pro: {
@@ -11,21 +11,21 @@ const PLAN_DETAILS = {
     yearlyPrice: 990,
     credits: "5,000",
     icon: Zap,
-    features: ["Find Your Leads", "Saved Lists", "Request Custom Leads", "Export Leads", "AI Lead Finder (Limited)"]
+    features: ["Find Prospects", "Saved Lists", "Request Custom Data", "Export Data", "AI Prospect Finder (Limited)"]
   },
   premium: {
     monthlyPrice: 299,
     yearlyPrice: 2990,
     credits: "15,000",
     icon: Sparkles,
-    features: ["Everything in Pro", "AI Role Targeting", "AI Market Targeting", "Data Enrichment", "Email Validation", "Team Access (5 Users)"]
+    features: ["Everything in Pro", "AI Role Targeting", "Data Enhancement", "Email Validation", "Inclusion / Exclusion", "Team Access (5 Users)"]
   },
   enterprise: {
     monthlyPrice: null,
     yearlyPrice: null,
     credits: "Unlimited",
     icon: Crown,
-    features: ["Everything in Premium", "Bulk Email Validation", "Suppression Management", "CRM Sync", "Team Access (10 Users)", "Shared Lists", "White Label Platform"]
+    features: ["Everything in Premium", "Suppression Management", "CRM Integration", "Team Access (10 Users)", "Shared Saved Lists", "White Label Platform"]
   }
 };
 
@@ -43,6 +43,7 @@ export default function SubscriptionPage() {
   const [selectedPlan, setSelectedPlan] = useState<PlanTier | null>(null);
   const [selectedAddon, setSelectedAddon] = useState<number | null>(null);
   const [showAddons, setShowAddons] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
 
   const featureName = searchParams.get("feature");
   const requiredPlan = searchParams.get("plan") as PlanTier;
@@ -81,150 +82,166 @@ export default function SubscriptionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="mb-6 hover:bg-muted/50">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
-
+    <div className="min-h-screen bg-gradient-to-br from-[#FFF5F2] via-white to-[#FFF5F2]">
+      <div className="w-full max-w-[1280px] px-6 py-2 -mt-[10px]">
         {featureName && requiredPlan && (
-          <div className="bg-gradient-to-r from-primary/10 via-purple-500/10 to-primary/10 border border-primary/20 rounded-2xl p-4 mb-8 backdrop-blur-sm animate-in fade-in slide-in-from-top-4 duration-500">
-            <p className="text-sm font-medium text-foreground text-center">
-              Upgrade to <span className="font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">{PLAN_INFO[requiredPlan].name}</span> to unlock <span className="font-bold">{featureName}</span>
+          <div className="bg-gradient-to-r from-[#FFE3D5] to-[#FFF5F2] border border-[#FF9882] rounded-xl p-2.5 mb-3">
+            <p className="text-sm font-medium text-[#B71833]">
+              Upgrade to <span className="font-bold text-[#FF3030]">{PLAN_INFO[requiredPlan].name}</span> to unlock <span className="font-bold">{featureName}</span>
             </p>
           </div>
         )}
 
-        <div className="text-center mb-8 animate-in fade-in slide-in-from-top-6 duration-700">
-          <h1 className="text-4xl font-bold text-foreground mb-2">Choose Your Plan</h1>
-          <p className="text-muted-foreground">Select the plan that fits your intelligence needs</p>
-        </div>
-
-        <div className="flex justify-center mb-12 animate-in fade-in slide-in-from-top-8 duration-900">
-          <div className="relative inline-flex items-center bg-muted/50 backdrop-blur-sm rounded-full p-1 border border-border shadow-inner">
-            <div
-              className={`absolute h-[calc(100%-8px)] bg-gradient-to-r from-primary to-purple-500 rounded-full transition-all duration-300 shadow-lg ${
-                billingCycle === "monthly" ? "left-1 w-[calc(50%-4px)]" : "left-[calc(50%+2px)] w-[calc(50%-4px)]"
-              }`}
-            />
-            <button
-              onClick={() => setBillingCycle("monthly")}
-              className={`relative z-10 px-6 py-2.5 rounded-full text-sm font-medium transition-colors ${
-                billingCycle === "monthly" ? "text-white" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Monthly
+        <div className="flex items-center justify-between py-2 mb-2 border-b border-[#E5E7EB]">
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate(-1)} className="text-[13px] text-[#64748B] hover:text-[#FF3030] flex items-center gap-1.5 transition-colors">
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Back
             </button>
+            <h1 className="text-[18px] font-semibold text-foreground">Pricing Plans</h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <CheckCircle className="h-3.5 w-3.5 text-[#10B981]" />
+            <span className="text-xs text-[#059669] font-semibold">GDPR Compliant</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <CheckCircle className="h-3.5 w-3.5 text-[#10B981]" />
+            <span className="text-xs text-[#059669] font-semibold">CCPA Compliant</span>
+          </div>
+          <div className="flex items-center gap-3">
             <button
-              onClick={() => setBillingCycle("yearly")}
-              className={`relative z-10 px-6 py-2.5 rounded-full text-sm font-medium transition-colors ${
-                billingCycle === "yearly" ? "text-white" : "text-muted-foreground hover:text-foreground"
-              }`}
+              onClick={() => setShowComparison(true)}
+              className="px-2.5 h-[30px] rounded-md border border-[#E5E7EB] text-[#334155] hover:border-[#FF3030] hover:text-[#FF3030] text-xs font-medium transition-colors"
             >
-              Yearly <span className="text-green-600 ml-1 font-bold">Save 17%</span>
+              Compare Plans
             </button>
+            <div className="inline-flex items-center bg-white border border-[#E5E7EB] rounded-lg p-0.5 h-8">
+              <button
+                onClick={() => setBillingCycle("monthly")}
+                className={`px-4 py-1 rounded-md text-[13px] font-medium transition-all duration-200 ${
+                  billingCycle === "monthly" ? "bg-[#FF3030] text-white" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Monthly
+              </button>
+              <button
+                onClick={() => setBillingCycle("yearly")}
+                className={`px-4 py-1 rounded-md text-[13px] font-medium transition-all duration-200 ${
+                  billingCycle === "yearly" ? "bg-[#FF3030] text-white" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Yearly <span className={billingCycle === "yearly" ? "text-white" : "text-[#10B981]"}>-17%</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          {(["pro", "premium", "enterprise"] as const).map((plan, idx) => {
+        <div className="grid grid-cols-[repeat(3,300px)] justify-center gap-5 mb-6">
+          {(["pro", "premium", "enterprise"] as const).map((plan) => {
             const details = PLAN_DETAILS[plan];
             const price = getPrice(plan);
-            const isRecommended = plan === requiredPlan;
+            const isRecommended = plan === requiredPlan || plan === "premium";
             const isCurrent = plan === currentPlan;
             const Icon = details.icon;
 
             return (
               <div
                 key={plan}
-                className={`relative bg-card/50 backdrop-blur-sm border-2 rounded-2xl p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl animate-in fade-in slide-in-from-bottom-4 ${
-                  selectedPlan === plan 
-                    ? "border-primary shadow-xl shadow-primary/20" 
-                    : "border-border hover:border-primary/50"
+                className={`bg-white border rounded-lg p-4 flex flex-col transition-all duration-200 relative ${
+                  plan === "enterprise"
+                    ? "border-[#FF3030] border-[1.5px] bg-[rgba(255,48,48,0.02)]"
+                    : selectedPlan === plan 
+                    ? "border-[#FF3030]" 
+                    : "border-[#E5E7EB] hover:border-[#FF9882]"
                 }`}
-                style={{ animationDelay: `${idx * 100}ms` }}
               >
-                {isRecommended && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-purple-600 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg animate-in zoom-in duration-500">
-                    Recommended
+                {plan === "premium" && (
+                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#FF3030] to-[#B71833] text-white px-3 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap">
+                    Most Popular
                   </div>
                 )}
-                {isCurrent && (
-                  <div className="absolute top-4 right-4 bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">
-                    Current Plan
+                {plan === "enterprise" && (
+                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#FF3030] to-[#B71833] text-white px-3 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap">
+                    Tailored Plan
                   </div>
                 )}
 
-                <div className="flex justify-center mb-4">
-                  <div className={`h-14 w-14 rounded-2xl flex items-center justify-center ${
-                    plan === "pro" ? "bg-blue-100" : plan === "premium" ? "bg-purple-100" : "bg-amber-100"
-                  }`}>
-                    <Icon className={`h-7 w-7 ${
-                      plan === "pro" ? "text-blue-600" : plan === "premium" ? "text-purple-600" : "text-amber-600"
-                    }`} />
-                  </div>
-                </div>
 
-                <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">{PLAN_INFO[plan].name}</h3>
-                  <div className="flex items-baseline justify-center gap-1 mb-2">
+                {/* Header Zone */}
+                <div className="pb-3 border-b border-[#F1F5F9] mb-3">
+                  <div className="flex items-center gap-2.5 mb-3">
+                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#FFE3D5] to-[#FF9882] flex items-center justify-center">
+                      <Icon className="h-5 w-5 text-[#B71833]" />
+                    </div>
+                    <h3 className="text-base font-bold text-foreground">{PLAN_INFO[plan].name}</h3>
+                  </div>
+                  <div className="mb-2">
                     {price ? (
-                      <>
-                        <span className="text-4xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">${price}</span>
-                        <span className="text-muted-foreground text-sm">/{billingCycle === "monthly" ? "mo" : "yr"}</span>
-                      </>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-2xl font-bold text-[#FF3030]">${price}</span>
+                        <span className="text-xs text-muted-foreground font-bold">/{billingCycle === "monthly" ? "mo" : "yr"}</span>
+                      </div>
                     ) : (
-                      <span className="text-4xl font-bold bg-gradient-to-r from-amber-600 to-amber-400 bg-clip-text text-transparent">Custom</span>
+                      <div>
+                        <div className="text-lg font-bold text-[#FF3030]">Custom</div>
+                        <div className="text-xs text-muted-foreground font-bold">Dedicated Manager</div>
+                      </div>
                     )}
                   </div>
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted/50 border border-border">
-                    <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span className="text-xs font-medium text-muted-foreground">{details.credits} credits/month</span>
+                  <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FFE3D5] border border-[#FF9882]">
+                    <Building2 className="h-3 w-3 text-[#B71833]" />
+                    <span className="text-[10px] font-semibold text-[#B71833]">{details.credits} credits/{billingCycle === "monthly" ? "mo" : "yr"}</span>
                   </div>
                 </div>
 
-                <ul className="space-y-3 mb-6">
-                  {details.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5 text-sm">
-                      <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center shrink-0 mt-0.5">
-                        <Check className="h-3 w-3 text-green-600" />
-                      </div>
-                      <span className="text-foreground leading-relaxed">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+                {/* CTA Zone - Moved to Top */}
+                <div className="mb-3">
+                  {plan === "enterprise" ? (
+                    <button className="w-full px-3 py-2 rounded-lg bg-gradient-to-r from-[#FF3030] to-[#B71833] hover:from-[#B71833] hover:to-[#7A0930] text-white text-sm font-semibold transition-all">
+                      Contact Sales
+                    </button>
+                  ) : (
+                    <button
+                      className="w-full px-3 py-2 rounded-lg text-sm font-semibold transition-all bg-gradient-to-r from-[#FF3030] to-[#B71833] hover:from-[#B71833] hover:to-[#7A0930] text-white"
+                      onClick={() => setSelectedPlan(plan)}
+                      disabled={isCurrent}
+                    >
+                      {isCurrent ? "Current Plan" : "Upgrade Now"}
+                    </button>
+                  )}
+                </div>
 
-                {plan === "enterprise" ? (
-                  <Button className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg hover:shadow-xl transition-all" size="lg">
-                    Contact Sales
-                  </Button>
-                ) : (
-                  <Button
-                    className={`w-full shadow-lg hover:shadow-xl transition-all ${
-                      selectedPlan === plan 
-                        ? "bg-gradient-to-r from-primary to-purple-600 hover:from-primary hover:to-purple-700 text-white" 
-                        : "bg-muted hover:bg-muted/80 text-foreground"
-                    }`}
-                    size="lg"
-                    onClick={() => setSelectedPlan(plan)}
-                  >
-                    {isCurrent ? "Current Plan" : "Select Plan"}
-                  </Button>
+                {/* Credit Zone */}
+                {(plan === "pro" || plan === "premium" || plan === "enterprise") && (
+                  <div className="bg-[#FFE3D5] border border-[#FF9882] rounded-md p-2 mb-3">
+                    <div className="text-[10px] font-semibold text-[#B71833] mb-1">Credit Usage:</div>
+                    <div className="text-[10px] text-[#B71833]">• Contact Email: 1 Credit</div>
+                    <div className="text-[10px] text-[#B71833]">• Contact Phone: 1 Credit</div>
+                  </div>
                 )}
+
+                {/* Feature Zone */}
+                <div className="flex-grow pt-1">
+                  {details.features.map((feature, idx) => (
+                    <div key={idx} className="flex items-center gap-2 mb-1.5">
+                      <Check className="h-4 w-4 text-[#FF3030] shrink-0" />
+                      <span className="text-[13px] text-foreground font-medium leading-[1.4]">{feature}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             );
           })}
         </div>
 
         {hasActiveSubscription && (
-          <div className="bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="bg-white border-2 border-[#E5E7EB] rounded-2xl p-5 mb-6 shadow-sm hover:shadow-md transition-shadow">
             <button
               onClick={() => setShowAddons(!showAddons)}
-              className="w-full flex items-center justify-between mb-4"
+              className="w-full flex items-center justify-between mb-3"
             >
-              <h3 className="text-lg font-bold text-foreground">Additional Credits</h3>
-              <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${showAddons ? "rotate-180" : ""}`} />
+              <h3 className="text-base font-bold text-foreground">Additional Credits</h3>
+              <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-300 ${showAddons ? "rotate-180" : ""}`} />
             </button>
             {showAddons && (
               <div className="grid md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
@@ -234,16 +251,16 @@ export default function SubscriptionPage() {
                     onClick={() => setSelectedAddon(selectedAddon === addon.amount ? null : addon.amount)}
                     className={`border-2 rounded-xl p-4 text-center transition-all hover:scale-105 ${
                       selectedAddon === addon.amount 
-                        ? "border-primary bg-primary/10 shadow-lg" 
-                        : "border-border hover:border-primary/50"
+                        ? "border-[#FF3030] bg-[#FFE3D5] shadow-md" 
+                        : "border-[#E5E7EB] hover:border-[#FF9882]"
                     }`}
                   >
-                    <div className="text-2xl font-bold text-foreground">+{addon.amount.toLocaleString()}</div>
+                    <div className="text-2xl font-bold text-[#FF3030]">+{addon.amount.toLocaleString()}</div>
                     <div className="text-sm text-muted-foreground mt-1">${addon.price}</div>
                   </button>
                 ))}
-                <button className="border-2 border-dashed border-border rounded-xl p-4 text-center hover:border-primary transition-all hover:scale-105">
-                  <div className="text-sm font-medium text-foreground">Custom</div>
+                <button className="border-2 border-dashed border-[#E5E7EB] rounded-xl p-4 text-center hover:border-[#FF3030] hover:scale-105 transition-all">
+                  <div className="text-sm font-semibold text-foreground">Custom</div>
                   <div className="text-xs text-muted-foreground mt-1">Contact us</div>
                 </button>
               </div>
@@ -252,27 +269,107 @@ export default function SubscriptionPage() {
         )}
 
         {selectedPlan && selectedPlan !== "enterprise" && (
-          <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border p-4 shadow-2xl md:relative md:bg-card/50 md:border md:rounded-2xl md:shadow-xl animate-in slide-in-from-bottom-4 duration-500">
-            <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-              <div className="flex-1">
-                <div className="text-sm text-muted-foreground mb-1">Total Amount</div>
-                <div className="text-3xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                  ${getTotalPrice()}
-                  <span className="text-base text-muted-foreground ml-2">/{billingCycle === "monthly" ? "month" : "year"}</span>
-                </div>
+          <div className="bg-gradient-to-r from-white to-[#FFF5F2] border-2 border-[#FF3030] rounded-2xl p-5 flex items-center justify-between gap-4 shadow-lg">
+            <div>
+              <div className="text-xs text-muted-foreground mb-1">Total Amount</div>
+              <div className="text-2xl font-bold text-[#FF3030]">
+                ${getTotalPrice()}
+                <span className="text-sm text-muted-foreground font-normal ml-2">/{billingCycle === "monthly" ? "month" : "year"}</span>
               </div>
-              <Button 
-                size="lg" 
-                onClick={handlePurchase}
-                className="bg-gradient-to-r from-primary to-purple-600 hover:from-primary hover:to-purple-700 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all px-8"
-              >
-                <Sparkles className="h-4 w-4 mr-2" />
-                Upgrade Now
-              </Button>
             </div>
+            <button 
+              onClick={handlePurchase}
+              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#FF3030] to-[#B71833] hover:from-[#B71833] hover:to-[#7A0930] text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2"
+            >
+              <Sparkles className="h-4 w-4" />
+              Upgrade Now
+            </button>
           </div>
         )}
       </div>
+
+      {/* Comparison Modal */}
+      {showComparison && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowComparison(false)} />
+          <div className="relative w-[90%] max-w-[920px] bg-white rounded-lg overflow-hidden shadow-2xl">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[#E5E7EB] bg-white">
+              <h2 className="text-base font-semibold text-foreground">Plan Feature Comparison</h2>
+              <button onClick={() => setShowComparison(false)} className="text-muted-foreground hover:text-foreground transition-colors">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            {/* Modal Body */}
+            <div className="max-h-[500px] overflow-y-auto">
+              <table className="w-full border-collapse">
+                <thead className="bg-[#F9FAFB] sticky top-0">
+                  <tr>
+                    <th className="text-left px-4 py-3 text-[13px] font-semibold text-foreground border-b border-[#F1F5F9]">Feature</th>
+                    <th className="text-center px-4 py-3 text-[13px] font-semibold text-foreground border-b border-[#F1F5F9]">Pro</th>
+                    <th className="text-center px-4 py-3 text-[13px] font-semibold text-foreground border-b border-[#F1F5F9]">Premium</th>
+                    <th className="text-center px-4 py-3 text-[13px] font-semibold text-foreground border-b border-[#F1F5F9]">Enterprise</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {FEATURES.map((feature) => {
+                    const availableInPro = feature.requiresPlan === 'pro';
+                    const availableInPremium = feature.requiresPlan === 'pro' || feature.requiresPlan === 'premium';
+                    const availableInEnterprise = true;
+                    
+                    return (
+                      <tr key={feature.id} className="hover:bg-[#FAFAFA] transition-colors">
+                        <td className="px-4 py-2.5 text-[13px] text-foreground border-b border-[#F1F5F9]">{feature.name}</td>
+                        <td className="px-4 py-2.5 text-center border-b border-[#F1F5F9]">
+                          {availableInPro ? (
+                            <Check className="h-4 w-4 text-[#FF3030] mx-auto" />
+                          ) : (
+                            <Minus className="h-4 w-4 text-[#CBD5E1] mx-auto" />
+                          )}
+                        </td>
+                        <td className="px-4 py-2.5 text-center border-b border-[#F1F5F9]">
+                          {availableInPremium ? (
+                            <Check className="h-4 w-4 text-[#FF3030] mx-auto" />
+                          ) : (
+                            <Minus className="h-4 w-4 text-[#CBD5E1] mx-auto" />
+                          )}
+                        </td>
+                        <td className="px-4 py-2.5 text-center border-b border-[#F1F5F9]">
+                          {availableInEnterprise ? (
+                            <Check className="h-4 w-4 text-[#FF3030] mx-auto" />
+                          ) : (
+                            <Minus className="h-4 w-4 text-[#CBD5E1] mx-auto" />
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            
+            {/* Modal Footer */}
+            <div className="flex items-center justify-end gap-3 px-4 py-3 border-t border-[#E5E7EB] bg-white">
+              <button
+                onClick={() => {
+                  setShowComparison(false);
+                  setSelectedPlan('premium');
+                }}
+                className="px-4 py-2 rounded-md bg-[#FF3030] hover:bg-[#B71833] text-white text-[13px] font-medium transition-colors"
+              >
+                Upgrade to Premium
+              </button>
+              <button
+                onClick={() => setShowComparison(false)}
+                className="px-4 py-2 rounded-md border border-[#E5E7EB] hover:bg-[#F9FAFB] text-foreground text-[13px] font-medium transition-colors"
+              >
+                Contact Enterprise
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

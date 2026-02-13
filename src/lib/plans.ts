@@ -51,7 +51,7 @@ export const FEATURES: Feature[] = [
   // ----------------------------
   {
     id: "find-leads",
-    name: "Find Your Leads",
+    name: "Find Prospects",
     description:
       "Build targeted prospect lists using filters for job title, seniority, company size, revenue, and location.",
     route: "/prospect-search",
@@ -71,7 +71,7 @@ export const FEATURES: Feature[] = [
   },
   {
     id: "request-custom-list",
-    name: "Request Custom Leads",
+    name: "Request Custom Data",
     description:
       "Submit your Ideal Customer Profile and receive a curated list of verified contacts built by our team.",
     route: "/custom-data",
@@ -81,7 +81,7 @@ export const FEATURES: Feature[] = [
   },
   {
     id: "export-leads",
-    name: "Export Leads",
+    name: "Export Data",
     description:
       "Export verified contacts and company data in CSV format for CRM import and outbound campaigns.",
     route: "/prospect-search",
@@ -95,7 +95,7 @@ export const FEATURES: Feature[] = [
   // ----------------------------
   {
     id: "ai-lead-finder",
-    name: "AI Lead Finder",
+    name: "AI Prospect Finder",
     description:
       "Use AI-powered targeting to discover prospects within specific sub-industries based on intent signals.",
     route: "/prospect-search?ai=limited",
@@ -121,21 +121,21 @@ export const FEATURES: Feature[] = [
     aiLevel: "advanced",
     category: "ai",
   },
-  {
-    id: "ai-market-targeting",
-    name: "AI Market Targeting",
-    description:
-      "Surface high-conversion prospects across all industries using advanced AI modeling and predictive scoring.",
-    route: "/prospect-search?ai=full",
-    icon: "Sparkles",
-    requiresPlan: "premium",
-    isAI: true,
-    aiLevel: "advanced",
-    category: "ai",
-  },
+  // {
+  //   id: "ai-market-targeting",
+  //   name: "AI Market Targeting",
+  //   description:
+  //     "Surface high-conversion prospects across all industries using advanced AI modeling and predictive scoring.",
+  //   route: "/prospect-search?ai=full",
+  //   icon: "Sparkles",
+  //   requiresPlan: "premium",
+  //   isAI: true,
+  //   aiLevel: "advanced",
+  //   category: "ai",
+  // },
   {
     id: "enrich-leads",
-    name: "Enrich Leads",
+    name: "Data Enhancement",
     description:
       "Enhance your existing database with verified contact information, firmographics, and company intelligence.",
     route: "/data-enrichment",
@@ -155,7 +155,7 @@ export const FEATURES: Feature[] = [
   },
   {
     id: "advanced-targeting",
-    name: "Advanced Targeting",
+    name: "Inclusion / Exclusion",
     description:
       "Refine targeting precision with inclusion and suppression rules to eliminate irrelevant or restricted records.",
     route: "/prospect-search?filters=advanced",
@@ -177,16 +177,16 @@ export const FEATURES: Feature[] = [
   // ----------------------------
   // ENTERPRISE – Integrations & Scale
   // ----------------------------
-  {
-    id: "bulk-email-validation",
-    name: "Bulk Email Validation",
-    description:
-      "Validate thousands of emails at scale with batch processing to ensure list quality before campaigns.",
-    route: "/bulk-validation",
-    icon: "CheckCheck",
-    requiresPlan: "enterprise",
-    category: "enterprise",
-  },
+  // {
+  //   id: "bulk-email-validation",
+  //   name: "Bulk Email Validation",
+  //   description:
+  //     "Validate thousands of emails at scale with batch processing to ensure list quality before campaigns.",
+  //   route: "/bulk-validation",
+  //   icon: "CheckCheck",
+  //   requiresPlan: "enterprise",
+  //   category: "enterprise",
+  // },
   {
     id: "suppression-management",
     name: "Suppression Management",
@@ -199,7 +199,7 @@ export const FEATURES: Feature[] = [
   },
   {
     id: "crm-sync",
-    name: "CRM Sync",
+    name: "CRM Integration",
     description:
       "Seamlessly sync prospect and company data with leading CRM platforms using automated field mapping.",
     route: "/crm",
@@ -219,7 +219,7 @@ export const FEATURES: Feature[] = [
   },
   {
     id: "shared-lists",
-    name: "Shared Lists",
+    name: "Shared Saved Lists",
     description:
       "Share saved lists across your organization with structured access controls and governance.",
     route: "/saved-search",

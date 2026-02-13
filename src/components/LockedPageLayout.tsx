@@ -34,13 +34,7 @@ export function LockedPageLayout({ children, featureName, requiredPlan }: Locked
     <div className="relative h-full">
       {/* Plan Badge - Top Right */}
       <div className="absolute top-0 right-0 z-20 animate-in fade-in duration-300">
-        <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg shadow-lg ${
-          requiredPlan === 'premium' 
-            ? 'bg-gradient-to-br from-purple-500 to-purple-600' 
-            : requiredPlan === 'enterprise'
-            ? 'bg-gradient-to-br from-amber-500 to-amber-600'
-            : 'bg-gradient-to-br from-blue-500 to-blue-600'
-        } text-white text-xs font-bold`}>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg shadow-lg bg-[#FF3030] text-white text-xs font-bold">
           <Lock className="h-3.5 w-3.5" />
           {requiredPlan === 'premium' && <Star className="h-3.5 w-3.5" />}
           {requiredPlan === 'enterprise' && <Crown className="h-3.5 w-3.5" />}
@@ -53,13 +47,7 @@ export function LockedPageLayout({ children, featureName, requiredPlan }: Locked
         <Button 
           onClick={handleUnlock}
           size="sm"
-          className={`gap-2 shadow-lg ${
-            requiredPlan === 'premium'
-              ? 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700'
-              : requiredPlan === 'enterprise'
-              ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700'
-              : 'bg-primary hover:bg-primary/90'
-          } text-white`}
+          className="gap-2 shadow-lg bg-[#FF3030] hover:bg-[#B71833] text-white"
         >
           <Unlock className="h-4 w-4" />
           Unlock This Feature

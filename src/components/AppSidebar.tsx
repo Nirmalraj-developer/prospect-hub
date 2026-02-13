@@ -74,8 +74,8 @@ export function AppSidebar() {
           >
             <item.icon className="h-[18px] w-[18px]" />
             {isLocked && (
-              <div className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-muted border border-border flex items-center justify-center">
-                <Lock className="h-2 w-2 text-muted-foreground" />
+              <div className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-[#FFE3D5] border border-[#FF9882] flex items-center justify-center">
+                <Lock className="h-2 w-2 text-[#B71833]" />
               </div>
             )}
           </RouterNavLink>

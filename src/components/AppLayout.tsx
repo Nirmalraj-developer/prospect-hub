@@ -121,7 +121,7 @@ export default function AppLayout() {
                 <Button 
                   onClick={() => navigate('/subscription')}
                   size="sm"
-                  className="gap-2 bg-gradient-to-r from-primary via-purple-500 to-primary hover:from-primary hover:via-purple-600 hover:to-primary text-white shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-200 rounded-full px-4"
+                  className="gap-2 bg-[#FF3030] hover:bg-[#B71833] text-white shadow-sm hover:shadow-md transition-all duration-200 rounded-md px-4 font-medium"
                 >
                   <Sparkles className="h-3.5 w-3.5" />
                   Upgrade
