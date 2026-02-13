@@ -62,45 +62,86 @@ export default function SettingsPage() {
           <p className="text-sm text-muted-foreground">Manage your account preferences and plan</p>
         </div>
 
-      {/* Account Identity Header */}
-      <div className="flex items-center gap-4 p-3 mb-4 border border-[#E5E7EB] rounded-md bg-white">
-        {/* Avatar */}
-        <div className="w-10 h-10 rounded-full bg-[#FFE3D5] text-[#B71833] flex items-center justify-center font-semibold text-sm shrink-0">
-          N
-        </div>
-        
-        {/* Account Meta */}
-        <div className="flex-1">
-          {/* Primary Info */}
-          <div className="flex flex-col">
-            <span className="text-base font-semibold text-[#1E293B]">Nirmal Raj</span>
-            <span className="text-xs text-[#64748B]">nirmal@infynd.com</span>
+        {/* Account Identity Header */}
+        <div className="flex items-center gap-4 p-3 mb-4 border border-[#E5E7EB] rounded-md bg-white">
+          {/* Avatar */}
+          <div className="w-10 h-10 rounded-full bg-[#FFE3D5] text-[#B71833] flex items-center justify-center font-semibold text-sm shrink-0">
+            N
           </div>
-          
-          {/* Secondary Info */}
-          <div className="flex items-center gap-4 mt-1 text-xs">
-            <span className="text-[#10B981] font-medium">Active</span>
-            <span className="px-1.5 py-0.5 rounded bg-[#FFE3D5] text-[#B71833] font-medium">{PLAN_INFO[currentPlan].name}</span>
-            <span className="text-[#94A3B8]">Last login: Today, 9:42 AM</span>
+
+          {/* Account Meta */}
+          <div className="flex-1">
+            {/* Primary Info */}
+            <div className="flex flex-col">
+              <span className="text-base font-semibold text-[#1E293B]">Nirmal Raj</span>
+              <span className="text-xs text-[#64748B]">nirmal@infynd.com</span>
+            </div>
+
+            {/* Secondary Info */}
+            <div className="flex items-center gap-4 mt-1 text-xs">
+              <span className="text-[#10B981] font-medium">Active</span>
+              <span className="px-1.5 py-0.5 rounded bg-[#FFE3D5] text-[#B71833] font-medium">{PLAN_INFO[currentPlan].name}</span>
+              <span className="text-[#94A3B8]">Last login: Today, 9:42 AM</span>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => setShowEditProfile(true)}
+              className="px-3 py-1.5 rounded-md border border-[#E5E7EB] text-[#334155] hover:border-[#FF3030] hover:text-[#FF3030] text-xs font-medium transition-colors"
+            >
+              Edit Profile
+            </button>
+            <button
+              onClick={() => setShowChangePassword(true)}
+              className="px-3 py-1.5 rounded-md border border-[#E5E7EB] text-[#334155] hover:border-[#FF3030] hover:text-[#FF3030] text-xs font-medium transition-colors"
+            >
+              Change Password
+            </button>
           </div>
         </div>
-        
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2 shrink-0">
-          <button 
-            onClick={() => setShowEditProfile(true)}
-            className="px-3 py-1.5 rounded-md border border-[#E5E7EB] text-[#334155] hover:border-[#FF3030] hover:text-[#FF3030] text-xs font-medium transition-colors"
-          >
-            Edit Profile
-          </button>
-          <button 
-            onClick={() => setShowChangePassword(true)}
-            className="px-3 py-1.5 rounded-md border border-[#E5E7EB] text-[#334155] hover:border-[#FF3030] hover:text-[#FF3030] text-xs font-medium transition-colors"
-          >
-            Change Password
-          </button>
+
+        <div className="bg-white rounded-xl border border-border p-6 mb-6">
+          <h2 className="text-lg font-bold text-foreground mb-1">UI Preferences</h2>
+          <p className="text-sm text-muted-foreground mb-4">Customize your workspace layout</p>
+
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <input
+                type="radio"
+                id="homepage1"
+                name="homeLayout"
+                value="homepage1"
+                checked={localStorage.getItem('homeLayoutMode') !== 'homepage2'}
+                onChange={() => {
+                  localStorage.setItem('homeLayoutMode', 'homepage1');
+                  window.dispatchEvent(new Event('homeLayoutChanged'));
+                  // Force re-render to update UI state if needed, but localStorage read on render works too if we used state
+                  window.location.reload(); // Simple reload to ensure clean switch
+                }}
+                className="accent-[#FF3030] h-4 w-4"
+              />
+              <label htmlFor="homepage1" className="text-sm text-foreground">Standard Layout (Single Grid)</label>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="radio"
+                id="homepage2"
+                name="homeLayout"
+                value="homepage2"
+                checked={localStorage.getItem('homeLayoutMode') === 'homepage2'}
+                onChange={() => {
+                  localStorage.setItem('homeLayoutMode', 'homepage2');
+                  window.dispatchEvent(new Event('homeLayoutChanged'));
+                  window.location.reload();
+                }}
+                className="accent-[#FF3030] h-4 w-4"
+              />
+              <label htmlFor="homepage2" className="text-sm text-foreground">Tier-Based Layout (Tabs)</label>
+            </div>
+          </div>
         </div>
-      </div>
 
         <div className="bg-white rounded-xl border border-border p-6">
           <h2 className="text-lg font-bold text-foreground mb-1">Current Plan</h2>
@@ -115,11 +156,10 @@ export default function SettingsPage() {
                 <button
                   key={tier}
                   onClick={() => handlePlanClick(tier)}
-                  className={`relative p-5 rounded-xl border-2 transition-all duration-300 text-left ${
-                    isActive
+                  className={`relative p-5 rounded-xl border-2 transition-all duration-300 text-left ${isActive
                       ? 'border-primary shadow-lg scale-105'
                       : 'border-border hover:border-primary/40 hover:shadow-md'
-                  }`}
+                    }`}
                 >
                   {isActive && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-white text-xs font-semibold rounded-full">
@@ -127,9 +167,8 @@ export default function SettingsPage() {
                     </div>
                   )}
 
-                  <div className={`h-11 w-11 rounded-[10px] flex items-center justify-center mb-3 ${
-                    isActive ? 'bg-[#FF9882]' : 'bg-[#FFE3D5]'
-                  }`}>
+                  <div className={`h-11 w-11 rounded-[10px] flex items-center justify-center mb-3 ${isActive ? 'bg-[#FF9882]' : 'bg-[#FFE3D5]'
+                    }`}>
                     <Icon className="h-[18px] w-[18px] text-[#B71833]" strokeWidth={1.8} />
                   </div>
 
@@ -147,7 +186,7 @@ export default function SettingsPage() {
 
           <div className="mt-6 p-4 bg-muted/50 rounded-lg">
             <p className="text-xs text-muted-foreground">
-              <span className="font-semibold text-foreground">Note:</span> This is a testing feature to preview different plan UIs. 
+              <span className="font-semibold text-foreground">Note:</span> This is a testing feature to preview different plan UIs.
               In production, the plan would be determined by your subscription status.
             </p>
           </div>
@@ -161,10 +200,9 @@ export default function SettingsPage() {
             <h3 className="text-sm font-semibold text-[#B71833]">{PLAN_INFO[selectedPlanPreview].name} Plan</h3>
             <p className="text-xs text-[#64748B] mt-0.5">Included capabilities</p>
           </div>
-          
-          <div className={`p-5 flex-1 transition-all duration-200 ${
-            isTransitioning ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'
-          }`}>
+
+          <div className={`p-5 flex-1 transition-all duration-200 ${isTransitioning ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'
+            }`}>
             <div className="space-y-2.5">
               {getSelectedPlanFeatures().map((feature) => (
                 <div key={feature.id} className="flex items-start gap-2.5">

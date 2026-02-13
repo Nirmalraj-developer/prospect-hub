@@ -8,7 +8,7 @@ export interface Feature {
   icon: string;
   requiresPlan: PlanTier;
   isAI?: boolean;
-  aiLevel?: "limited" | "full";
+  aiLevel?: "limited" | "full" | "advanced";
   category: "prospecting" | "data" | "ai" | "enterprise";
 }
 
@@ -177,16 +177,16 @@ export const FEATURES: Feature[] = [
   // ----------------------------
   // ENTERPRISE – Integrations & Scale
   // ----------------------------
-  // {
-  //   id: "bulk-email-validation",
-  //   name: "Bulk Email Validation",
-  //   description:
-  //     "Validate thousands of emails at scale with batch processing to ensure list quality before campaigns.",
-  //   route: "/bulk-validation",
-  //   icon: "CheckCheck",
-  //   requiresPlan: "enterprise",
-  //   category: "enterprise",
-  // },
+  {
+    id: "bulk-email-validation",
+    name: "Bulk Email Validation",
+    description:
+      "Validate thousands of emails at scale with batch processing to ensure list quality before campaigns.",
+    route: "/bulk-validation",
+    icon: "CheckCheck",
+    requiresPlan: "enterprise",
+    category: "enterprise",
+  },
   {
     id: "suppression-management",
     name: "Suppression Management",
