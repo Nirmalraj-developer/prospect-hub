@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Bookmark, Download, Sparkles, TrendingUp, Database, Lock, Zap, Star, Crown, FileSpreadsheet, Users, Share2, Palette, Shield, ArrowRight, Clock } from "lucide-react";
+import { Search, Bookmark, Download, Sparkles, TrendingUp, Database, Lock, Zap, Star, Crown, FileSpreadsheet, Users, Share2, Palette, Shield, ArrowRight, Clock, CheckCircle, CheckCheck, ShieldOff, Info, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import { PlanTier, FEATURES, hasAccess, PLAN_INFO, PLAN_FEATURES } from "@/lib/plans";
 import { usePlan } from "@/contexts/PlanContext";
 
 const ICON_MAP: Record<string, any> = {
-  Search, Bookmark, Download, Sparkles, TrendingUp, Database, FileSpreadsheet, Users, Share2, Palette, Shield
+  Search, Bookmark, Download, Sparkles, TrendingUp, Database, FileSpreadsheet, Users, Share2, Palette, Shield, CheckCircle, CheckCheck, ShieldOff
 };
 
 export default function HomePage() {
@@ -16,6 +16,17 @@ export default function HomePage() {
   const [selectedPlan, setSelectedPlan] = useState<PlanTier>(currentPlan === 'trial' ? 'pro' : currentPlan);
   const [upgradeModal, setUpgradeModal] = useState<{ open: boolean; feature?: any }>({ open: false });
   const [credits, setCredits] = useState(0);
+  const [showTrialInfo, setShowTrialInfo] = useState(false);
+
+  useEffect(() => {
+    if (currentPlan === 'trial') {
+      const hasSeenTrialInfo = sessionStorage.getItem('hasSeenTrialInfo');
+      if (!hasSeenTrialInfo) {
+        setTimeout(() => setShowTrialInfo(true), 500);
+        sessionStorage.setItem('hasSeenTrialInfo', 'true');
+      }
+    }
+  }, [currentPlan]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -36,11 +47,7 @@ export default function HomePage() {
   }, []);
 
   const handleFeatureClick = (feature: any) => {
-    if (hasAccess(currentPlan, feature.requiresPlan)) {
-      navigate(feature.route);
-    } else {
-      setUpgradeModal({ open: true, feature });
-    }
+    navigate(feature.route);
   };
 
   const getDisplayFeatures = () => {
@@ -204,7 +211,7 @@ export default function HomePage() {
             return (
               <div
                 key={feature.id}
-                onClick={() => !locked && handleFeatureClick(feature)}
+                onClick={() => handleFeatureClick(feature)}
                 className={`relative bg-white rounded-xl p-3.5 transition-all duration-300 cursor-pointer fade-in-up hover:-translate-y-1 hover:shadow-lg ${
                   locked
                     ? 'border border-border opacity-75 hover:border-border'
@@ -287,6 +294,56 @@ export default function HomePage() {
           requiredPlan={upgradeModal.feature.requiresPlan}
           featureName={upgradeModal.feature.name}
         />
+      )}
+
+      {/* Trial Info Popup */}
+      {showTrialInfo && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-[1000]" onClick={() => setShowTrialInfo(false)} />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1001] w-full max-w-md">
+            <div className="bg-white rounded-2xl shadow-2xl p-6 mx-4 animate-in fade-in zoom-in duration-300">
+              <div className="flex items-start gap-4">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center flex-shrink-0">
+                  <Info className="h-6 w-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-foreground mb-2">Welcome to Your 3-Day Trial!</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                    You have full access to all <span className="font-semibold text-foreground">Pro features</span> for the next 3 days. Explore lead finding, AI search, data export, and more—completely free.
+                  </p>
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200">
+                    <Clock className="h-4 w-4 text-amber-600" />
+                    <span className="text-xs font-semibold text-amber-900">Trial expires in 3 days</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowTrialInfo(false)}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="mt-6 flex gap-3">
+                <Button
+                  onClick={() => setShowTrialInfo(false)}
+                  className="flex-1 bg-primary hover:bg-primary/90 text-white"
+                >
+                  Get Started
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowTrialInfo(false);
+                    setSelectedPlan('premium');
+                  }}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  View Plans
+                </Button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

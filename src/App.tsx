@@ -13,6 +13,7 @@ import CustomDataPage from "@/pages/CustomDataPage";
 import EmailValidationPage from "@/pages/EmailValidationPage";
 import SuppressionPage from "@/pages/SuppressionPage";
 import SettingsPage from "@/pages/SettingsPage";
+import SubscriptionPage from "@/pages/SubscriptionPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
               <Route path="/validations/email" element={<EmailValidationPage />} />
               <Route path="/validations/suppression" element={<SuppressionPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/subscription" element={<SubscriptionPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

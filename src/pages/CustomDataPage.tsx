@@ -2,6 +2,7 @@ import { FileSpreadsheet, Send, Clock, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { LockedPageLayout, LockedButton } from "@/components/LockedPageLayout";
 
 const pastRequests = [
   { id: 1, title: "UK SaaS Decision Makers", status: "completed", date: "Jan 15, 2026" },
@@ -10,6 +11,7 @@ const pastRequests = [
 
 export default function CustomDataPage() {
   return (
+    <LockedPageLayout featureName="Custom Data Request" requiredPlan="pro">
     <div className="max-w-3xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-foreground">Custom Data Request</h1>
@@ -38,10 +40,10 @@ export default function CustomDataPage() {
             />
           </div>
           <div className="flex justify-end">
-            <Button>
+            <LockedButton requiredPlan="pro" tooltipText="Upgrade to Pro to submit custom data requests">
               <Send className="h-4 w-4 mr-2" />
               Submit Request
-            </Button>
+            </LockedButton>
           </div>
         </div>
       </div>
@@ -78,5 +80,6 @@ export default function CustomDataPage() {
         ))}
       </div>
     </div>
+    </LockedPageLayout>
   );
 }

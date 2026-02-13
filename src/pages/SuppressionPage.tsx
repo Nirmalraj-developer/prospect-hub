@@ -2,6 +2,7 @@ import { Upload, FileUp, Shield, Trash2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { LockedPageLayout, LockedButton } from "@/components/LockedPageLayout";
 
 const validationTabs = [
   { label: "Email Validation", path: "/validations/email" },
@@ -18,6 +19,7 @@ export default function SuppressionPage() {
   const location = useLocation();
 
   return (
+    <LockedPageLayout featureName="Suppression Management" requiredPlan="enterprise">
     <div className="max-w-3xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-foreground">Validations</h1>
@@ -55,19 +57,19 @@ export default function SuppressionPage() {
         <p className="text-sm text-muted-foreground mb-4">
           Upload emails or domains to exclude from your searches and exports
         </p>
-        <Button>
+        <LockedButton requiredPlan="enterprise" tooltipText="Upgrade to Enterprise to enable suppression management">
           <FileUp className="h-4 w-4 mr-2" />
           Upload List
-        </Button>
+        </LockedButton>
       </div>
 
       {/* Existing lists */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-semibold text-foreground">Suppression Lists</h3>
-        <Button size="sm" variant="outline">
+        <LockedButton size="sm" variant="outline" requiredPlan="enterprise" tooltipText="Upgrade to Enterprise to create suppression lists">
           <Plus className="h-3.5 w-3.5 mr-1" />
           New List
-        </Button>
+        </LockedButton>
       </div>
       <div className="space-y-3">
         {suppressionLists.map((list) => (
@@ -86,12 +88,13 @@ export default function SuppressionPage() {
                 </div>
               </div>
             </div>
-            <Button size="sm" variant="ghost">
+            <LockedButton size="sm" variant="ghost" requiredPlan="enterprise" tooltipText="Upgrade to Enterprise to manage suppression lists">
               <Trash2 className="h-3.5 w-3.5" />
-            </Button>
+            </LockedButton>
           </div>
         ))}
       </div>
     </div>
+    </LockedPageLayout>
   );
 }

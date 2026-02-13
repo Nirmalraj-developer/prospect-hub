@@ -1,5 +1,6 @@
 import { Upload, FileUp, CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LockedPageLayout, LockedButton } from "@/components/LockedPageLayout";
 
 const steps = [
   { step: 1, title: "Upload your file", description: "CSV or Excel with company or contact data" },
@@ -9,7 +10,8 @@ const steps = [
 
 export default function DataEnrichmentPage() {
   return (
-    <div className="max-w-3xl mx-auto">
+    <LockedPageLayout featureName="Data Enrichment" requiredPlan="premium">
+      <div className="max-w-3xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-foreground">Data Enrichment</h1>
         <p className="text-sm text-muted-foreground mt-1">
@@ -48,10 +50,10 @@ export default function DataEnrichmentPage() {
         <p className="text-sm text-muted-foreground mb-4">
           Supports CSV, XLSX up to 50MB
         </p>
-        <Button>
+        <LockedButton requiredPlan="premium" tooltipText="Upgrade to Premium to enrich data">
           <FileUp className="h-4 w-4 mr-2" />
           Browse Files
-        </Button>
+        </LockedButton>
       </div>
 
       {/* Info cards */}
@@ -67,6 +69,7 @@ export default function DataEnrichmentPage() {
           </div>
         ))}
       </div>
-    </div>
+      </div>
+    </LockedPageLayout>
   );
 }

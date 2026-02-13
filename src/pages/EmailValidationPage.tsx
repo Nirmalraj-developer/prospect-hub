@@ -2,6 +2,7 @@ import { Upload, Mail, CheckCircle, XCircle, AlertTriangle, FileUp } from "lucid
 import { Button } from "@/components/ui/button";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { LockedPageLayout, LockedButton } from "@/components/LockedPageLayout";
 
 const validationTabs = [
   { label: "Email Validation", path: "/validations/email" },
@@ -18,6 +19,7 @@ export default function EmailValidationPage() {
   const location = useLocation();
 
   return (
+    <LockedPageLayout featureName="Email Validation" requiredPlan="premium">
     <div className="max-w-3xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-foreground">Validations</h1>
@@ -55,10 +57,10 @@ export default function EmailValidationPage() {
         <p className="text-sm text-muted-foreground mb-4">
           CSV or TXT file with one email per line
         </p>
-        <Button>
+        <LockedButton requiredPlan="premium" tooltipText="Upgrade to Premium to validate emails">
           <FileUp className="h-4 w-4 mr-2" />
           Upload File
-        </Button>
+        </LockedButton>
       </div>
 
       {/* Sample results */}
@@ -101,5 +103,6 @@ export default function EmailValidationPage() {
         ))}
       </div>
     </div>
+    </LockedPageLayout>
   );
 }

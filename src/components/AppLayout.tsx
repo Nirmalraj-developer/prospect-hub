@@ -1,7 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Bell, Zap, Settings, Clock } from "lucide-react";
+import { Bell, Zap, Settings, Clock, X, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { usePlan } from "@/contexts/PlanContext";
 
 const pageTitles: Record<string, string> = {
   "/": "Home",
@@ -17,11 +20,21 @@ const pageTitles: Record<string, string> = {
 export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { currentPlan } = usePlan();
   const currentTitle = Object.entries(pageTitles).find(
     ([path]) => path === "/" ? location.pathname === "/" : location.pathname.startsWith(path)
   )?.[1] || "Home";
 
   const [timeLeft, setTimeLeft] = useState('');
+  const [showTooltip, setShowTooltip] = useState(false);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const badgeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (currentPlan === 'trial') {
+      setTimeout(() => setShowTooltip(true), 800);
+    }
+  }, [currentPlan]);
 
   useEffect(() => {
     const trialEnd = new Date();
@@ -50,6 +63,42 @@ export default function AppLayout() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        showTooltip &&
+        tooltipRef.current &&
+        badgeRef.current &&
+        !tooltipRef.current.contains(event.target as Node) &&
+        !badgeRef.current.contains(event.target as Node)
+      ) {
+        handleDismissTooltip();
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && showTooltip) {
+        handleDismissTooltip();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [showTooltip]);
+
+  const handleDismissTooltip = () => {
+    setShowTooltip(false);
+  };
+
+  const handleBadgeClick = () => {
+    setShowTooltip(!showTooltip);
+  };
+
   return (
     <div className="flex flex-col min-h-screen w-full bg-background">
       {/* Top navbar */}
@@ -66,10 +115,62 @@ export default function AppLayout() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200">
-            <Clock className="h-3.5 w-3.5 text-amber-600" />
-            <span className="text-xs font-semibold text-amber-900">Trial: {timeLeft}</span>
-          </div>
+          {currentPlan !== 'enterprise' && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  onClick={() => navigate('/subscription')}
+                  size="sm"
+                  className="gap-2 bg-gradient-to-r from-primary via-purple-500 to-primary hover:from-primary hover:via-purple-600 hover:to-primary text-white shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-200 rounded-full px-4"
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Upgrade
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">Unlock Premium Intelligence Tools</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
+          {currentPlan === 'trial' && (
+            <div className="relative">
+              <div 
+                ref={badgeRef}
+                onClick={handleBadgeClick}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200 cursor-pointer hover:bg-amber-100 transition-colors"
+              >
+                <Clock className="h-3.5 w-3.5 text-amber-600" />
+                <span className="text-xs font-semibold text-amber-900">Trial: {timeLeft}</span>
+              </div>
+              
+              {showTooltip && (
+                <div
+                  ref={tooltipRef}
+                  role="dialog"
+                  aria-label="Trial information"
+                  className="absolute top-full right-0 mt-2 w-80 bg-gradient-to-br from-green-50 via-white to-amber-50 rounded-xl shadow-2xl border border-green-200/50 p-4 z-[1000] animate-in fade-in zoom-in-95 duration-200"
+                  style={{ transformOrigin: 'top right' }}
+                >
+                  <button
+                    onClick={handleDismissTooltip}
+                    className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label="Close tooltip"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                  <div className="pr-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+                      <h4 className="text-sm font-bold text-foreground">Limited Pro Access</h4>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      You can access Pro features in a limited way during your Free Plan trial period. Upgrade to unlock full access to all premium tools.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
           <button className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
             <Bell className="h-4.5 w-4.5" />
           </button>

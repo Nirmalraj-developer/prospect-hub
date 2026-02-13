@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Search, Filter, Sparkles, Building2, Users, Target, Shield, Info, ChevronDown, X, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { LockedPageLayout, LockedButton } from "@/components/LockedPageLayout";
 
 export default function ProspectSearchPage() {
   const [searchType, setSearchType] = useState<"company" | "people">("company");
@@ -9,9 +10,13 @@ export default function ProspectSearchPage() {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   return (
-    <div className="flex h-[calc(100vh-6.5rem)] relative">
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
+    <LockedPageLayout 
+      featureName="Find Leads" 
+      requiredPlan="pro"
+    >
+      <div className="flex h-[calc(100vh-6.5rem)] relative">
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col">
         {/* Top Control Bar */}
         <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border">
           {/* Company/People Toggle */}
@@ -55,10 +60,10 @@ export default function ProspectSearchPage() {
           </Button>
 
           {/* AI Prompt Button */}
-          <Button variant="outline" size="sm" className="gap-2">
+          <LockedButton variant="outline" size="sm" className="gap-2" requiredPlan="pro" tooltipText="Upgrade to Pro to use AI-powered search">
             <Sparkles className="h-4 w-4" />
             AI Prompt
-          </Button>
+          </LockedButton>
 
           {/* Active Filter Chips */}
           {activeFilters.length > 0 && (
@@ -202,9 +207,9 @@ export default function ProspectSearchPage() {
           {/* Sticky Footer */}
           <div className="p-4 border-t border-border bg-white">
             <div className="flex gap-2">
-              <Button className="flex-1" size="sm">
+              <LockedButton className="flex-1" size="sm" requiredPlan="pro" tooltipText="Upgrade to Pro to apply filters">
                 Apply Filters
-              </Button>
+              </LockedButton>
               <Button variant="ghost" size="sm" className="text-muted-foreground">
                 Clear
               </Button>
@@ -220,7 +225,8 @@ export default function ProspectSearchPage() {
           onClick={() => setIsFilterOpen(false)}
         />
       )}
-    </div>
+      </div>
+    </LockedPageLayout>
   );
 }
 

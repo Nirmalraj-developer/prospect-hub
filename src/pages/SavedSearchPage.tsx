@@ -1,5 +1,6 @@
 import { Bookmark, Clock, Trash2, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LockedPageLayout, LockedButton } from "@/components/LockedPageLayout";
 
 const savedSearches = [
   { id: 1, name: "UK Healthcare Companies", filters: "Sector: Healthcare · Size: 50-200 · UK", date: "2 hours ago", results: 1240 },
@@ -9,6 +10,7 @@ const savedSearches = [
 
 export default function SavedSearchPage() {
   return (
+    <LockedPageLayout featureName="Saved Search" requiredPlan="pro">
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -50,17 +52,18 @@ export default function SavedSearchPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Button size="sm" variant="outline">
+                <LockedButton size="sm" variant="outline" requiredPlan="pro" tooltipText="Upgrade to Pro to run saved searches">
                   <Play className="h-3.5 w-3.5 mr-1" /> Run
-                </Button>
-                <Button size="sm" variant="ghost">
+                </LockedButton>
+                <LockedButton size="sm" variant="ghost" requiredPlan="pro" tooltipText="Upgrade to Pro to manage saved searches">
                   <Trash2 className="h-3.5 w-3.5" />
-                </Button>
+                </LockedButton>
               </div>
             </div>
           ))}
         </div>
       )}
     </div>
+    </LockedPageLayout>
   );
 }
