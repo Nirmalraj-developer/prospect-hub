@@ -18,6 +18,7 @@ export default function HomePage2() {
     const [activeTier, setActiveTier] = useState<"pro" | "premium" | "enterprise">("premium");
     const [upgradeModal, setUpgradeModal] = useState<{ open: boolean; feature?: any }>({ open: false });
     const [credits, setCredits] = useState(0);
+    const [bannerVisible, setBannerVisible] = useState(true);
 
     // Default to premium as requested in step 6
     // const [activeTier, setActiveTier] = useState('premium')
@@ -41,8 +42,10 @@ export default function HomePage2() {
         return () => clearTimeout(timer);
     }, []);
 
-    const handleFeatureClick = (feature: any) => {
-        navigate(feature.route);
+    const handleFeatureClick = (feature: any, locked: boolean) => {
+        if (!locked) {
+            navigate(feature.route);
+        }
     };
 
     const getFeatureCTA = (featureId: string) => {
@@ -72,8 +75,8 @@ export default function HomePage2() {
         // Exact mapping from requirements
         const featureMap = {
             pro: ['find-leads', 'saved-lists', 'request-custom-list', 'export-leads'],
-            premium: ['ai-lead-finder', 'ai-role-targeting', 'ai-market-targeting', 'enrich-leads', 'email-validation', 'advanced-targeting', 'team-access-5'],
-            enterprise: ['bulk-email-validation', 'suppression-management', 'crm-sync', 'shared-lists', 'white-label-platform', 'team-access-10']
+            premium: ['enrich-leads', 'email-validation', 'advanced-targeting', 'team-access-5'],
+            enterprise: ['suppression-management', 'crm-sync', 'shared-lists', 'white-label-platform', 'team-access-10']
         };
 
         const targetIds = featureMap[tab] || [];
@@ -91,6 +94,21 @@ export default function HomePage2() {
         };
     }
     const theme = getThemeColors();
+
+    const getTierInheritanceBanner = () => {
+        if (activeTier === 'pro') return 'Everything in Pro';
+        if (activeTier === 'premium') return 'Everything in Pro + Data Enrichment, Data Validation & Team Collaboration';
+        if (activeTier === 'enterprise') return 'Everything in Premium + Data Compliance, Data Integrations & White Labelling';
+        return '';
+    };
+
+    const handleTierChange = (tier: "pro" | "premium" | "enterprise") => {
+        setBannerVisible(false);
+        setTimeout(() => {
+            setActiveTier(tier);
+            setBannerVisible(true);
+        }, 100);
+    };
 
     return (
         <div className="h-[calc(100vh-3.5rem)] flex flex-col relative bg-gradient-to-br from-[#FFF5F2] to-white">
@@ -151,7 +169,7 @@ export default function HomePage2() {
                         {(['pro', 'premium', 'enterprise'] as const).map((tier) => (
                             <button
                                 key={tier}
-                                onClick={() => setActiveTier(tier)}
+                                onClick={() => handleTierChange(tier)}
                                 className={cn(
                                     "relative h-[28px] px-3 text-xs rounded-md border transition-all duration-150 capitalize whitespace-nowrap flex items-center gap-2",
                                     activeTier === tier
@@ -179,22 +197,21 @@ export default function HomePage2() {
                         ))}
                     </div>
 
-                    {/* Tier Highlight Banner */}
-                    {activeTier !== 'pro' && (
-                        <div
-                            key={activeTier}
-                            className="mx-auto max-w-fit mt-2 mb-3 px-2.5 py-1.5 rounded-md text-xs font-medium border text-center animate-in fade-in slide-in-from-bottom-1 duration-200"
-                            style={{
-                                backgroundColor: 'rgba(255,48,48,0.06)',
-                                borderColor: theme.light,
-                                color: theme.dark,
-                                lineHeight: 1.3
-                            }}
-                        >
-                            {activeTier === 'premium' && "Everything in Pro + Advanced AI & Team Collaboration"}
-                            {activeTier === 'enterprise' && "Everything in Premium + Data Integrations & White Labelling"}
-                        </div>
-                    )}
+                    {/* Tier Inheritance Banner */}
+                    <div
+                        className={cn(
+                            "mx-auto max-w-fit mt-2 mb-3 px-2.5 py-1.5 rounded-md text-xs font-medium border text-center transition-all duration-180",
+                            bannerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"
+                        )}
+                        style={{
+                            backgroundColor: 'rgba(255,48,48,0.06)',
+                            borderColor: theme.lighter,
+                            color: theme.dark,
+                            lineHeight: 1.3
+                        }}
+                    >
+                        {getTierInheritanceBanner()}
+                    </div>
                 </div>
 
                 {/* Feature Grid */}
@@ -219,14 +236,14 @@ export default function HomePage2() {
                             return (
                                 <div
                                     key={feature.id}
-                                    onClick={() => !locked && handleFeatureClick(feature)}
+                                    onClick={() => handleFeatureClick(feature, locked)}
                                     className={`relative bg-white border border-black/[0.06] rounded-2xl p-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-200 cursor-pointer ${locked
                                         ? 'opacity-75 cursor-not-allowed'
                                         : 'hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]'
                                         }`}
                                     style={{
                                         animationDelay: `${index * 50}ms`,
-                                        borderColor: !locked ? 'transparent' : undefined // Let hover effect handle border color via CSS or class
+                                        borderColor: !locked ? 'transparent' : undefined
                                     }}
                                     onMouseEnter={(e) => {
                                         if (!locked) e.currentTarget.style.borderColor = theme.light;
@@ -267,35 +284,41 @@ export default function HomePage2() {
                                             </div>
                                         </div>
 
-                                        <p className={`text-[13px] leading-relaxed line-clamp-2 mb-4 ${locked ? 'text-muted-foreground' : 'text-[rgba(60,60,67,0.7)]'
+                                        <p className={`text-[13px] leading-relaxed line-clamp-2 ${locked ? 'text-muted-foreground' : 'text-[rgba(60,60,67,0.7)]'
                                             }`}>
                                             {feature.description}
                                         </p>
 
-                                        {/* CTA */}
-                                        {locked ? (
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setUpgradeModal({ open: true, feature });
-                                                }}
-                                                className="px-3 py-1.5 rounded-lg text-white text-xs font-medium transition-colors flex items-center gap-1 shadow-sm"
-                                                style={{ backgroundColor: theme.default }}
-                                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = theme.dark}
-                                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = theme.default}
-                                            >
-                                                Upgrade to unlock {feature.name} →
-                                            </button>
-                                        ) : (
-                                            <button
-                                                className="px-3 py-1.5 rounded-lg text-white text-xs font-medium transition-colors"
-                                                style={{ backgroundColor: theme.default }}
-                                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = theme.dark}
-                                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = theme.default}
-                                            >
-                                                {getFeatureCTA(feature.id)}
-                                            </button>
+                                        {locked && (
+                                            <div className="text-[11px] text-[#64748B] mt-1 mb-3">
+                                                Available in {activeTier.charAt(0).toUpperCase() + activeTier.slice(1)}
+                                            </div>
                                         )}
+
+                                        {/* CTA */}
+                                        <div className="mt-4">
+                                            {locked ? (
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setUpgradeModal({ open: true, feature });
+                                                    }}
+                                                    className="text-xs font-medium"
+                                                    style={{ color: theme.dark }}
+                                                >
+                                                    Upgrade to unlock {feature.name} →
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    className="px-3 py-1.5 rounded-lg text-white text-xs font-medium transition-colors"
+                                                    style={{ backgroundColor: theme.default }}
+                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = theme.dark}
+                                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = theme.default}
+                                                >
+                                                    {getFeatureCTA(feature.id)}
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             );
