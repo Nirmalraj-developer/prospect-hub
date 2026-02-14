@@ -9,35 +9,30 @@ const PLAN_CAPABILITIES = {
   trial: [
     "Prospect Search",
     "Saved Lists",
-    "Request Custom Leads",
-    "Export Leads",
-    "AI Lead Finder (Limited)"
+    "Custom Data",
+    "Export Data"
   ],
   pro: [
     "Prospect Search",
     "Saved Lists",
-    "Request Custom Leads",
-    "Export Leads",
-    "AI Lead Finder (Limited)"
+    "Custom Data",
+    "Export Data"
   ],
   premium: [
     "Prospect Search",
-    "AI Role Targeting",
-    "AI Market Targeting",
     "Data Enrichment",
-    "Email Validation",
-    "Team Access (5 Users)",
-    "Export Leads"
+    "Data Validation",
+    "Team Collaboration (5 Users)",
+    "Export Data"
   ],
   enterprise: [
     "Prospect Search",
-    "AI Role Targeting",
     "Bulk Email Validation",
-    "Suppression Management",
-    "CRM Sync",
-    "Team Access (10 Users)",
-    "Shared Lists",
-    "White Label Platform"
+    "Data Compliance",
+    "Data Integrations",
+    "Team Collaboration (10 Users)",
+    "Shared Search",
+    "White Labelling"
   ]
 };
 
@@ -151,7 +146,7 @@ export function PlanIntelligencePanel() {
               </div>
               <div>
                 <h5 className="text-[17px] font-semibold text-[#1C1C1E] mb-1">Upgrade to Premium</h5>
-                <p className="text-[13px] text-[rgba(60,60,67,0.7)]">Enable Advanced AI & CRM Sync</p>
+                <p className="text-[13px] text-[rgba(60,60,67,0.7)]">Enable Advanced AI & Data Integrations</p>
               </div>
             </div>
             <button 

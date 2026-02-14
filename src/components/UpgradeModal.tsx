@@ -12,9 +12,9 @@ interface UpgradeModalProps {
 }
 
 const PLAN_COMPARISON = {
-  pro: ['Prospect Search', 'Saved Search', 'Export Data', 'AI Search (Sub-Industry Only)', '10,000 credits/month'],
-  premium: ['Everything in Pro', 'AI Search (Sub Industries)', 'Data Enrichment', 'Advanced Filters', 'Email Validation', '50,000 credits/month'],
-  enterprise: ['Everything in Premium', 'CRM Integration', 'White-label', 'Email Suppression', 'Dedicated Support', 'Unlimited credits']
+  pro: ['Prospect Search', 'Saved Search', 'Export Data', 'Custom Data', '10,000 credits/month'],
+  premium: ['Everything in Pro', 'Data Enrichment', 'Data Validation', 'Team Collaboration (5 Users)', '50,000 credits/month'],
+  enterprise: ['Everything in Premium', 'Data Integrations', 'White Labelling', 'Data Compliance', 'Dedicated Support', 'Unlimited credits']
 };
 
 export function UpgradeModal({ open, onClose, currentPlan, requiredPlan, featureName }: UpgradeModalProps) {

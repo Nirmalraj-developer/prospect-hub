@@ -192,7 +192,7 @@ export default function HomePage2() {
                             }}
                         >
                             {activeTier === 'premium' && "Everything in Pro + Advanced AI & Team Collaboration"}
-                            {activeTier === 'enterprise' && "Everything in Premium + CRM Sync & White Label Platform"}
+                            {activeTier === 'enterprise' && "Everything in Premium + Data Integrations & White Labelling"}
                         </div>
                     )}
                 </div>
@@ -284,7 +284,7 @@ export default function HomePage2() {
                                                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = theme.dark}
                                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = theme.default}
                                             >
-                                                Upgrade to {activeTier.charAt(0).toUpperCase() + activeTier.slice(1)} →
+                                                Upgrade to unlock {feature.name} →
                                             </button>
                                         ) : (
                                             <button

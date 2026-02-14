@@ -19,7 +19,7 @@ export default function SuppressionPage() {
   const location = useLocation();
 
   return (
-    <LockedPageLayout featureName="Suppression Management" requiredPlan="enterprise">
+    <LockedPageLayout featureName="Data Compliance" requiredPlan="enterprise">
     <div className="max-w-3xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-foreground">Validations</h1>

@@ -28,15 +28,12 @@ export const PLAN_FEATURES: Record<PlanTier, string[]> = {
     "ai-lead-finder",
   ],
   premium: [
-    "ai-role-targeting",
-    "ai-market-targeting",
     "enrich-leads",
     "email-validation",
     "advanced-targeting",
     "team-access-5",
   ],
   enterprise: [
-    "bulk-email-validation",
     "suppression-management",
     "crm-sync",
     "team-access-10",
@@ -51,9 +48,9 @@ export const FEATURES: Feature[] = [
   // ----------------------------
   {
     id: "find-leads",
-    name: "Find Prospects",
+    name: "Prospect Search",
     description:
-      "Build targeted prospect lists using filters for job title, seniority, company size, revenue, and location.",
+      "Prospect Search enables AI-driven discovery of ideal customers using job role, seniority, and firmographic filters.",
     route: "/prospect-search",
     icon: "Search",
     requiresPlan: "pro",
@@ -71,7 +68,7 @@ export const FEATURES: Feature[] = [
   },
   {
     id: "request-custom-list",
-    name: "Request Custom Data",
+    name: "Custom Data",
     description:
       "Submit your Ideal Customer Profile and receive a curated list of verified contacts built by our team.",
     route: "/custom-data",
@@ -109,18 +106,18 @@ export const FEATURES: Feature[] = [
   // ----------------------------
   // PREMIUM – Advanced AI & Data
   // ----------------------------
-  {
-    id: "ai-role-targeting",
-    name: "AI Role Targeting",
-    description:
-      "Discover prospects using AI-driven job title pattern recognition and role-based targeting across industries.",
-    route: "/prospect-search?ai=job",
-    icon: "Sparkles",
-    requiresPlan: "premium",
-    isAI: true,
-    aiLevel: "advanced",
-    category: "ai",
-  },
+  // {
+  //   id: "ai-role-targeting",
+  //   name: "AI Role Targeting",
+  //   description:
+  //     "Discover prospects using AI-driven job title pattern recognition and role-based targeting across industries.",
+  //   route: "/prospect-search?ai=job",
+  //   icon: "Sparkles",
+  //   requiresPlan: "premium",
+  //   isAI: true,
+  //   aiLevel: "advanced",
+  //   category: "ai",
+  // },
   // {
   //   id: "ai-market-targeting",
   //   name: "AI Market Targeting",
@@ -135,9 +132,9 @@ export const FEATURES: Feature[] = [
   // },
   {
     id: "enrich-leads",
-    name: "Data Enhancement",
+    name: "Data Enrichment",
     description:
-      "Enhance your existing database with verified contact information, firmographics, and company intelligence.",
+      "Data Enrichment enhances prospect and company data with verified attributes.",
     route: "/data-enrichment",
     icon: "TrendingUp",
     requiresPlan: "premium",
@@ -145,9 +142,9 @@ export const FEATURES: Feature[] = [
   },
   {
     id: "email-validation",
-    name: "Email Validation",
+    name: "Data Validation",
     description:
-      "Verify email deliverability in real-time to reduce bounce rates and protect sender reputation.",
+      "Data Validation verifies email deliverability before outreach.",
     route: "/email-validation",
     icon: "CheckCircle",
     requiresPlan: "premium",
@@ -165,9 +162,9 @@ export const FEATURES: Feature[] = [
   },
   {
     id: "team-access-5",
-    name: "Team Access (5 Users)",
+    name: "Team Collaboration",
     description:
-      "Invite up to 5 team members to collaborate on lists with shared access and role-based permissions.",
+      "Team Collaboration enables shared search and controlled access across users (5 Users).",
     route: "/team",
     icon: "Users",
     requiresPlan: "premium",
@@ -177,21 +174,21 @@ export const FEATURES: Feature[] = [
   // ----------------------------
   // ENTERPRISE – Integrations & Scale
   // ----------------------------
-  {
-    id: "bulk-email-validation",
-    name: "Bulk Email Validation",
-    description:
-      "Validate thousands of emails at scale with batch processing to ensure list quality before campaigns.",
-    route: "/bulk-validation",
-    icon: "CheckCheck",
-    requiresPlan: "enterprise",
-    category: "enterprise",
-  },
+  // {
+  //   id: "bulk-email-validation",
+  //   name: "Bulk Email Validation",
+  //   description:
+  //     "Data Validation verifies email deliverability before outreach at scale with batch processing.",
+  //   route: "/bulk-validation",
+  //   icon: "CheckCheck",
+  //   requiresPlan: "enterprise",
+  //   category: "enterprise",
+  // },
   {
     id: "suppression-management",
-    name: "Suppression Management",
+    name: "Data Compliance",
     description:
-      "Manage suppression lists across email, phone, domain, and LinkedIn to ensure compliance and data hygiene.",
+      "Data Compliance helps manage suppression and DNC lists across email, phone, domain, and LinkedIn.",
     route: "/suppression",
     icon: "ShieldOff",
     requiresPlan: "enterprise",
@@ -199,7 +196,7 @@ export const FEATURES: Feature[] = [
   },
   {
     id: "crm-sync",
-    name: "CRM Integration",
+    name: "Data Integrations",
     description:
       "Seamlessly sync prospect and company data with leading CRM platforms using automated field mapping.",
     route: "/crm",
@@ -209,9 +206,9 @@ export const FEATURES: Feature[] = [
   },
   {
     id: "team-access-10",
-    name: "Team Access (10 Users)",
+    name: "Team Collaboration",
     description:
-      "Enable larger teams with expanded user limits, granular permissions, and workflow management.",
+      "Team Collaboration enables shared search and controlled access across users (10 Users).",
     route: "/team",
     icon: "Users",
     requiresPlan: "enterprise",
@@ -219,7 +216,7 @@ export const FEATURES: Feature[] = [
   },
   {
     id: "shared-lists",
-    name: "Shared Saved Lists",
+    name: "Shared Search",
     description:
       "Share saved lists across your organization with structured access controls and governance.",
     route: "/saved-search",
@@ -229,9 +226,9 @@ export const FEATURES: Feature[] = [
   },
   {
     id: "white-label-platform",
-    name: "White Label Platform",
+    name: "White Labelling",
     description:
-      "Customize the platform interface with your brand identity for client-facing or internal deployments.",
+      "White Labelling allows full platform branding customization for client-facing or internal deployments.",
     route: "/white-label",
     icon: "Palette",
     requiresPlan: "enterprise",

@@ -11,21 +11,21 @@ const PLAN_DETAILS = {
     yearlyPrice: 990,
     credits: "5,000",
     icon: Zap,
-    features: ["Find Prospects", "Saved Lists", "Request Custom Data", "Export Data", "AI Prospect Finder (Limited)"]
+    features: ["Prospect Search", "Saved Lists", "Custom Data", "Export Data"]
   },
   premium: {
     monthlyPrice: 299,
     yearlyPrice: 2990,
     credits: "15,000",
     icon: Sparkles,
-    features: ["Everything in Pro", "AI Role Targeting", "Data Enhancement", "Email Validation", "Inclusion / Exclusion", "Team Access (5 Users)"]
+    features: ["Everything in Pro", "Data Enrichment", "Data Validation", "Team Collaboration (5 Users)"]
   },
   enterprise: {
     monthlyPrice: null,
     yearlyPrice: null,
     credits: "Unlimited",
     icon: Crown,
-    features: ["Everything in Premium", "Suppression Management", "CRM Integration", "Team Access (10 Users)", "Shared Saved Lists", "White Label Platform"]
+    features: ["Everything in Premium", "Bulk Email Validation", "Data Compliance", "Data Integrations", "Team Collaboration (10 Users)", "White Labelling"]
   }
 };
 
