@@ -106,39 +106,66 @@ export default function SettingsPage() {
           <h2 className="text-lg font-bold text-foreground mb-1">UI Preferences</h2>
           <p className="text-sm text-muted-foreground mb-4">Customize your workspace layout</p>
 
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <input
-                type="radio"
-                id="homepage1"
-                name="homeLayout"
-                value="homepage1"
-                checked={localStorage.getItem('homeLayoutMode') !== 'homepage2'}
-                onChange={() => {
-                  localStorage.setItem('homeLayoutMode', 'homepage1');
-                  window.dispatchEvent(new Event('homeLayoutChanged'));
-                  // Force re-render to update UI state if needed, but localStorage read on render works too if we used state
-                  window.location.reload(); // Simple reload to ensure clean switch
-                }}
-                className="accent-[#FF3030] h-4 w-4"
-              />
-              <label htmlFor="homepage1" className="text-sm text-foreground">Standard Layout (Single Grid)</label>
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground mb-2">Home Layout</h3>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id="homepage1"
+                    name="homeLayout"
+                    value="homepage1"
+                    checked={localStorage.getItem('homeLayoutMode') !== 'homepage2'}
+                    onChange={() => {
+                      localStorage.setItem('homeLayoutMode', 'homepage1');
+                      window.dispatchEvent(new Event('homeLayoutChanged'));
+                      window.location.reload();
+                    }}
+                    className="accent-[#FF3030] h-4 w-4"
+                  />
+                  <label htmlFor="homepage1" className="text-sm text-foreground">Standard Layout (Single Grid)</label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id="homepage2"
+                    name="homeLayout"
+                    value="homepage2"
+                    checked={localStorage.getItem('homeLayoutMode') === 'homepage2'}
+                    onChange={() => {
+                      localStorage.setItem('homeLayoutMode', 'homepage2');
+                      window.dispatchEvent(new Event('homeLayoutChanged'));
+                      window.location.reload();
+                    }}
+                    className="accent-[#FF3030] h-4 w-4"
+                  />
+                  <label htmlFor="homepage2" className="text-sm text-foreground">Tier-Based Layout (Tabs)</label>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="radio"
-                id="homepage2"
-                name="homeLayout"
-                value="homepage2"
-                checked={localStorage.getItem('homeLayoutMode') === 'homepage2'}
-                onChange={() => {
-                  localStorage.setItem('homeLayoutMode', 'homepage2');
-                  window.dispatchEvent(new Event('homeLayoutChanged'));
-                  window.location.reload();
-                }}
-                className="accent-[#FF3030] h-4 w-4"
-              />
-              <label htmlFor="homepage2" className="text-sm text-foreground">Tier-Based Layout (Tabs)</label>
+
+            <div className="pt-3 border-t border-[#E5E7EB]">
+              <h3 className="text-sm font-semibold text-foreground mb-2">Prospect Search</h3>
+              <div className="flex items-center justify-between">
+                <div>
+                  <label htmlFor="customForm" className="text-sm text-foreground">Show Custom Form</label>
+                  <p className="text-xs text-muted-foreground mt-0.5">Display custom order form instead of results grid</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    id="customForm"
+                    checked={localStorage.getItem('showCustomForm') === 'true'}
+                    onChange={(e) => {
+                      localStorage.setItem('showCustomForm', e.target.checked.toString());
+                      window.dispatchEvent(new Event('customFormChanged'));
+                    }}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#FF3030]/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FF3030]"></div>
+                </label>
+              </div>
             </div>
           </div>
         </div>

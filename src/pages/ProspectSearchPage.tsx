@@ -87,9 +87,19 @@ export default function ProspectSearchPage() {
   const [showAIAnimation, setShowAIAnimation] = useState(true);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [showResults, setShowResults] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({});
   const [displayedProspects, setDisplayedProspects] = useState<Prospect[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [showCustomForm, setShowCustomForm] = useState(false);
+
+  useEffect(() => {
+    const handleCustomFormChange = () => {
+      setShowCustomForm(localStorage.getItem('showCustomForm') === 'true');
+    };
+    window.addEventListener('customFormChanged', handleCustomFormChange);
+    return () => window.removeEventListener('customFormChanged', handleCustomFormChange);
+  }, []);
   const popupRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   
@@ -117,6 +127,13 @@ export default function ProspectSearchPage() {
   }, []);
 
   const handleFindProspects = () => {
+    const customFormEnabled = localStorage.getItem('showCustomForm') === 'true';
+    if (customFormEnabled) {
+      setShowCustomForm(true);
+      setShowResults(false);
+      return;
+    }
+    setShowCustomForm(false);
     setShowResults(true);
     setCurrentPage(1);
     setDisplayedProspects(MOCK_PROSPECTS.slice(0, RESULTS_PER_PAGE));
@@ -386,7 +403,114 @@ export default function ProspectSearchPage() {
           )}
 
           {/* Results */}
-          {showResults ? (
+          {showCustomForm ? (
+            <div className="flex-1 flex flex-col bg-white overflow-y-auto">
+              <div className="p-3 border-b border-[#E5E7EB]">
+                <h2 className="text-[15px] font-bold text-[#111827]">Custom Data Order</h2>
+                <p className="text-[12px] text-[#6B7280] mt-0.5">Submit your requirements for a tailored prospect list</p>
+              </div>
+              
+              <div className="flex-1 p-3 space-y-3">
+                {/* Top Row - 3 Columns */}
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">Target Lead Volume</label>
+                    <Input placeholder="e.g., 500 leads" className="h-9 text-[13px]" />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">Request Category</label>
+                    <select className="w-full h-9 px-3 text-[13px] border border-input rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#FF4D4F] focus:border-transparent">
+                      <option>Standard List</option>
+                      <option>Premium List</option>
+                      <option>Enterprise List</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">Delivery Email</label>
+                    <Input placeholder="your@email.com" className="h-9 text-[13px]" />
+                  </div>
+                </div>
+
+                {/* Current Search Criteria */}
+                {selectedFilters && Object.keys(selectedFilters).length > 0 && (
+                  <div>
+                    <label className="text-[11px] font-semibold text-[#374151] mb-1.5 block">Selected Filters:</label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {Object.entries(selectedFilters).map(([key, value]) => (
+                        <span key={key} className="px-2 py-1 bg-[#FFF1F0] text-[#FF4D4F] text-[11px] font-medium rounded border border-[#FFCCC7]">
+                          {value}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Middle Section - 2 Columns */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">Upload Suppression List</label>
+                    <div className="h-40 border border-dashed border-[#E5E7EB] rounded-md flex flex-col items-center justify-center gap-2 bg-[#FAFBFC] hover:bg-[#F5F5F5] transition-colors cursor-pointer">
+                      <svg className="h-8 w-8 text-[#9CA3AF]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      <span className="text-[12px] text-[#6B7280] font-medium">Click to upload CSV</span>
+                      <span className="text-[10px] text-[#9CA3AF]">Max 10MB</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">Additional Notes</label>
+                    <textarea 
+                      placeholder="Specify any custom requirements..."
+                      className="w-full h-40 px-3 py-2 text-[12px] border border-input rounded-md bg-white resize-none focus:outline-none focus:ring-2 focus:ring-[#FF4D4F] focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                {/* License + Included Data Attributes */}
+                <div className="flex justify-between items-center gap-3 flex-wrap pt-2 border-t border-[#E5E7EB]">
+                  <div>
+                    <label className="text-[11px] font-semibold text-[#374151] block mb-1">License Type</label>
+                    <div className="flex gap-2">
+                      <label className="flex items-center gap-1.5 cursor-pointer">
+                        <input type="radio" name="license" className="accent-[#FF3030] h-3 w-3" defaultChecked />
+                        <span className="text-[12px] text-[#374151]">Single Use</span>
+                      </label>
+                      <label className="flex items-center gap-1.5 cursor-pointer">
+                        <input type="radio" name="license" className="accent-[#FF3030] h-3 w-3" />
+                        <span className="text-[12px] text-[#374151]">Multi Use</span>
+                      </label>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-semibold text-[#374151] block mb-1">Included Data Attributes</label>
+                    <div className="flex flex-wrap gap-1">
+                      <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">Email</span>
+                      <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">Phone</span>
+                      <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">LinkedIn</span>
+                      <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">Company</span>
+                      <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">Title</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sticky Submit CTA */}
+              <div className="sticky bottom-0 bg-white border-t border-[#E5E7EB] p-2 flex gap-2">
+                <button className="flex-1 h-9 rounded-md text-[13px] font-semibold bg-gradient-to-r from-[#FF4D4F] to-[#E53935] hover:shadow-lg text-white transition-all">
+                  Submit Custom Order
+                </button>
+                <button 
+                  onClick={() => {
+                    localStorage.setItem('showCustomForm', 'false');
+                    setShowCustomForm(false);
+                  }}
+                  className="px-4 h-9 rounded-md text-[13px] font-medium bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#374151] transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : showResults ? (
             <div className="flex-1 flex flex-col min-h-0">
               {/* Scrollable Table */}
               <div className="flex-1 overflow-y-auto min-h-0">
