@@ -230,3 +230,68 @@
   50% { transform: scale(1.15) rotate(10deg); }
   100% { transform: scale(1) rotate(0deg); }
 }
+
+@keyframes floatAI {
+  0% { transform: translateY(0px); opacity: 0.6; }
+  50% { transform: translateY(-6px); opacity: 1; }
+  100% { transform: translateY(0px); opacity: 0.6; }
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink {
+  50% { border-color: transparent; }
+}
+
+@keyframes aiGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes aiOrbit {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes chipFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.aiTypingPlaceholder::placeholder {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 2.5s steps(30, end) infinite, blink 0.7s step-end infinite;
+}

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, Sparkles, Building2, Users, MapPin, DollarSign, Briefcase, Target, Shield, ChevronRight, X, Info, GripVertical, Maximize2, ChevronDown, Plus, Minus, Bookmark } from "lucide-react";
+import { Search, Sparkles, Building2, Users, MapPin, DollarSign, Briefcase, Target, Shield, ChevronRight, X, Info, GripVertical, Maximize2, ChevronDown, Plus, Minus, Bookmark, Eye, EyeOff, Mail, Phone, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LockedPageLayout, LockedButton } from "@/components/LockedPageLayout";
@@ -14,6 +14,23 @@ interface FilterItem {
   count?: number;
   category: string;
   hasAI?: boolean;
+}
+
+interface Prospect {
+  id: string;
+  company: string;
+  industry: string;
+  location: string;
+  contactName: string;
+  jobTitle: string;
+  email: string;
+  phone: string;
+  companyEmail?: string;
+  companyPhone?: string;
+  companyMobile?: string;
+  linkedin?: string;
+  subSector?: string;
+  companySize?: string;
 }
 
 const companyFilters: FilterItem[] = [
@@ -35,6 +52,29 @@ const peopleFilters: FilterItem[] = [
   { id: "dataControl", label: "Inclusion / Exclusion", category: "DATA CONTROL" },
 ];
 
+const MOCK_PROSPECTS: Prospect[] = [
+  { id: '1', company: 'NHS Digital', industry: 'Healthcare', location: 'London, UK', contactName: 'Sarah Johnson', jobTitle: 'Chief Technology Officer', email: 'sarah.johnson@nhs.uk', phone: '+44 20 7946 0958', companyEmail: 'info@nhs.uk', companyPhone: '+44 20 7946 0000', companyMobile: '+44 7700 900000', linkedin: 'linkedin.com/in/sarahjohnson', subSector: 'Digital Health', companySize: '5000+' },
+  { id: '2', company: 'Revolut', industry: 'Fintech', location: 'London, UK', contactName: 'James Smith', jobTitle: 'VP of Engineering', email: 'james.smith@revolut.com', phone: '+44 20 7946 0234', companyEmail: 'contact@revolut.com', companyPhone: '+44 20 3322 8352', companyMobile: '+44 7700 900001', linkedin: 'linkedin.com/in/jamessmith', subSector: 'Banking', companySize: '1000-5000' },
+  { id: '3', company: 'Tesco PLC', industry: 'Retail', location: 'Hertfordshire, UK', contactName: 'Emma Williams', jobTitle: 'Head of Digital', email: 'emma.williams@tesco.com', phone: '+44 1992 632222', companyEmail: 'customer.service@tesco.com', companyPhone: '+44 800 505 555', companyMobile: '+44 7700 900002', linkedin: 'linkedin.com/in/emmawilliams', subSector: 'Grocery', companySize: '5000+' },
+  { id: '4', company: 'Deliveroo', industry: 'Technology', location: 'London, UK', contactName: 'Michael Brown', jobTitle: 'Director of Operations', email: 'michael.brown@deliveroo.co.uk', phone: '+44 20 3699 9977', companyEmail: 'hello@deliveroo.co.uk', companyPhone: '+44 20 3699 9900', companyMobile: '+44 7700 900003', linkedin: 'linkedin.com/in/michaelbrown', subSector: 'Food Delivery', companySize: '1000-5000' },
+  { id: '5', company: 'AstraZeneca', industry: 'Pharmaceuticals', location: 'Cambridge, UK', contactName: 'Lisa Anderson', jobTitle: 'Senior Director', email: 'lisa.anderson@astrazeneca.com', phone: '+44 1223 245000', companyEmail: 'information.centre@astrazeneca.com', companyPhone: '+44 1223 245000', companyMobile: '+44 7700 900004', linkedin: 'linkedin.com/in/lisaanderson', subSector: 'Biotech', companySize: '5000+' },
+  { id: '6', company: 'Barclays', industry: 'Financial Services', location: 'London, UK', contactName: 'David Taylor', jobTitle: 'Managing Director', email: 'david.taylor@barclays.com', phone: '+44 20 7116 1000', companyEmail: 'corporate@barclays.com', companyPhone: '+44 345 734 5345', companyMobile: '+44 7700 900005', linkedin: 'linkedin.com/in/davidtaylor', subSector: 'Investment Banking', companySize: '5000+' },
+  { id: '7', company: 'Sainsbury\'s', industry: 'Retail', location: 'London, UK', contactName: 'Rachel Green', jobTitle: 'Head of Strategy', email: 'rachel.green@sainsburys.co.uk', phone: '+44 20 7695 6000', companyEmail: 'customer.services@sainsburys.co.uk', companyPhone: '+44 800 636 262', companyMobile: '+44 7700 900006', linkedin: 'linkedin.com/in/rachelgreen', subSector: 'Supermarket', companySize: '5000+' },
+  { id: '8', company: 'Monzo Bank', industry: 'Fintech', location: 'London, UK', contactName: 'Tom Wilson', jobTitle: 'VP Product', email: 'tom.wilson@monzo.com', phone: '+44 20 3872 0620', companyEmail: 'help@monzo.com', companyPhone: '+44 20 3872 0620', companyMobile: '+44 7700 900007', linkedin: 'linkedin.com/in/tomwilson', subSector: 'Digital Banking', companySize: '500-1000' },
+  { id: '9', company: 'GSK', industry: 'Pharmaceuticals', location: 'Brentford, UK', contactName: 'Sophie Martin', jobTitle: 'Chief Digital Officer', email: 'sophie.martin@gsk.com', phone: '+44 20 8047 5000', companyEmail: 'customercontactuk@gsk.com', companyPhone: '+44 20 8047 5000', companyMobile: '+44 7700 900008', linkedin: 'linkedin.com/in/sophiemartin', subSector: 'Pharmaceuticals', companySize: '5000+' },
+  { id: '10', company: 'Ocado', industry: 'E-commerce', location: 'Hatfield, UK', contactName: 'Oliver Davis', jobTitle: 'Head of Technology', email: 'oliver.davis@ocado.com', phone: '+44 1707 228000', companyEmail: 'customer.services@ocado.com', companyPhone: '+44 345 656 1234', companyMobile: '+44 7700 900009', linkedin: 'linkedin.com/in/oliverdavis', subSector: 'Online Grocery', companySize: '1000-5000' },
+  { id: '11', company: 'Wise', industry: 'Fintech', location: 'London, UK', contactName: 'Emily Clark', jobTitle: 'Director of Engineering', email: 'emily.clark@wise.com', phone: '+44 20 3695 2000', companyEmail: 'support@wise.com', companyPhone: '+44 20 3695 2000', companyMobile: '+44 7700 900010', linkedin: 'linkedin.com/in/emilyclark', subSector: 'Payments', companySize: '1000-5000' },
+  { id: '12', company: 'Boots UK', industry: 'Retail', location: 'Nottingham, UK', contactName: 'Daniel White', jobTitle: 'Head of Digital Commerce', email: 'daniel.white@boots.co.uk', phone: '+44 115 950 6111', companyEmail: 'customer.care@boots.co.uk', companyPhone: '+44 345 609 0055', companyMobile: '+44 7700 900011', linkedin: 'linkedin.com/in/danielwhite', subSector: 'Pharmacy', companySize: '5000+' },
+  { id: '13', company: 'Lloyds Banking Group', industry: 'Financial Services', location: 'London, UK', contactName: 'Victoria Lee', jobTitle: 'Chief Data Officer', email: 'victoria.lee@lloydsbanking.com', phone: '+44 20 7626 1500', companyEmail: 'customer.services@lloydsbanking.com', companyPhone: '+44 345 300 0000', companyMobile: '+44 7700 900012', linkedin: 'linkedin.com/in/victorialee', subSector: 'Retail Banking', companySize: '5000+' },
+  { id: '14', company: 'Marks & Spencer', industry: 'Retail', location: 'London, UK', contactName: 'Andrew Harris', jobTitle: 'Director of IT', email: 'andrew.harris@marks-and-spencer.com', phone: '+44 20 7935 4422', companyEmail: 'customer.services@marks-and-spencer.com', companyPhone: '+44 333 014 8555', companyMobile: '+44 7700 900013', linkedin: 'linkedin.com/in/andrewharris', subSector: 'Department Store', companySize: '5000+' },
+  { id: '15', company: 'Starling Bank', industry: 'Fintech', location: 'London, UK', contactName: 'Charlotte Moore', jobTitle: 'VP Engineering', email: 'charlotte.moore@starlingbank.com', phone: '+44 20 3818 2000', companyEmail: 'hello@starlingbank.com', companyPhone: '+44 20 3818 2000', companyMobile: '+44 7700 900014', linkedin: 'linkedin.com/in/charlottemoore', subSector: 'Challenger Bank', companySize: '500-1000' },
+  { id: '16', company: 'Unilever', industry: 'Consumer Goods', location: 'London, UK', contactName: 'George Thompson', jobTitle: 'Head of Digital Transformation', email: 'george.thompson@unilever.com', phone: '+44 20 7822 5252', companyEmail: 'contact@unilever.com', companyPhone: '+44 20 7822 5252', companyMobile: '+44 7700 900015', linkedin: 'linkedin.com/in/georgethompson', subSector: 'FMCG', companySize: '5000+' },
+  { id: '17', company: 'HSBC', industry: 'Financial Services', location: 'London, UK', contactName: 'Jessica Walker', jobTitle: 'Managing Director', email: 'jessica.walker@hsbc.com', phone: '+44 20 7991 8888', companyEmail: 'customer.service@hsbc.com', companyPhone: '+44 345 740 4404', companyMobile: '+44 7700 900016', linkedin: 'linkedin.com/in/jessicawalker', subSector: 'Global Banking', companySize: '5000+' },
+  { id: '18', company: 'Morrisons', industry: 'Retail', location: 'Bradford, UK', contactName: 'Matthew Hall', jobTitle: 'Head of E-commerce', email: 'matthew.hall@morrisons.com', phone: '+44 1924 870000', companyEmail: 'customer.services@morrisons.com', companyPhone: '+44 345 611 6111', companyMobile: '+44 7700 900017', linkedin: 'linkedin.com/in/matthewhall', subSector: 'Supermarket', companySize: '5000+' },
+  { id: '19', company: 'Nationwide', industry: 'Financial Services', location: 'Swindon, UK', contactName: 'Laura Young', jobTitle: 'Director of Technology', email: 'laura.young@nationwide.co.uk', phone: '+44 1793 513513', companyEmail: 'customer.services@nationwide.co.uk', companyPhone: '+44 345 266 0000', companyMobile: '+44 7700 900018', linkedin: 'linkedin.com/in/laurayoung', subSector: 'Building Society', companySize: '5000+' },
+  { id: '20', company: 'John Lewis', industry: 'Retail', location: 'London, UK', contactName: 'Christopher King', jobTitle: 'Head of Digital', email: 'christopher.king@johnlewis.co.uk', phone: '+44 20 7828 1000', companyEmail: 'contact@johnlewis.co.uk', companyPhone: '+44 345 604 9049', companyMobile: '+44 7700 900019', linkedin: 'linkedin.com/in/christopherking', subSector: 'Department Store', companySize: '5000+' },
+];
+
 export default function ProspectSearchPage() {
   const [searchMode, setSearchMode] = useState<SearchMode>("company");
   const [selectedFilter, setSelectedFilter] = useState<FilterCategory | null>(null);
@@ -44,12 +84,56 @@ export default function ProspectSearchPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [showAIAnimation, setShowAIAnimation] = useState(true);
+  const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
+  const [showResults, setShowResults] = useState(false);
+  const [displayedProspects, setDisplayedProspects] = useState<Prospect[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const popupRef = useRef<HTMLDivElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  
+  const hasPro = false; // Mock: user has trial access
+  const userPlan: 'trial' | 'pro' | 'premium' | 'enterprise' = 'trial'; // Mock user plan
+  const RESULTS_PER_PAGE = 10;
+
+  const placeholders = [
+    "Healthcare companies in London...",
+    "Tech firms in Manchester...",
+    "Hospitals with 1000+ employees...",
+    "Retail companies in UK..."
+  ];
 
   useEffect(() => {
     const timer = setTimeout(() => setShowAIAnimation(false), 3600);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleFindProspects = () => {
+    setShowResults(true);
+    setCurrentPage(1);
+    setDisplayedProspects(MOCK_PROSPECTS.slice(0, RESULTS_PER_PAGE));
+    setHasMore(MOCK_PROSPECTS.length > RESULTS_PER_PAGE);
+  };
+
+  const loadPage = (page: number) => {
+    const hasAccess = userPlan === 'premium' || userPlan === 'enterprise' || userPlan === 'pro';
+    if (!hasAccess && page > 1) return;
+    const start = (page - 1) * RESULTS_PER_PAGE;
+    const end = start + RESULTS_PER_PAGE;
+    setDisplayedProspects(MOCK_PROSPECTS.slice(start, end));
+    setCurrentPage(page);
+    setHasMore(end < MOCK_PROSPECTS.length);
+    resultsRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const totalPages = 5; // Show 5 pages for trial demo
 
   const handleFilterClick = (filterId: FilterCategory) => {
     setSelectedFilter(selectedFilter === filterId ? null : filterId);
@@ -196,13 +280,12 @@ export default function ProspectSearchPage() {
           {/* Sticky Footer */}
           <div className="sticky bottom-0 p-3 pb-2.5 border-t border-[#E5E7EB] bg-white mb-[-40px]">
             <div className="flex gap-2">
-              <LockedButton 
-                className="flex-1 h-9 rounded-lg text-[13px] font-semibold bg-gradient-to-r from-[#FF4D4F] to-[#D9363E] hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] transition-all shadow-[0_4px_12px_rgba(255,77,79,0.25)]" 
-                size="sm" 
-                requiredPlan="pro"
+              <button
+                onClick={handleFindProspects}
+                className="flex-1 h-9 rounded-lg text-[13px] font-semibold bg-gradient-to-r from-[#FF4D4F] to-[#D9363E] hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] transition-all shadow-[0_4px_12px_rgba(255,77,79,0.25)] text-white"
               >
                 Find Prospects
-              </LockedButton>
+              </button>
               <LockedButton
                 variant="outline"
                 className="h-9 px-3 rounded-lg text-[13px] font-medium border-[#E5E7EB] hover:bg-[#F9FAFB] transition-colors"
@@ -261,27 +344,114 @@ export default function ProspectSearchPage() {
         )}
 
         {/* Right: Results Area */}
-        <div className="flex-1 flex flex-col overflow-auto bg-[#FAFBFC]">
+        <div className="flex-1 flex flex-col bg-[#FAFBFC]">
           {/* Top Bar */}
-          <div className="flex items-center justify-between p-4 bg-white border-b border-border">
+          <div className="flex items-center justify-between px-3 py-2 bg-white border-b border-border">
             <div className="flex items-center gap-2">
-              <LockedButton variant="outline" size="sm" className="gap-2 h-9 text-[13px] font-medium" requiredPlan="pro">
-                <Sparkles className="h-4 w-4" />
+              <span className="text-[14px] font-semibold text-[#1F2937]">
+                Prospects Found :
+              </span>
+              <span className="text-[18px] font-bold text-[#FF4D4F]">
+                {showResults ? MOCK_PROSPECTS.length.toLocaleString() : '0'}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <LockedButton variant="outline" size="sm" className="gap-2 h-8 text-[12px] font-medium px-2.5" requiredPlan="pro">
+                <Sparkles className="h-3.5 w-3.5" />
                 AI Prompt Search
               </LockedButton>
-            </div>
-            <div className="text-[13px] text-muted-foreground font-medium">
-              0 results found
+              <button className="h-8 px-2.5 text-[12px] font-medium bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#374151] rounded-md transition-colors">
+                Data Insights
+              </button>
+              <button className="h-8 px-3 text-[12px] font-semibold bg-gradient-to-r from-[#FF4D4F] to-[#E53935] hover:shadow-lg text-white rounded-md transition-all">
+                Export
+              </button>
             </div>
           </div>
 
-          {/* Results Placeholder */}
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <Search className="h-12 w-12 mx-auto mb-3 text-muted-foreground opacity-20" />
-              <p className="text-[13px] text-muted-foreground font-medium">Apply filters to see results</p>
+          {/* Results */}
+          {showResults ? (
+            <div className="flex-1 flex flex-col min-h-0">
+              {/* Scrollable Table */}
+              <div className="flex-1 overflow-y-auto min-h-0">
+                {/* Table Header */}
+                <div className="sticky top-0 bg-[#F9FAFB] border-b-2 border-[#E5E7EB] z-10">
+                  <div className="grid grid-cols-[2fr_1.2fr_1.5fr_1fr_1fr_1.8fr] gap-4 px-5 py-2.5">
+                    <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">{searchMode === 'company' ? 'Company' : 'Name'}</div>
+                    <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">Contact</div>
+                    <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">{searchMode === 'company' ? 'Sub Sector' : 'Company'}</div>
+                    <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">City</div>
+                    <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">Country</div>
+                    <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">{searchMode === 'company' ? 'Company Size' : 'Job Title'}</div>
+                  </div>
+                </div>
+                
+                {/* Table Body */}
+                <div>
+                  {displayedProspects.map((prospect) => (
+                    <ProspectCard key={prospect.id} prospect={prospect} searchMode={searchMode} />
+                  ))}
+                </div>
+              </div>
+              
+              {/* Fixed Pagination Footer */}
+              <div className="flex-shrink-0 border-t border-[#E5E7EB] bg-white px-4 py-2 flex items-center justify-between shadow-[0_-2px_8px_rgba(0,0,0,0.06)] z-20">
+                <div className="text-[13px] text-[#6B7280]">
+                  Showing {((currentPage - 1) * RESULTS_PER_PAGE) + 1}-{Math.min(currentPage * RESULTS_PER_PAGE, MOCK_PROSPECTS.length)} of {MOCK_PROSPECTS.length}
+                </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => loadPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1.5 text-[13px] font-medium text-[#6B7280] hover:bg-[#F3F4F6] rounded disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    Previous
+                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                    const hasAccess = userPlan === 'premium' || userPlan === 'enterprise' || userPlan === 'pro';
+                    const isLocked = !hasAccess && page > 1;
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => !isLocked && loadPage(page)}
+                        disabled={isLocked}
+                        title={isLocked ? "Upgrade to Pro to access more results" : ""}
+                        className={cn(
+                          "relative w-9 h-9 text-[13px] rounded transition-all",
+                          currentPage === page
+                            ? "bg-[#FF3030] text-white font-bold"
+                            : isLocked
+                            ? "text-[#6B7280] cursor-not-allowed font-bold"
+                            : "text-[#6B7280] hover:bg-[#F3F4F6] font-medium"
+                        )}
+                      >
+                        <span className={isLocked ? "opacity-0" : ""}>{page}</span>
+                        {isLocked && (
+                          <div className="absolute inset-0 flex items-center justify-center gap-0.5 bg-white/95 rounded">
+                            <span className="text-[13px] font-bold text-[#6B7280]">{page}</span>
+                            <svg className="w-3 h-3 text-[#9CA3AF]" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                  <button
+                    onClick={() => loadPage(currentPage + 1)}
+                    disabled={!hasMore || (userPlan === 'trial' && currentPage >= 1)}
+                    className="px-3 py-1.5 text-[13px] font-medium text-[#6B7280] hover:bg-[#F3F4F6] rounded disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="flex-1 flex items-center justify-center" style={{ background: 'linear-gradient(to bottom, #ffffff, #fafafa)' }}>
+              <AIDiscoveryPanel aiPrompt={aiPrompt} setAiPrompt={setAiPrompt} currentPlaceholder={placeholders[currentPlaceholder]} />
+            </div>
+          )}
         </div>
       </div>
     </LockedPageLayout>
@@ -755,8 +925,8 @@ function FileBasedFilter() {
         </div>
 
         {isOpen && (
-          <div className="absolute w-full mt-1 bg-white border border-[#E5E7EB] rounded-md shadow-md overflow-hidden z-50">
-            <div className="overflow-y-auto max-h-[180px] pr-1 [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#D1D5DB] [&::-webkit-scrollbar-thumb]:rounded-md [&::-webkit-scrollbar-thumb:hover]:bg-[#9CA3AF] [scrollbar-width:thin] [scrollbar-color:#D1D5DB_transparent]">
+          <div className="absolute w-full mt-1 bg-white border border-[#E5E7EB] rounded-md shadow-md overflow-hidden z-[1000]">
+            <div className="overflow-y-auto min-h-[108px] max-h-[240px] pr-1 [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#D1D5DB] [&::-webkit-scrollbar-thumb]:rounded-md [&::-webkit-scrollbar-thumb:hover]:bg-[#9CA3AF] [scrollbar-width:thin] [scrollbar-color:#D1D5DB_transparent]">
               {uploadedFiles.map((file) => (
                 <div
                   key={file.fileId}
@@ -773,6 +943,207 @@ function FileBasedFilter() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function AIDiscoveryPanel({ aiPrompt, setAiPrompt, currentPlaceholder }: { aiPrompt: string; setAiPrompt: (value: string) => void; currentPlaceholder: string }) {
+  const promptChips = [
+    "Healthcare Providers – UK",
+    "Fintech Startups – London",
+    "Retail Chains – 500+ Staff",
+    "SaaS Companies – Global",
+    "Private Hospitals – UK",
+    "Logistics Firms – EU"
+  ];
+
+  return (
+    <div className="flex items-center justify-center w-full h-full relative overflow-hidden">
+      {/* Animated Background Grid */}
+      <div className="absolute inset-0 opacity-[0.02]" style={{
+        backgroundImage: 'radial-gradient(circle at 1px 1px, #FF4D4F 1px, transparent 0)',
+        backgroundSize: '40px 40px'
+      }} />
+      
+      {/* Floating Orbs */}
+      <div className="absolute top-[15%] left-[10%] w-32 h-32 bg-gradient-to-br from-[#FF4D4F]/10 to-transparent rounded-full blur-3xl animate-[floatAI_8s_ease-in-out_infinite]" />
+      <div className="absolute bottom-[20%] right-[15%] w-40 h-40 bg-gradient-to-br from-[#FFA940]/10 to-transparent rounded-full blur-3xl animate-[floatAI_10s_ease-in-out_infinite_2s]" />
+      
+      {/* Content */}
+      <div className="relative w-full max-w-[480px] mx-8">
+        {/* Header */}
+        <div className="text-center mb-4 animate-[fadeInUp_0.6s_ease-out]">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#FF4D4F] to-[#FF7A45] mb-2.5 shadow-lg shadow-[#FF4D4F]/20 animate-[scaleIn_0.5s_ease-out]">
+            <Sparkles className="h-6 w-6 text-white animate-[spin_3s_linear_infinite]" style={{ animationDirection: 'reverse' }} />
+          </div>
+          <h2 className="text-[22px] font-bold bg-gradient-to-r from-[#FF4D4F] to-[#FF7A45] bg-clip-text text-transparent mb-1">AI Prospect Discovery</h2>
+          <p className="text-[12px] text-[#9CA3AF]">Describe your ideal customer and let AI build your search</p>
+        </div>
+
+        {/* AI Input */}
+        <div className="relative mb-3 animate-[fadeInUp_0.6s_ease-out_0.1s] opacity-0" style={{ animationFillMode: 'forwards' }}>
+          <div className="absolute -inset-[2px] bg-gradient-to-r from-[#FF4D4F] via-[#FF7A45] to-[#FFA940] rounded-xl opacity-60 blur-md animate-[aiGradient_4s_ease_infinite]" />
+          <div className="relative bg-white rounded-xl shadow-xl">
+            <textarea
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              placeholder={currentPlaceholder}
+              className="w-full h-12 px-4 py-2.5 text-[13px] bg-transparent rounded-xl outline-none resize-none placeholder:text-[#9CA3AF]"
+            />
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <button className="w-full h-11 rounded-xl text-[14px] font-bold text-white mb-3 relative overflow-hidden group transition-all hover:shadow-2xl hover:shadow-[#FF4D4F]/50 hover:-translate-y-1 hover:scale-[1.02] shadow-xl shadow-[#FF4D4F]/40 animate-[fadeInUp_0.6s_ease-out_0.2s] opacity-0" style={{ background: 'linear-gradient(135deg, #FF4D4F 0%, #FF7A45 100%)', animationFillMode: 'forwards' }}>
+          <span className="relative z-10 flex items-center justify-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            Generate AI Filters
+          </span>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+        </button>
+
+        {/* Quick Prompts */}
+        <div className="flex items-center gap-2 mb-2.5 animate-[fadeInUp_0.6s_ease-out_0.3s] opacity-0" style={{ animationFillMode: 'forwards' }}>
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#E5E7EB] to-transparent" />
+          <span className="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-widest">Quick Start</span>
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#E5E7EB] to-transparent" />
+        </div>
+
+        <div className="flex flex-wrap gap-1.5 justify-center mb-3">
+          {promptChips.map((chip, index) => (
+            <button
+              key={chip}
+              onClick={() => setAiPrompt(chip)}
+              className="px-3 py-1.5 text-[11px] font-semibold text-[#6B7280] bg-white hover:text-[#FF4D4F] border border-[#E5E7EB] hover:border-[#FF4D4F] rounded-full transition-all hover:shadow-md hover:-translate-y-0.5 opacity-0 animate-[chipFadeIn_0.4s_ease_forwards]"
+              style={{ animationDelay: `${index * 120}ms` }}
+            >
+              {chip}
+            </button>
+          ))}
+        </div>
+
+        {/* Features */}
+        <div className="flex items-center justify-center gap-4 text-[11px] text-[#9CA3AF] animate-[fadeInUp_0.6s_ease-out_0.8s] opacity-0" style={{ animationFillMode: 'forwards' }}>
+          <div className="flex items-center gap-1">
+            <span className="text-[#22C55E] text-[12px]">✓</span>
+            <span>Auto-Apply</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-[#22C55E] text-[12px]">✓</span>
+            <span>Smart Target</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-[#22C55E] text-[12px]">✓</span>
+            <span>Instant</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProspectCard({ prospect, searchMode }: { prospect: Prospect; searchMode: SearchMode }) {
+  const [revealedEmail, setRevealedEmail] = useState(false);
+  const [revealedPhone, setRevealedPhone] = useState(false);
+  const [hoveredField, setHoveredField] = useState<string | null>(null);
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+
+  const TruncatedText = ({ text, field }: { text: string; field: string }) => (
+    <div 
+      className="relative"
+      onMouseEnter={(e) => {
+        setHoveredField(field);
+        const rect = e.currentTarget.getBoundingClientRect();
+        setTooltipPos({ x: rect.left, y: rect.bottom + 4 });
+      }}
+      onMouseLeave={() => setHoveredField(null)}
+    >
+      <span className="block truncate max-w-[160px] text-[12px] text-[#374151] font-normal">{text}</span>
+      {hoveredField === field && (
+        <div 
+          className="fixed bg-[#111827] text-white px-2 py-1 text-[12px] rounded shadow-lg z-50 max-w-[240px]"
+          style={{ left: `${tooltipPos.x}px`, top: `${tooltipPos.y}px` }}
+        >
+          {text}
+        </div>
+      )}
+    </div>
+  );
+
+  const CompactContactCell = ({ email, phone }: { email?: string; phone?: string }) => (
+    <div className="flex items-center gap-1.5">
+      <button
+        className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#F3F4F6] transition-colors group"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (revealedEmail && email) {
+            navigator.clipboard.writeText(email);
+          } else {
+            setRevealedEmail(true);
+          }
+        }}
+        title={revealedEmail ? email : 'Click to reveal email'}
+      >
+        <Mail className={cn(
+          "h-4 w-4 transition-colors",
+          revealedEmail ? "text-[#10B981]" : "text-[#9CA3AF] group-hover:text-[#6B7280]"
+        )} />
+      </button>
+      <button
+        className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#F3F4F6] transition-colors group"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (revealedPhone && phone) {
+            navigator.clipboard.writeText(phone);
+          } else {
+            setRevealedPhone(true);
+          }
+        }}
+        title={revealedPhone ? phone : 'Click to reveal phone'}
+      >
+        <Phone className={cn(
+          "h-4 w-4 transition-colors",
+          revealedPhone ? "text-[#10B981]" : "text-[#9CA3AF] group-hover:text-[#6B7280]"
+        )} />
+      </button>
+      <button
+        className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#F3F4F6] transition-colors group"
+        title="More actions"
+      >
+        <ChevronDown className="h-4 w-4 text-[#9CA3AF] group-hover:text-[#6B7280]" />
+      </button>
+    </div>
+  );
+
+  const [city, country] = prospect.location.split(',').map(s => s.trim());
+
+  if (searchMode === 'company') {
+    return (
+      <div className="grid grid-cols-[2fr_1.2fr_1.5fr_1fr_1fr_1.8fr] gap-4 items-center bg-white px-5 h-[42px] border-b border-[#E5E7EB] hover:bg-[#F9FAFB] transition-colors">
+        <div className="flex items-center gap-2">
+          <Building2 className="h-3.5 w-3.5 text-[#FF4D4F] flex-shrink-0" />
+          <TruncatedText text={prospect.company} field={`company-${prospect.id}`} />
+        </div>
+        <CompactContactCell email={prospect.companyEmail} phone={prospect.companyPhone} />
+        <TruncatedText text={prospect.subSector || 'N/A'} field={`sector-${prospect.id}`} />
+        <TruncatedText text={city} field={`city-${prospect.id}`} />
+        <TruncatedText text={country} field={`country-${prospect.id}`} />
+        <TruncatedText text={prospect.companySize || 'N/A'} field={`size-${prospect.id}`} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-[2fr_1.2fr_1.5fr_1fr_1fr_1.8fr] gap-4 items-center bg-white px-5 h-[42px] border-b border-[#E5E7EB] hover:bg-[#F9FAFB] transition-colors">
+      <TruncatedText text={prospect.contactName} field={`name-${prospect.id}`} />
+      <CompactContactCell email={prospect.email} phone={prospect.phone} />
+      <div className="flex items-center gap-1.5">
+        <Building2 className="h-3.5 w-3.5 text-[#FF4D4F] flex-shrink-0" />
+        <TruncatedText text={prospect.company} field={`company-${prospect.id}`} />
+      </div>
+      <TruncatedText text={city} field={`city-${prospect.id}`} />
+      <TruncatedText text={country} field={`country-${prospect.id}`} />
+      <TruncatedText text={prospect.jobTitle} field={`title-${prospect.id}`} />
     </div>
   );
 }
