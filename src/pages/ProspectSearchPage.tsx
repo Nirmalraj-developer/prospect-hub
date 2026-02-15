@@ -246,7 +246,7 @@ export default function ProspectSearchPage() {
             )}
 
             {/* Scrollable Content */}
-            <div className="overflow-y-auto overflow-x-hidden p-3" style={{ maxHeight: 'calc(75vh - 140px)' }}>
+            <div className="overflow-y-auto overflow-x-hidden p-3 pr-1 [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#D1D5DB] [&::-webkit-scrollbar-thumb]:rounded-md [&::-webkit-scrollbar-thumb:hover]:bg-[#9CA3AF] [scrollbar-width:thin] [scrollbar-color:#D1D5DB_transparent]" style={{ maxHeight: 'calc(75vh - 140px)' }}>
               <FilterDetailContent filterId={selectedFilter} />
             </div>
           </div>
@@ -361,22 +361,27 @@ function FilterDetailContent({ filterId }: { filterId: FilterCategory }) {
 function MultiSelectDropdown({ options, placeholder }: { options: string[]; placeholder?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
+  const [customOptions, setCustomOptions] = useState<string[]>([]);
   const [search, setSearch] = useState("");
+  const [showModal, setShowModal] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsOpen(false);
+        handleCreateCustom();
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [search]);
 
-  const filteredOptions = options.filter(opt => opt.toLowerCase().includes(search.toLowerCase()));
+  const allOptions = [...options, ...customOptions];
+  const filteredOptions = allOptions.filter(opt => opt.toLowerCase().includes(search.toLowerCase()));
   const allSelected = filteredOptions.length > 0 && filteredOptions.every(opt => selected.includes(opt));
   const someSelected = filteredOptions.some(opt => selected.includes(opt)) && !allSelected;
+  const canCreateCustom = search.trim() && !allOptions.some(opt => opt.toLowerCase() === search.trim().toLowerCase());
 
   const toggleAll = () => {
     if (allSelected) {
@@ -392,20 +397,102 @@ function MultiSelectDropdown({ options, placeholder }: { options: string[]; plac
     );
   };
 
+  const removeChip = (option: string) => {
+    setSelected(prev => prev.filter(s => s !== option));
+  };
+
+  const handleCreateCustom = () => {
+    if (canCreateCustom) {
+      const newOption = search.trim();
+      setCustomOptions(prev => [...prev, newOption]);
+      setSelected(prev => [...prev, newOption]);
+      setSearch("");
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === 'Tab') {
+      e.preventDefault();
+      handleCreateCustom();
+    }
+  };
+
+  const copyAll = () => {
+    navigator.clipboard.writeText(selected.join(', '));
+  };
+
+  const isCustom = (option: string) => customOptions.includes(option);
+  const displayChips = selected.slice(0, 2);
+  const overflowCount = selected.length - 2;
+
   return (
     <div className="relative w-full" ref={dropdownRef}>
-      <input
-        type="text"
-        placeholder={selected.length === 0 ? (placeholder || "Select...") : `${selected.length} selected`}
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        onFocus={() => setIsOpen(true)}
-        className="w-full h-9 px-3 text-[13px] border border-input rounded-md bg-white hover:border-[#9CA3AF] focus:outline-none focus:border-[#FF4D4F]"
-      />
+      <div
+        onClick={() => !isOpen && setIsOpen(true)}
+        className="w-full min-h-[36px] px-2 py-1.5 text-[13px] border border-input rounded-md bg-white hover:border-[#9CA3AF] cursor-text flex flex-wrap gap-1 items-center"
+      >
+        {selected.length === 0 ? (
+          <input
+            type="text"
+            placeholder={placeholder || "Select..."}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onFocus={() => setIsOpen(true)}
+            onKeyDown={handleKeyDown}
+            className="flex-1 outline-none bg-transparent text-[13px] min-w-[120px]"
+          />
+        ) : selected.length <= 3 ? (
+          <>
+            {selected.map((item) => (
+              <span key={item} className={cn(
+                "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[12px] font-medium",
+                isCustom(item) ? "bg-[#FFF7E6] border border-dashed border-[#FFB74D] text-[#F57C00]" : "bg-[#E6F0FF] text-[#2563EB]"
+              )}>
+                {item}
+                <X className="h-3 w-3 cursor-pointer hover:opacity-70" onClick={(e) => { e.stopPropagation(); removeChip(item); }} />
+              </span>
+            ))}
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onFocus={() => setIsOpen(true)}
+              onKeyDown={handleKeyDown}
+              className="flex-1 outline-none bg-transparent text-[13px] min-w-[60px]"
+            />
+          </>
+        ) : (
+          <>
+            {displayChips.map((item) => (
+              <span key={item} className={cn(
+                "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[12px] font-medium",
+                isCustom(item) ? "bg-[#FFF7E6] border border-dashed border-[#FFB74D] text-[#F57C00]" : "bg-[#E6F0FF] text-[#2563EB]"
+              )}>
+                {item}
+                <X className="h-3 w-3 cursor-pointer hover:opacity-70" onClick={(e) => { e.stopPropagation(); removeChip(item); }} />
+              </span>
+            ))}
+            <span
+              onClick={(e) => { e.stopPropagation(); setShowModal(true); }}
+              className="inline-flex items-center px-2 py-0.5 bg-[#F3F4F6] text-[#6B7280] rounded text-[12px] font-medium cursor-pointer hover:bg-[#E5E7EB]"
+            >
+              +{overflowCount}
+            </span>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onFocus={() => setIsOpen(true)}
+              onKeyDown={handleKeyDown}
+              className="flex-1 outline-none bg-transparent text-[13px] min-w-[60px]"
+            />
+          </>
+        )}
+      </div>
 
       {isOpen && (
         <div className="w-full mt-1 bg-white border border-[#E5E7EB] rounded-md shadow-md overflow-hidden flex flex-col" style={{ maxHeight: '220px' }}>
-          <div className="overflow-y-auto flex-1" style={{ maxHeight: '180px' }}>
+          <div className="overflow-y-auto flex-1 pr-1 [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#D1D5DB] [&::-webkit-scrollbar-thumb]:rounded-md [&::-webkit-scrollbar-thumb:hover]:bg-[#9CA3AF] [scrollbar-width:thin] [scrollbar-color:#D1D5DB_transparent]" style={{ maxHeight: '180px' }}>
             <label className="flex items-center gap-2 h-8 px-2 text-[13px] cursor-pointer hover:bg-[#F3F4F6] border-b border-[#E5E7EB]">
               <input
                 type="checkbox"
@@ -416,6 +503,14 @@ function MultiSelectDropdown({ options, placeholder }: { options: string[]; plac
               />
               <span className="font-semibold">Select All</span>
             </label>
+            {canCreateCustom && (
+              <div
+                onClick={handleCreateCustom}
+                className="flex items-center gap-2 h-8 px-2 text-[13px] cursor-pointer hover:bg-[#F3F4F6] text-[#2563EB] font-medium border-b border-[#E5E7EB]"
+              >
+                Create "{search.trim()}"
+              </div>
+            )}
             {filteredOptions.map((option) => (
               <label
                 key={option}
@@ -443,6 +538,48 @@ function MultiSelectDropdown({ options, placeholder }: { options: string[]; plac
             >
               Clear all
             </button>
+          </div>
+        </div>
+      )}
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]" onClick={() => setShowModal(false)}>
+          <div className="bg-white rounded-lg shadow-xl w-[420px] max-h-[60vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="px-4 py-3 border-b border-[#E5E7EB]">
+              <h3 className="text-[14px] font-semibold text-foreground">Selected Filters</h3>
+            </div>
+            <div className="overflow-y-auto flex-1 p-4 pr-2 [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#D1D5DB] [&::-webkit-scrollbar-thumb]:rounded-md [&::-webkit-scrollbar-thumb:hover]:bg-[#9CA3AF] [scrollbar-width:thin] [scrollbar-color:#D1D5DB_transparent]">
+              {selected.filter(s => !isCustom(s)).length > 0 && (
+                <div className="mb-3">
+                  <h4 className="text-[12px] font-semibold text-[#6B7280] uppercase mb-2">Predefined Filters</h4>
+                  {selected.filter(s => !isCustom(s)).map((item) => (
+                    <div key={item} className="flex items-center gap-2 py-1.5">
+                      <input type="checkbox" checked readOnly className="h-3.5 w-3.5" />
+                      <span className="text-[13px] text-foreground">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {selected.filter(s => isCustom(s)).length > 0 && (
+                <div>
+                  <h4 className="text-[12px] font-semibold text-[#6B7280] uppercase mb-2">Custom Filters</h4>
+                  {selected.filter(s => isCustom(s)).map((item) => (
+                    <div key={item} className="flex items-center gap-2 py-1.5">
+                      <input type="checkbox" checked readOnly className="h-3.5 w-3.5" />
+                      <span className="text-[13px] text-foreground">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="px-4 py-3 border-t border-[#E5E7EB] flex items-center justify-between">
+              <button onClick={copyAll} className="px-3 py-1.5 text-[13px] font-medium text-[#2563EB] hover:bg-[#F3F4F6] rounded">
+                Copy All
+              </button>
+              <button onClick={() => setShowModal(false)} className="px-3 py-1.5 text-[13px] font-medium bg-[#F3F4F6] hover:bg-[#E5E7EB] rounded">
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
