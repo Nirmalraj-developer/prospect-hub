@@ -3,6 +3,14 @@ import { Search, Sparkles, Building2, Users, MapPin, DollarSign, Briefcase, Targ
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LockedPageLayout, LockedButton } from "@/components/LockedPageLayout";
+
+<style>{`
+  [contentEditable][data-placeholder]:empty:before {
+    content: attr(data-placeholder);
+    color: #9CA3AF;
+    pointer-events: none;
+  }
+`}</style>
 import { cn } from "@/lib/utils";
 
 type SearchMode = "company" | "people";
@@ -87,8 +95,20 @@ export default function ProspectSearchPage() {
   const [showAIAnimation, setShowAIAnimation] = useState(true);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [showResults, setShowResults] = useState(false);
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({});
+  const [activeFilters, setActiveFilters] = useState<Array<{ category: string; value: string; mode: 'include' | 'exclude' }>>([]);
+  const [requestType, setRequestType] = useState<'order' | 'count' | 'sample' | 'count&sample'>('order');
+  const [leadVolume, setLeadVolume] = useState<string>('');
+  const [notesColor, setNotesColor] = useState<string>('#000000');
+  const [orderName, setOrderName] = useState<string>('');
+  const [deliveryEmail, setDeliveryEmail] = useState<string>('');
   const [displayedProspects, setDisplayedProspects] = useState<Prospect[]>([]);
+
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `[contentEditable][data-placeholder]:empty:before{content:attr(data-placeholder);color:#9CA3AF;pointer-events:none;}`;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [showCustomForm, setShowCustomForm] = useState(false);
@@ -367,7 +387,12 @@ export default function ProspectSearchPage() {
 
             {/* Scrollable Content */}
             <div className="overflow-y-auto overflow-x-hidden p-3 pr-1 [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#D1D5DB] [&::-webkit-scrollbar-thumb]:rounded-md [&::-webkit-scrollbar-thumb:hover]:bg-[#9CA3AF] [scrollbar-width:thin] [scrollbar-color:#D1D5DB_transparent]" style={{ maxHeight: 'calc(75vh - 140px)' }}>
-              <FilterDetailContent filterId={selectedFilter} />
+              <FilterDetailContent filterId={selectedFilter} onFilterChange={(category, selected) => {
+                setActiveFilters(prev => [
+                  ...prev.filter(f => f.category !== category),
+                  ...selected.map(s => ({ category, value: s.value, mode: s.mode }))
+                ]);
+              }} />
             </div>
           </div>
         )}
@@ -411,39 +436,124 @@ export default function ProspectSearchPage() {
               </div>
               
               <div className="flex-1 p-3 space-y-3">
-                {/* Top Row - 3 Columns */}
-                <div className="grid grid-cols-3 gap-2">
+                {/* Top Row - 4 Columns */}
+                <div className="grid grid-cols-4 gap-2">
                   <div>
-                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">Target Lead Volume</label>
-                    <Input placeholder="e.g., 500 leads" className="h-9 text-[13px]" />
+                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">
+                      Order Name <span className="text-[#FF4D4F]">*</span>
+                    </label>
+                    <Input 
+                      placeholder="e.g., Q1 Tech Leads" 
+                      value={orderName}
+                      onChange={(e) => setOrderName(e.target.value)}
+                      className="h-9 text-[13px]" 
+                    />
                   </div>
                   <div>
-                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">Request Category</label>
-                    <select className="w-full h-9 px-3 text-[13px] border border-input rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#FF4D4F] focus:border-transparent">
-                      <option>Standard List</option>
-                      <option>Premium List</option>
-                      <option>Enterprise List</option>
+                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">Target Lead Volume</label>
+                    <Input 
+                      placeholder="e.g., 500" 
+                      type="number"
+                      value={leadVolume}
+                      onChange={(e) => setLeadVolume(e.target.value)}
+                      className="h-9 text-[13px]" 
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">
+                      Request Type <span className="text-[#FF4D4F]">*</span>
+                    </label>
+                    <select 
+                      value={requestType}
+                      onChange={(e) => setRequestType(e.target.value as any)}
+                      className="w-full h-9 px-3 text-[13px] border border-input rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#FF4D4F] focus:border-transparent"
+                    >
+                      <option value="order">Order</option>
+                      <option value="count">Count</option>
+                      <option value="sample">Sample</option>
+                      <option value="count&sample">Count & Sample</option>
                     </select>
                   </div>
                   <div>
-                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">Delivery Email</label>
-                    <Input placeholder="your@email.com" className="h-9 text-[13px]" />
+                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">
+                      Delivery Email <span className="text-[#FF4D4F]">*</span>
+                    </label>
+                    <Input 
+                      placeholder="your@email.com" 
+                      type="email"
+                      value={deliveryEmail}
+                      onChange={(e) => setDeliveryEmail(e.target.value)}
+                      className="h-9 text-[13px]" 
+                    />
                   </div>
                 </div>
 
-                {/* Current Search Criteria */}
-                {selectedFilters && Object.keys(selectedFilters).length > 0 && (
-                  <div>
-                    <label className="text-[11px] font-semibold text-[#374151] mb-1.5 block">Selected Filters:</label>
-                    <div className="flex flex-wrap gap-1.5">
-                      {Object.entries(selectedFilters).map(([key, value]) => (
-                        <span key={key} className="px-2 py-1 bg-[#FFF1F0] text-[#FF4D4F] text-[11px] font-medium rounded border border-[#FFCCC7]">
-                          {value}
-                        </span>
-                      ))}
+                {/* Credit Debit Info */}
+                {requestType === 'order' && leadVolume && parseInt(leadVolume) > 0 && (
+                  <div className="bg-[#FFF7E6] border border-[#FFD591] rounded-md p-2 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <svg className="h-4 w-4 text-[#F57C00]" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-[12px] font-semibold text-[#F57C00]">Credit Debit Information</span>
+                    </div>
+                    <div className="text-[12px] font-bold text-[#F57C00]">
+                      {parseInt(leadVolume).toLocaleString()} leads × 1 credit = {parseInt(leadVolume).toLocaleString()} credits will be debited
                     </div>
                   </div>
                 )}
+
+                {/* Current Search Criteria - Always Visible */}
+                <div className={`rounded-md p-2 border ${
+                  activeFilters.length === 0
+                    ? 'bg-[#FEF2F2] border-[#FCA5A5]'
+                    : 'bg-[#F9FAFB] border-[#E5E7EB]'
+                }`}>
+                  <label className={`text-[11px] font-semibold mb-1.5 block ${
+                    activeFilters.length === 0 ? 'text-[#B91C1C]' : 'text-[#374151]'
+                  }`}>Selected Filters:</label>
+                  {activeFilters.length === 0 ? (
+                    <div className="flex items-center gap-1.5 text-[#B91C1C]">
+                      <span className="text-[14px]">⚠</span>
+                      <span className="text-[12px]">Please select at least one filter to proceed</span>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {Object.entries(
+                        activeFilters.reduce((acc, filter) => {
+                          if (!acc[filter.category]) acc[filter.category] = [];
+                          acc[filter.category].push(filter);
+                          return acc;
+                        }, {} as Record<string, typeof activeFilters>)
+                      ).map(([category, filters]) => (
+                        <div key={category}>
+                          <span className="text-[10px] font-semibold text-[#6B7280] uppercase tracking-wide block mb-1">{category}:</span>
+                          <div className="flex flex-wrap gap-1">
+                            {filters.map((filter, idx) => (
+                              <span
+                                key={idx}
+                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border ${
+                                  filter.mode === 'include'
+                                    ? 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]'
+                                    : 'bg-[#FEF2F2] border-[#FECACA] text-[#B91C1C]'
+                                }`}
+                              >
+                                {filter.value}
+                                <span className="text-[9px] opacity-70">{filter.mode === 'include' ? '✔' : '✖'}</span>
+                                <button
+                                  onClick={() => setActiveFilters(prev => prev.filter((_, i) => i !== activeFilters.indexOf(filter)))}
+                                  className="hover:opacity-70"
+                                >
+                                  <X className="h-2.5 w-2.5" />
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
                 {/* Middle Section - 2 Columns */}
                 <div className="grid grid-cols-2 gap-3">
@@ -459,44 +569,102 @@ export default function ProspectSearchPage() {
                   </div>
                   <div>
                     <label className="text-[11px] font-semibold text-[#374151] mb-1 block">Additional Notes</label>
-                    <textarea 
-                      placeholder="Specify any custom requirements..."
-                      className="w-full h-40 px-3 py-2 text-[12px] border border-input rounded-md bg-white resize-none focus:outline-none focus:ring-2 focus:ring-[#FF4D4F] focus:border-transparent"
-                    />
+                    <div className="border border-input rounded-md bg-white">
+                      <div className="flex items-center gap-1 p-1 border-b border-[#E5E7EB] bg-[#F9FAFB]">
+                        <button
+                          onClick={() => document.execCommand('bold')}
+                          className="p-1 hover:bg-[#E5E7EB] rounded text-[#374151]"
+                          title="Bold"
+                        >
+                          <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M11 3H6v14h5.5c2.5 0 4.5-2 4.5-4.5 0-1.5-.7-2.8-1.8-3.7C15.3 7.8 16 6.5 16 5c0-2.5-2-5-5-5zm-1 6V5h1c1.1 0 2 .9 2 2s-.9 2-2 2h-1zm0 2h1.5c1.4 0 2.5 1.1 2.5 2.5S12.9 16 11.5 16H10v-5z"/>
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => document.execCommand('italic')}
+                          className="p-1 hover:bg-[#E5E7EB] rounded text-[#374151]"
+                          title="Italic"
+                        >
+                          <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/>
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => document.execCommand('underline')}
+                          className="p-1 hover:bg-[#E5E7EB] rounded text-[#374151]"
+                          title="Underline"
+                        >
+                          <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 18c3.3 0 6-2.7 6-6V3h-2v9c0 2.2-1.8 4-4 4s-4-1.8-4-4V3H4v9c0 3.3 2.7 6 6 6zm-6 2h12v2H4v-2z"/>
+                          </svg>
+                        </button>
+                        <div className="w-px h-4 bg-[#E5E7EB] mx-1"></div>
+                        <input
+                          type="color"
+                          value={notesColor}
+                          onChange={(e) => {
+                            setNotesColor(e.target.value);
+                            document.execCommand('foreColor', false, e.target.value);
+                          }}
+                          className="w-6 h-6 rounded cursor-pointer"
+                          title="Text Color"
+                        />
+                        <div className="w-px h-4 bg-[#E5E7EB] mx-1"></div>
+                        <button
+                          onClick={() => document.execCommand('insertUnorderedList')}
+                          className="p-1 hover:bg-[#E5E7EB] rounded text-[#374151]"
+                          title="Bullet List"
+                        >
+                          <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M4 4h2v2H4V4zm4 0h10v2H8V4zM4 9h2v2H4V9zm4 0h10v2H8V9zm-4 5h2v2H4v-2zm4 0h10v2H8v-2z"/>
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => document.execCommand('insertOrderedList')}
+                          className="p-1 hover:bg-[#E5E7EB] rounded text-[#374151]"
+                          title="Numbered List"
+                        >
+                          <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4h1v4H3V4zm1 6H3v1h1v1H3v1h2V9H4v1zm-1 4h1.8L3 16.1v.9h3v-1H4.2L6 13.9V13H3v1zm5-10h10v2H8V4zm0 5h10v2H8V9zm0 5h10v2H8v-2z"/>
+                          </svg>
+                        </button>
+                      </div>
+                      <div
+                        contentEditable
+                        className="w-full h-32 px-3 py-2 text-[12px] overflow-y-auto focus:outline-none [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-thumb]:bg-[#D1D5DB] [&::-webkit-scrollbar-thumb]:rounded"
+                        data-placeholder="Specify any custom requirements..."
+                        style={{
+                          minHeight: '128px',
+                        }}
+                        onInput={(e) => {
+                          if (e.currentTarget.textContent === '') {
+                            e.currentTarget.innerHTML = '';
+                          }
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
 
-                {/* License + Included Data Attributes */}
-                <div className="flex justify-between items-center gap-3 flex-wrap pt-2 border-t border-[#E5E7EB]">
-                  <div>
-                    <label className="text-[11px] font-semibold text-[#374151] block mb-1">License Type</label>
-                    <div className="flex gap-2">
-                      <label className="flex items-center gap-1.5 cursor-pointer">
-                        <input type="radio" name="license" className="accent-[#FF3030] h-3 w-3" defaultChecked />
-                        <span className="text-[12px] text-[#374151]">Single Use</span>
-                      </label>
-                      <label className="flex items-center gap-1.5 cursor-pointer">
-                        <input type="radio" name="license" className="accent-[#FF3030] h-3 w-3" />
-                        <span className="text-[12px] text-[#374151]">Multi Use</span>
-                      </label>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-[11px] font-semibold text-[#374151] block mb-1">Included Data Attributes</label>
-                    <div className="flex flex-wrap gap-1">
-                      <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">Email</span>
-                      <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">Phone</span>
-                      <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">LinkedIn</span>
-                      <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">Company</span>
-                      <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">Title</span>
-                    </div>
+                {/* Included Data Attributes */}
+                <div className="pt-2 border-t border-[#E5E7EB]">
+                  <label className="text-[11px] font-semibold text-[#374151] block mb-1">Included Data Attributes</label>
+                  <div className="flex flex-wrap gap-1">
+                    <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">Email</span>
+                    <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">Phone</span>
+                    <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">LinkedIn</span>
+                    <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">Company</span>
+                    <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">Title</span>
                   </div>
                 </div>
               </div>
 
               {/* Sticky Submit CTA */}
               <div className="sticky bottom-0 bg-white border-t border-[#E5E7EB] p-2 flex gap-2">
-                <button className="flex-1 h-9 rounded-md text-[13px] font-semibold bg-gradient-to-r from-[#FF4D4F] to-[#E53935] hover:shadow-lg text-white transition-all">
+                <button 
+                  disabled={activeFilters.length === 0 || !orderName.trim() || !deliveryEmail.trim()}
+                  className="flex-1 h-9 rounded-md text-[13px] font-semibold bg-gradient-to-r from-[#FF4D4F] to-[#E53935] hover:shadow-lg text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                >
                   Submit Custom Order
                 </button>
                 <button 
@@ -598,22 +766,22 @@ export default function ProspectSearchPage() {
   );
 }
 
-function FilterDetailContent({ filterId }: { filterId: FilterCategory }) {
+function FilterDetailContent({ filterId, onFilterChange }: { filterId: FilterCategory; onFilterChange?: (category: string, selected: Array<{ value: string; mode: 'include' | 'exclude' }>) => void }) {
   const renderContent = () => {
     switch (filterId) {
       case "sector":
         return (
           <div className="space-y-4">
-            <FilterField label="Major Sector" aiSuggested filterId="sector" options={['Technology', 'Healthcare', 'Finance', 'Manufacturing', 'Retail']} />
-            <FilterField label="Group Sector" filterId="sector" options={['Software', 'Hardware', 'Services', 'Consulting']} />
+            <FilterField label="Major Sector" aiSuggested filterId="sector" options={['Technology', 'Healthcare', 'Finance', 'Manufacturing', 'Retail']} onFilterChange={onFilterChange} />
+            <FilterField label="Group Sector" filterId="sector" options={['Software', 'Hardware', 'Services', 'Consulting']} onFilterChange={onFilterChange} />
             <div>
               <label className="text-[13px] font-semibold text-foreground flex items-center gap-1.5 mb-2">
                 Sub Sector
                 <Sparkles className="h-3 w-3 text-[#FF3030]" />
               </label>
-              <MultiSelectDropdown options={['SaaS', 'Cloud Computing', 'AI/ML', 'Cybersecurity']} placeholder="Select sub sector..." />
+              <MultiSelectDropdown options={['SaaS', 'Cloud Computing', 'AI/ML', 'Cybersecurity']} placeholder="Select sub sector..." onSelectionChange={(selected) => onFilterChange?.('Sub Sector', selected)} />
             </div>
-            <FilterField label="SIC Code" filterId="sector" options={['7372', '7373', '7374', '7375']} />
+            <FilterField label="SIC Code" filterId="sector" options={['7372', '7373', '7374', '7375']} onFilterChange={onFilterChange} />
           </div>
         );
       case "companySize":
@@ -638,18 +806,18 @@ function FilterDetailContent({ filterId }: { filterId: FilterCategory }) {
       case "location":
         return (
           <div className="space-y-4">
-            <FilterField label="Country" filterId="location" options={['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany']} />
-            <FilterField label="State/Region" filterId="location" options={['California', 'New York', 'Texas', 'Florida', 'Illinois']} />
-            <FilterField label="City" filterId="location" options={['San Francisco', 'New York', 'Los Angeles', 'Chicago', 'Boston']} />
+            <FilterField label="Country" filterId="location" options={['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany']} onFilterChange={onFilterChange} />
+            <FilterField label="State/Region" filterId="location" options={['California', 'New York', 'Texas', 'Florida', 'Illinois']} onFilterChange={onFilterChange} />
+            <FilterField label="City" filterId="location" options={['San Francisco', 'New York', 'Los Angeles', 'Chicago', 'Boston']} onFilterChange={onFilterChange} />
           </div>
         );
       case "companyInfo":
         return (
           <div className="space-y-4">
-            <FilterField label="Company Name" filterId="companyInfo" options={['Google', 'Microsoft', 'Amazon', 'Apple', 'Meta']} />
-            <FilterField label="Website Domain" filterId="companyInfo" options={['google.com', 'microsoft.com', 'amazon.com']} />
-            <FilterField label="Year Founded" filterId="companyInfo" options={['2020-2024', '2015-2019', '2010-2014', '2000-2009']} />
-            <FilterField label="Company Type" filterId="companyInfo" options={['Public', 'Private', 'Startup', 'Non-Profit']} />
+            <FilterField label="Company Name" filterId="companyInfo" options={['Google', 'Microsoft', 'Amazon', 'Apple', 'Meta']} onFilterChange={onFilterChange} />
+            <FilterField label="Website Domain" filterId="companyInfo" options={['google.com', 'microsoft.com', 'amazon.com']} onFilterChange={onFilterChange} />
+            <FilterField label="Year Founded" filterId="companyInfo" options={['2020-2024', '2015-2019', '2010-2014', '2000-2009']} onFilterChange={onFilterChange} />
+            <FilterField label="Company Type" filterId="companyInfo" options={['Public', 'Private', 'Startup', 'Non-Profit']} onFilterChange={onFilterChange} />
           </div>
         );
       case "marketing":
@@ -657,7 +825,7 @@ function FilterDetailContent({ filterId }: { filterId: FilterCategory }) {
           <div className="space-y-4">
             <div>
               <label className="text-[13px] font-semibold text-foreground mb-2 block">Contact Availability</label>
-              <MultiSelectDropdown options={['Mailable', 'Emailable', 'Phoneable']} placeholder="Select availability..." />
+              <MultiSelectDropdown options={['Mailable', 'Emailable', 'Phoneable']} placeholder="Select availability..." onSelectionChange={(selected) => onFilterChange?.('Contact Availability', selected)} />
             </div>
           </div>
         );
@@ -670,10 +838,10 @@ function FilterDetailContent({ filterId }: { filterId: FilterCategory }) {
       case "jobInfo":
         return (
           <div className="space-y-4">
-            <FilterField label="Job Title" aiSuggested filterId="jobInfo" options={['CEO', 'CTO', 'VP Engineering', 'Director', 'Manager']} />
-            <FilterField label="Seniority Level" filterId="jobInfo" options={['C-Level', 'VP', 'Director', 'Manager', 'Individual Contributor']} />
-            <FilterField label="Department" filterId="jobInfo" options={['Engineering', 'Sales', 'Marketing', 'Operations', 'Finance']} />
-            <FilterField label="Job Function" filterId="jobInfo" options={['Leadership', 'Technical', 'Business Development', 'Operations']} />
+            <FilterField label="Job Title" aiSuggested filterId="jobInfo" options={['CEO', 'CTO', 'VP Engineering', 'Director', 'Manager']} onFilterChange={onFilterChange} />
+            <FilterField label="Seniority Level" filterId="jobInfo" options={['C-Level', 'VP', 'Director', 'Manager', 'Individual Contributor']} onFilterChange={onFilterChange} />
+            <FilterField label="Department" filterId="jobInfo" options={['Engineering', 'Sales', 'Marketing', 'Operations', 'Finance']} onFilterChange={onFilterChange} />
+            <FilterField label="Job Function" filterId="jobInfo" options={['Leadership', 'Technical', 'Business Development', 'Operations']} onFilterChange={onFilterChange} />
           </div>
         );
       default:
@@ -688,7 +856,7 @@ function FilterDetailContent({ filterId }: { filterId: FilterCategory }) {
   return <div>{renderContent()}</div>;
 }
 
-function MultiSelectDropdown({ options, placeholder }: { options: string[]; placeholder?: string }) {
+function MultiSelectDropdown({ options, placeholder, onSelectionChange }: { options: string[]; placeholder?: string; onSelectionChange?: (selected: Array<{ value: string; mode: 'include' | 'exclude' }>) => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<Array<{ value: string; mode: 'include' | 'exclude' }>>([]);
   const [customOptions, setCustomOptions] = useState<string[]>([]);
@@ -726,19 +894,29 @@ function MultiSelectDropdown({ options, placeholder }: { options: string[]; plac
   };
 
   const toggleOption = (option: string) => {
-    setSelected(prev => 
-      prev.some(s => s.value === option) ? prev.filter(s => s.value !== option) : [...prev, { value: option, mode: 'include' }]
-    );
+    setSelected(prev => {
+      const newSelected = prev.some(s => s.value === option) ? prev.filter(s => s.value !== option) : [...prev, { value: option, mode: 'include' }];
+      onSelectionChange?.(newSelected);
+      return newSelected;
+    });
   };
 
   const toggleMode = (value: string) => {
-    setSelected(prev => prev.map(s => 
-      s.value === value ? { ...s, mode: s.mode === 'include' ? 'exclude' : 'include' } : s
-    ));
+    setSelected(prev => {
+      const newSelected = prev.map(s => 
+        s.value === value ? { ...s, mode: s.mode === 'include' ? 'exclude' : 'include' } : s
+      );
+      onSelectionChange?.(newSelected);
+      return newSelected;
+    });
   };
 
   const removeChip = (value: string) => {
-    setSelected(prev => prev.filter(s => s.value !== value));
+    setSelected(prev => {
+      const newSelected = prev.filter(s => s.value !== value);
+      onSelectionChange?.(newSelected);
+      return newSelected;
+    });
   };
 
   const handleCreateCustom = () => {
@@ -984,13 +1162,17 @@ function MultiSelectDropdown({ options, placeholder }: { options: string[]; plac
   );
 }
 
-function FilterField({ label, aiSuggested, filterId, options }: { label: string; aiSuggested?: boolean; filterId?: FilterCategory; options?: string[] }) {
+function FilterField({ label, aiSuggested, filterId, options, onFilterChange }: { label: string; aiSuggested?: boolean; filterId?: FilterCategory; options?: string[]; onFilterChange?: (category: string, selected: Array<{ value: string; mode: 'include' | 'exclude' }>) => void }) {
   return (
     <div>
       <label className="text-[13px] font-semibold text-foreground flex items-center gap-1.5 mb-2">
         {label}
       </label>
-      <MultiSelectDropdown options={options || []} placeholder={`Select ${label.toLowerCase()}...`} />
+      <MultiSelectDropdown 
+        options={options || []} 
+        placeholder={`Select ${label.toLowerCase()}...`}
+        onSelectionChange={(selected) => onFilterChange?.(label, selected)}
+      />
     </div>
   );
 }
