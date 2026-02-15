@@ -269,7 +269,10 @@ export default function ProspectSearchPage() {
                   className="pl-7 pr-2.5 h-9 text-[13px] bg-[#F9FAFB] border-[#E5E7EB] rounded-md focus:bg-white focus:border-[#FF4D4F]"
                 />
               </div>
-              <button className="text-xs font-medium text-[#6B7280] hover:text-[#111827] hover:bg-[#F3F4F6] px-1.5 h-9 rounded transition-colors flex items-center">
+              <button 
+                onClick={() => setActiveFilters([])}
+                className="text-xs font-medium text-[#6B7280] hover:text-[#111827] hover:bg-[#F3F4F6] px-1.5 h-9 rounded transition-colors flex items-center"
+              >
                 Clear All
               </button>
             </div>
@@ -284,6 +287,19 @@ export default function ProspectSearchPage() {
                 </div>
                 {filters.map((filter) => {
                   const IconComponent = filter.icon;
+                  const selectedCount = activeFilters.filter(f => {
+                    const categoryMap: Record<FilterCategory, string[]> = {
+                      sector: ['Major Sector', 'Group Sector', 'Sub Sector', 'SIC Code'],
+                      companySize: ['Employee Count', 'Annual Revenue (USD)'],
+                      companyInfo: ['Company Name', 'Website Domain', 'Year Founded', 'Company Type'],
+                      location: ['Country', 'State/Region', 'City'],
+                      marketing: ['Contact Availability'],
+                      dataControl: ['Inclusion / Exclusion'],
+                      jobInfo: ['Job Title', 'Seniority Level', 'Department', 'Job Function'],
+                      personalInfo: ['Personal Information']
+                    };
+                    return categoryMap[filter.id]?.includes(f.category);
+                  }).length;
                   return (
                   <button
                     key={filter.id}
@@ -298,9 +314,9 @@ export default function ProspectSearchPage() {
                     <span className="flex items-center gap-2">
                       {IconComponent && <IconComponent className="h-3 w-3 text-[#111827] opacity-80" strokeWidth={1.8} />}
                       {filter.label}
-                      {filter.count && (
-                        <span className="px-1.5 py-0.5 rounded-full bg-[#FF3030] text-white text-[10px] font-semibold">
-                          {filter.count}
+                      {selectedCount > 0 && (
+                        <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-[#FF3030] text-white text-[11px] font-semibold inline-flex items-center justify-center">
+                          {selectedCount}
                         </span>
                       )}
                     </span>
@@ -387,12 +403,16 @@ export default function ProspectSearchPage() {
 
             {/* Scrollable Content */}
             <div className="overflow-y-auto overflow-x-hidden p-3 pr-1 [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#D1D5DB] [&::-webkit-scrollbar-thumb]:rounded-md [&::-webkit-scrollbar-thumb:hover]:bg-[#9CA3AF] [scrollbar-width:thin] [scrollbar-color:#D1D5DB_transparent]" style={{ maxHeight: 'calc(75vh - 140px)' }}>
-              <FilterDetailContent filterId={selectedFilter} onFilterChange={(category, selected) => {
-                setActiveFilters(prev => [
-                  ...prev.filter(f => f.category !== category),
-                  ...selected.map(s => ({ category, value: s.value, mode: s.mode }))
-                ]);
-              }} />
+              <FilterDetailContent 
+                filterId={selectedFilter} 
+                activeFilters={activeFilters}
+                onFilterChange={(category, selected) => {
+                  setActiveFilters(prev => [
+                    ...prev.filter(f => f.category !== category),
+                    ...selected.map(s => ({ category, value: s.value, mode: s.mode }))
+                  ]);
+                }} 
+              />
             </div>
           </div>
         )}
@@ -525,32 +545,41 @@ export default function ProspectSearchPage() {
                           acc[filter.category].push(filter);
                           return acc;
                         }, {} as Record<string, typeof activeFilters>)
-                      ).map(([category, filters]) => (
-                        <div key={category}>
-                          <span className="text-[10px] font-semibold text-[#6B7280] uppercase tracking-wide block mb-1">{category}:</span>
-                          <div className="flex flex-wrap gap-1">
-                            {filters.map((filter, idx) => (
-                              <span
-                                key={idx}
-                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border ${
-                                  filter.mode === 'include'
-                                    ? 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]'
-                                    : 'bg-[#FEF2F2] border-[#FECACA] text-[#B91C1C]'
-                                }`}
-                              >
-                                {filter.value}
-                                <span className="text-[9px] opacity-70">{filter.mode === 'include' ? '✔' : '✖'}</span>
-                                <button
-                                  onClick={() => setActiveFilters(prev => prev.filter((_, i) => i !== activeFilters.indexOf(filter)))}
-                                  className="hover:opacity-70"
+                      ).map(([category, filters]) => {
+                        const displayFilters = filters.slice(0, 2);
+                        const overflowCount = filters.length - 2;
+                        return (
+                          <div key={category}>
+                            <span className="text-[10px] font-semibold text-[#6B7280] uppercase tracking-wide block mb-1">{category}:</span>
+                            <div className="flex flex-wrap gap-1">
+                              {displayFilters.map((filter, idx) => (
+                                <span
+                                  key={idx}
+                                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border ${
+                                    filter.mode === 'include'
+                                      ? 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]'
+                                      : 'bg-[#FEF2F2] border-[#FECACA] text-[#B91C1C]'
+                                  }`}
                                 >
-                                  <X className="h-2.5 w-2.5" />
-                                </button>
-                              </span>
-                            ))}
+                                  {filter.value}
+                                  <span className="text-[9px] opacity-70">{filter.mode === 'include' ? '✔' : '✖'}</span>
+                                  <button
+                                    onClick={() => setActiveFilters(prev => prev.filter((_, i) => i !== activeFilters.indexOf(filter)))}
+                                    className="hover:opacity-70"
+                                  >
+                                    <X className="h-2.5 w-2.5" />
+                                  </button>
+                                </span>
+                              ))}
+                              {overflowCount > 0 && (
+                                <span className="inline-flex items-center px-2 py-0.5 bg-[#F3F4F6] text-[#6B7280] rounded text-[11px] font-medium">
+                                  +{overflowCount}
+                                </span>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -766,22 +795,27 @@ export default function ProspectSearchPage() {
   );
 }
 
-function FilterDetailContent({ filterId, onFilterChange }: { filterId: FilterCategory; onFilterChange?: (category: string, selected: Array<{ value: string; mode: 'include' | 'exclude' }>) => void }) {
+function FilterDetailContent({ filterId, activeFilters, onFilterChange }: { filterId: FilterCategory; activeFilters: Array<{ category: string; value: string; mode: 'include' | 'exclude' }>; onFilterChange?: (category: string, selected: Array<{ value: string; mode: 'include' | 'exclude' }>) => void }) {
   const renderContent = () => {
     switch (filterId) {
       case "sector":
         return (
           <div className="space-y-4">
-            <FilterField label="Major Sector" aiSuggested filterId="sector" options={['Technology', 'Healthcare', 'Finance', 'Manufacturing', 'Retail']} onFilterChange={onFilterChange} />
-            <FilterField label="Group Sector" filterId="sector" options={['Software', 'Hardware', 'Services', 'Consulting']} onFilterChange={onFilterChange} />
+            <FilterField label="Major Sector" aiSuggested filterId="sector" options={['Technology', 'Healthcare', 'Finance', 'Manufacturing', 'Retail']} activeFilters={activeFilters} onFilterChange={onFilterChange} />
+            <FilterField label="Group Sector" filterId="sector" options={['Software', 'Hardware', 'Services', 'Consulting']} activeFilters={activeFilters} onFilterChange={onFilterChange} />
             <div>
               <label className="text-[13px] font-semibold text-foreground flex items-center gap-1.5 mb-2">
                 Sub Sector
                 <Sparkles className="h-3 w-3 text-[#FF3030]" />
               </label>
-              <MultiSelectDropdown options={['SaaS', 'Cloud Computing', 'AI/ML', 'Cybersecurity']} placeholder="Select sub sector..." onSelectionChange={(selected) => onFilterChange?.('Sub Sector', selected)} />
+              <MultiSelectDropdown 
+                options={['SaaS', 'Cloud Computing', 'AI/ML', 'Cybersecurity']} 
+                placeholder="Select sub sector..." 
+                initialSelected={activeFilters.filter(f => f.category === 'Sub Sector')}
+                onSelectionChange={(selected) => onFilterChange?.('Sub Sector', selected)} 
+              />
             </div>
-            <FilterField label="SIC Code" filterId="sector" options={['7372', '7373', '7374', '7375']} onFilterChange={onFilterChange} />
+            <FilterField label="SIC Code" filterId="sector" options={['7372', '7373', '7374', '7375']} activeFilters={activeFilters} onFilterChange={onFilterChange} />
           </div>
         );
       case "companySize":
@@ -806,18 +840,18 @@ function FilterDetailContent({ filterId, onFilterChange }: { filterId: FilterCat
       case "location":
         return (
           <div className="space-y-4">
-            <FilterField label="Country" filterId="location" options={['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany']} onFilterChange={onFilterChange} />
-            <FilterField label="State/Region" filterId="location" options={['California', 'New York', 'Texas', 'Florida', 'Illinois']} onFilterChange={onFilterChange} />
-            <FilterField label="City" filterId="location" options={['San Francisco', 'New York', 'Los Angeles', 'Chicago', 'Boston']} onFilterChange={onFilterChange} />
+            <FilterField label="Country" filterId="location" options={['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany']} activeFilters={activeFilters} onFilterChange={onFilterChange} />
+            <FilterField label="State/Region" filterId="location" options={['California', 'New York', 'Texas', 'Florida', 'Illinois']} activeFilters={activeFilters} onFilterChange={onFilterChange} />
+            <FilterField label="City" filterId="location" options={['San Francisco', 'New York', 'Los Angeles', 'Chicago', 'Boston']} activeFilters={activeFilters} onFilterChange={onFilterChange} />
           </div>
         );
       case "companyInfo":
         return (
           <div className="space-y-4">
-            <FilterField label="Company Name" filterId="companyInfo" options={['Google', 'Microsoft', 'Amazon', 'Apple', 'Meta']} onFilterChange={onFilterChange} />
-            <FilterField label="Website Domain" filterId="companyInfo" options={['google.com', 'microsoft.com', 'amazon.com']} onFilterChange={onFilterChange} />
-            <FilterField label="Year Founded" filterId="companyInfo" options={['2020-2024', '2015-2019', '2010-2014', '2000-2009']} onFilterChange={onFilterChange} />
-            <FilterField label="Company Type" filterId="companyInfo" options={['Public', 'Private', 'Startup', 'Non-Profit']} onFilterChange={onFilterChange} />
+            <FilterField label="Company Name" filterId="companyInfo" options={['Google', 'Microsoft', 'Amazon', 'Apple', 'Meta']} activeFilters={activeFilters} onFilterChange={onFilterChange} />
+            <FilterField label="Website Domain" filterId="companyInfo" options={['google.com', 'microsoft.com', 'amazon.com']} activeFilters={activeFilters} onFilterChange={onFilterChange} />
+            <FilterField label="Year Founded" filterId="companyInfo" options={['2020-2024', '2015-2019', '2010-2014', '2000-2009']} activeFilters={activeFilters} onFilterChange={onFilterChange} />
+            <FilterField label="Company Type" filterId="companyInfo" options={['Public', 'Private', 'Startup', 'Non-Profit']} activeFilters={activeFilters} onFilterChange={onFilterChange} />
           </div>
         );
       case "marketing":
@@ -825,7 +859,12 @@ function FilterDetailContent({ filterId, onFilterChange }: { filterId: FilterCat
           <div className="space-y-4">
             <div>
               <label className="text-[13px] font-semibold text-foreground mb-2 block">Contact Availability</label>
-              <MultiSelectDropdown options={['Mailable', 'Emailable', 'Phoneable']} placeholder="Select availability..." onSelectionChange={(selected) => onFilterChange?.('Contact Availability', selected)} />
+              <MultiSelectDropdown 
+                options={['Mailable', 'Emailable', 'Phoneable']} 
+                placeholder="Select availability..." 
+                initialSelected={activeFilters.filter(f => f.category === 'Contact Availability')}
+                onSelectionChange={(selected) => onFilterChange?.('Contact Availability', selected)} 
+              />
             </div>
           </div>
         );
@@ -838,10 +877,10 @@ function FilterDetailContent({ filterId, onFilterChange }: { filterId: FilterCat
       case "jobInfo":
         return (
           <div className="space-y-4">
-            <FilterField label="Job Title" aiSuggested filterId="jobInfo" options={['CEO', 'CTO', 'VP Engineering', 'Director', 'Manager']} onFilterChange={onFilterChange} />
-            <FilterField label="Seniority Level" filterId="jobInfo" options={['C-Level', 'VP', 'Director', 'Manager', 'Individual Contributor']} onFilterChange={onFilterChange} />
-            <FilterField label="Department" filterId="jobInfo" options={['Engineering', 'Sales', 'Marketing', 'Operations', 'Finance']} onFilterChange={onFilterChange} />
-            <FilterField label="Job Function" filterId="jobInfo" options={['Leadership', 'Technical', 'Business Development', 'Operations']} onFilterChange={onFilterChange} />
+            <FilterField label="Job Title" aiSuggested filterId="jobInfo" options={['CEO', 'CTO', 'VP Engineering', 'Director', 'Manager']} activeFilters={activeFilters} onFilterChange={onFilterChange} />
+            <FilterField label="Seniority Level" filterId="jobInfo" options={['C-Level', 'VP', 'Director', 'Manager', 'Individual Contributor']} activeFilters={activeFilters} onFilterChange={onFilterChange} />
+            <FilterField label="Department" filterId="jobInfo" options={['Engineering', 'Sales', 'Marketing', 'Operations', 'Finance']} activeFilters={activeFilters} onFilterChange={onFilterChange} />
+            <FilterField label="Job Function" filterId="jobInfo" options={['Leadership', 'Technical', 'Business Development', 'Operations']} activeFilters={activeFilters} onFilterChange={onFilterChange} />
           </div>
         );
       default:
@@ -856,13 +895,18 @@ function FilterDetailContent({ filterId, onFilterChange }: { filterId: FilterCat
   return <div>{renderContent()}</div>;
 }
 
-function MultiSelectDropdown({ options, placeholder, onSelectionChange }: { options: string[]; placeholder?: string; onSelectionChange?: (selected: Array<{ value: string; mode: 'include' | 'exclude' }>) => void }) {
+function MultiSelectDropdown({ options, placeholder, initialSelected = [], onSelectionChange }: { options: string[]; placeholder?: string; initialSelected?: Array<{ value: string; mode: 'include' | 'exclude' }>; onSelectionChange?: (selected: Array<{ value: string; mode: 'include' | 'exclude' }>) => void }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState<Array<{ value: string; mode: 'include' | 'exclude' }>>([]);
+  const [selected, setSelected] = useState<Array<{ value: string; mode: 'include' | 'exclude' }>>(initialSelected);
   const [customOptions, setCustomOptions] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Sync with initialSelected when it changes
+  useEffect(() => {
+    setSelected(initialSelected);
+  }, [JSON.stringify(initialSelected)]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -1162,7 +1206,7 @@ function MultiSelectDropdown({ options, placeholder, onSelectionChange }: { opti
   );
 }
 
-function FilterField({ label, aiSuggested, filterId, options, onFilterChange }: { label: string; aiSuggested?: boolean; filterId?: FilterCategory; options?: string[]; onFilterChange?: (category: string, selected: Array<{ value: string; mode: 'include' | 'exclude' }>) => void }) {
+function FilterField({ label, aiSuggested, filterId, options, activeFilters, onFilterChange }: { label: string; aiSuggested?: boolean; filterId?: FilterCategory; options?: string[]; activeFilters?: Array<{ category: string; value: string; mode: 'include' | 'exclude' }>; onFilterChange?: (category: string, selected: Array<{ value: string; mode: 'include' | 'exclude' }>) => void }) {
   return (
     <div>
       <label className="text-[13px] font-semibold text-foreground flex items-center gap-1.5 mb-2">
@@ -1171,6 +1215,7 @@ function FilterField({ label, aiSuggested, filterId, options, onFilterChange }: 
       <MultiSelectDropdown 
         options={options || []} 
         placeholder={`Select ${label.toLowerCase()}...`}
+        initialSelected={activeFilters?.filter(f => f.category === label) || []}
         onSelectionChange={(selected) => onFilterChange?.(label, selected)}
       />
     </div>
