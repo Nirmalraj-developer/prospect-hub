@@ -10,6 +10,16 @@ import { LockedPageLayout, LockedButton } from "@/components/LockedPageLayout";
     color: #9CA3AF;
     pointer-events: none;
   }
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
 `}</style>
 import { cn } from "@/lib/utils";
 
@@ -102,6 +112,7 @@ export default function ProspectSearchPage() {
   const [orderName, setOrderName] = useState<string>('');
   const [deliveryEmail, setDeliveryEmail] = useState<string>('');
   const [displayedProspects, setDisplayedProspects] = useState<Prospect[]>([]);
+  const [showInsights, setShowInsights] = useState(false);
 
   useEffect(() => {
     const style = document.createElement('style');
@@ -435,7 +446,10 @@ export default function ProspectSearchPage() {
                   <Sparkles className="h-3.5 w-3.5" />
                   Try AI Search
                 </button>
-                <button className="h-8 px-2.5 text-[12px] font-medium bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#374151] rounded-md transition-colors flex items-center gap-1.5">
+                <button 
+                  onClick={() => setShowInsights(true)}
+                  className="h-8 px-2.5 text-[12px] font-medium bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#374151] rounded-md transition-colors flex items-center gap-1.5"
+                >
                   <BarChart3 className="h-3.5 w-3.5" />
                   Data Insights
                 </button>
@@ -708,6 +722,226 @@ export default function ProspectSearchPage() {
               </div>
             </div>
           ) : showResults ? (
+            showInsights ? (
+              <div className="flex-1 flex flex-col bg-white animate-[slideInRight_180ms_ease-in-out]">
+                {/* Header */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-[#E5E7EB]">
+                  <h2 className="text-[15px] font-bold text-[#111827]">Data Insights</h2>
+                  <button 
+                    onClick={() => setShowInsights(false)}
+                    className="px-3 py-1.5 text-[12px] font-medium text-[#6B7280] hover:bg-[#F3F4F6] rounded transition-colors flex items-center gap-1.5"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                    Back to Results
+                  </button>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 overflow-y-auto p-4">
+                  {/* Top Section: 3 Columns Grid */}
+                  <div className="grid gap-3 mb-3" style={{ gridTemplateColumns: '0.9fr 0.8fr 1.4fr' }}>
+                    {/* Selected Filters Card */}
+                    <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-md p-2.5 flex flex-col">
+                      <h3 className="text-[12px] font-semibold text-[#111827] mb-2">Selected Filters</h3>
+                      <div className="flex-1">
+                        {activeFilters.length === 0 ? (
+                          <p className="text-[11px] text-[#6B7280]">No Filters Selected</p>
+                        ) : (
+                          <div className="space-y-1">
+                            {Object.entries(
+                              activeFilters.reduce((acc, filter) => {
+                                if (!acc[filter.category]) acc[filter.category] = [];
+                                acc[filter.category].push(filter.value);
+                                return acc;
+                              }, {} as Record<string, string[]>)
+                            ).map(([category, values]) => (
+                              <div key={category} className="text-[11px] text-[#6B7280]">
+                                <span className="font-medium">{category}:</span> {values.join(', ')}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Overall Count Card */}
+                    <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-md p-2.5 flex flex-col">
+                      <h3 className="text-[12px] font-semibold text-[#111827] mb-2">Overall Count</h3>
+                      <div className="flex-1 flex flex-col justify-center gap-1.5">
+                        <div className="text-[12px] text-[#374151]">
+                          <span className="font-medium">Company Count:</span> 4,092,817
+                        </div>
+                        <div className="text-[12px] text-[#374151]">
+                          <span className="font-medium">People Count:</span> 18,344,446
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Marketability Breakdown Card */}
+                    <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-md p-2.5 flex flex-col" style={{ minWidth: '340px' }}>
+                      <h3 className="text-[12px] font-semibold text-[#111827] mb-2">Marketability Breakdown</h3>
+                      <div className="flex-1">
+                        <table className="w-full text-[12px]" style={{ borderCollapse: 'collapse' }}>
+                          <thead className="bg-[#F3F4F6]">
+                            <tr>
+                              <th className="px-2 py-1.5 text-left font-semibold text-[#374151]">Type</th>
+                              <th className="px-2 py-1.5 text-right font-semibold text-[#374151]" style={{ whiteSpace: 'nowrap' }}>Company</th>
+                              <th className="px-2 py-1.5 text-right font-semibold text-[#374151]" style={{ whiteSpace: 'nowrap' }}>People</th>
+                              <th className="px-2 py-1.5 text-right font-semibold text-[#374151]" style={{ whiteSpace: 'nowrap' }}>Ratio</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td className="px-2 py-1.5 text-[#374151]">Mailable</td>
+                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>3,892,456</td>
+                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>16,234,892</td>
+                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>4.2</td>
+                            </tr>
+                            <tr>
+                              <td className="px-2 py-1.5 text-[#374151]">Phoneable</td>
+                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>2,456,123</td>
+                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>12,892,345</td>
+                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>5.2</td>
+                            </tr>
+                            <tr>
+                              <td className="px-2 py-1.5 text-[#374151]">Emailable</td>
+                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>3,234,567</td>
+                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>14,567,234</td>
+                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>4.5</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Column & Row Filter Section */}
+                  <div className="flex justify-center gap-4 my-2.5">
+                    <div className="flex items-center gap-2">
+                      <label className="text-[12px] font-medium text-[#6B7280]">Column Filter</label>
+                      <select className="h-8 px-3 text-[12px] border border-[#E5E7EB] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#FF4D4F] focus:border-transparent">
+                        <option>Country</option>
+                        <option>Region</option>
+                        <option>City</option>
+                      </select>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <label className="text-[12px] font-medium text-[#6B7280]">Row Filter</label>
+                      <select className="h-8 px-3 text-[12px] border border-[#E5E7EB] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#FF4D4F] focus:border-transparent">
+                        <option>Major Sector</option>
+                        <option>Sub Sector</option>
+                        <option>Industry</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Insights Breakdown Table */}
+                  <div className="mt-2">
+                    <h3 className="text-[12px] font-semibold text-[#111827] mb-2">Insights Breakdown</h3>
+                    <div className="border border-[#E5E7EB] rounded-md overflow-hidden">
+                      <div className="overflow-y-auto" style={{ maxHeight: '280px' }}>
+                        <table className="w-full text-[12px]" style={{ tableLayout: 'fixed', borderCollapse: 'collapse' }}>
+                          <thead className="bg-[#F3F4F6] sticky top-0">
+                            <tr>
+                              <th className="px-3 py-2 text-left font-semibold text-[#374151]" style={{ width: '200px' }}>Sector</th>
+                              <th className="px-3 py-2 text-right font-semibold text-[#374151]" style={{ width: '120px' }}>England</th>
+                              <th className="px-3 py-2 text-right font-semibold text-[#374151]" style={{ width: '140px' }}>Northern Ireland</th>
+                              <th className="px-3 py-2 text-right font-semibold text-[#374151]" style={{ width: '120px' }}>Scotland</th>
+                              <th className="px-3 py-2 text-right font-semibold text-[#374151]" style={{ width: '120px' }}>Wales</th>
+                              <th className="px-3 py-2 text-right font-semibold text-[#374151]" style={{ width: '120px' }}>UK</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="hover:bg-[#F9FAFB] transition-colors">
+                              <td className="px-3 py-2 text-[#374151]">Agriculture & Farming</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">45,234</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">3,456</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">8,923</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">5,678</td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">63,291</td>
+                            </tr>
+                            <tr className="hover:bg-[#F9FAFB] transition-colors">
+                              <td className="px-3 py-2 text-[#374151]">Automotive</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">89,456</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">4,567</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">12,345</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">7,890</td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">114,258</td>
+                            </tr>
+                            <tr className="hover:bg-[#F9FAFB] transition-colors">
+                              <td className="px-3 py-2 text-[#374151]">Construction & Materials</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">156,789</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">8,901</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">23,456</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">12,345</td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">201,491</td>
+                            </tr>
+                            <tr className="hover:bg-[#F9FAFB] transition-colors">
+                              <td className="px-3 py-2 text-[#374151]">Consumer Goods & Services</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">234,567</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">12,345</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">34,567</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">18,901</td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">300,380</td>
+                            </tr>
+                            <tr className="hover:bg-[#F9FAFB] transition-colors">
+                              <td className="px-3 py-2 text-[#374151]">Education</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">178,901</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">9,876</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">28,901</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">15,678</td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">233,356</td>
+                            </tr>
+                            <tr className="hover:bg-[#F9FAFB] transition-colors">
+                              <td className="px-3 py-2 text-[#374151]">Financial Services</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">456,789</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">23,456</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">67,890</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">34,567</td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">582,702</td>
+                            </tr>
+                            <tr className="hover:bg-[#F9FAFB] transition-colors">
+                              <td className="px-3 py-2 text-[#374151]">Healthcare</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">892,345</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">45,678</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">123,456</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">67,890</td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">1,129,369</td>
+                            </tr>
+                            <tr className="hover:bg-[#F9FAFB] transition-colors">
+                              <td className="px-3 py-2 text-[#374151]">Technology</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">678,901</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">34,567</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">89,012</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">45,678</td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">848,158</td>
+                            </tr>
+                            <tr className="hover:bg-[#F9FAFB] transition-colors">
+                              <td className="px-3 py-2 text-[#374151]">Manufacturing</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">345,678</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">18,901</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">56,789</td>
+                              <td className="px-3 py-2 text-right text-[#374151]">28,901</td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">450,269</td>
+                            </tr>
+                          </tbody>
+                          <tfoot className="sticky bottom-0 bg-[#F3F4F6]">
+                            <tr>
+                              <td className="px-3 py-2 text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">Total</td>
+                              <td className="px-3 py-2 text-right text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">3,078,660</td>
+                              <td className="px-3 py-2 text-right text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">161,747</td>
+                              <td className="px-3 py-2 text-right text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">445,339</td>
+                              <td className="px-3 py-2 text-right text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">237,528</td>
+                              <td className="px-3 py-2 text-right text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">3,923,274</td>
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
             <div className="flex-1 flex flex-col min-h-0">
               {/* Scrollable Table */}
               <div className="flex-1 overflow-y-auto min-h-0">
@@ -784,6 +1018,7 @@ export default function ProspectSearchPage() {
                 </div>
               </div>
             </div>
+            )
           ) : (
             <div className="flex-1 flex items-center justify-center" style={{ background: 'linear-gradient(to bottom, #ffffff, #fafafa)' }}>
               <AIDiscoveryPanel aiPrompt={aiPrompt} setAiPrompt={setAiPrompt} currentPlaceholder={placeholders[currentPlaceholder]} />
