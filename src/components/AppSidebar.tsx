@@ -7,7 +7,6 @@ import {
   Database,
   FileSpreadsheet,
   ShieldCheck,
-  Settings,
   Sparkles,
   Users,
   Lock,
@@ -128,21 +127,6 @@ export function AppSidebar() {
             </>
           )}
         </nav>
-
-        {/* Settings at Bottom */}
-        <Tooltip delayDuration={0}>
-          <TooltipTrigger asChild>
-            <button 
-              onClick={() => navigate('/settings')}
-              className="flex items-center justify-center w-11 h-11 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-            >
-              <Settings className="h-[18px] w-[18px]" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent side="right" sideOffset={8}>
-            Settings
-          </TooltipContent>
-        </Tooltip>
       </aside>
 
       {upgradeModal.requiredPlan && (

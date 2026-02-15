@@ -1,304 +1,375 @@
-import { useState } from "react";
-import { Search, Filter, Sparkles, Building2, Users, Target, Shield, Info, ChevronDown, X, SlidersHorizontal } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Search, Sparkles, Building2, Users, MapPin, DollarSign, Briefcase, Target, Shield, ChevronRight, X, Info, GripVertical, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LockedPageLayout, LockedButton } from "@/components/LockedPageLayout";
+import { cn } from "@/lib/utils";
+
+type SearchMode = "company" | "people";
+type FilterCategory = "sector" | "companySize" | "companyInfo" | "location" | "marketing" | "dataControl" | "jobInfo" | "personalInfo";
+
+interface FilterItem {
+  id: FilterCategory;
+  label: string;
+  count?: number;
+  category: string;
+}
+
+const companyFilters: FilterItem[] = [
+  { id: "sector", label: "Sector", category: "COMPANY PROFILE" },
+  { id: "companySize", label: "Company Size & Revenue", category: "COMPANY PROFILE" },
+  { id: "companyInfo", label: "Company Information", category: "COMPANY PROFILE" },
+  { id: "location", label: "Location", category: "COMPANY PROFILE" },
+  { id: "marketing", label: "Marketing Touchpoints", category: "ENGAGEMENT" },
+  { id: "dataControl", label: "Inclusion / Exclusion", category: "DATA CONTROL" },
+];
+
+const peopleFilters: FilterItem[] = [
+  { id: "jobInfo", label: "Job Information", category: "PEOPLE PROFILE" },
+  { id: "personalInfo", label: "Personal Information", category: "PEOPLE PROFILE" },
+  { id: "location", label: "Location", category: "PEOPLE PROFILE" },
+  { id: "sector", label: "Sector", category: "COMPANY PROFILE" },
+  { id: "companySize", label: "Company Size & Revenue", category: "COMPANY PROFILE" },
+  { id: "companyInfo", label: "Company Information", category: "COMPANY PROFILE" },
+  { id: "dataControl", label: "Inclusion / Exclusion", category: "DATA CONTROL" },
+];
 
 export default function ProspectSearchPage() {
-  const [searchType, setSearchType] = useState<"company" | "people">("company");
-  const [isFilterOpen, setIsFilterOpen] = useState(true);
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [searchMode, setSearchMode] = useState<SearchMode>("company");
+  const [selectedFilter, setSelectedFilter] = useState<FilterCategory | null>(null);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [appliedFiltersCount, setAppliedFiltersCount] = useState(0);
+  const [popupPosition, setPopupPosition] = useState({ x: 340, y: 120 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  const handleFilterClick = (filterId: FilterCategory) => {
+    setSelectedFilter(selectedFilter === filterId ? null : filterId);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setDragOffset({
+      x: e.clientX - popupPosition.x,
+      y: e.clientY - popupPosition.y
+    });
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDragging) {
+        setPopupPosition({
+          x: Math.max(0, Math.min(e.clientX - dragOffset.x, window.innerWidth - 420)),
+          y: Math.max(0, Math.min(e.clientY - dragOffset.y, window.innerHeight - 300))
+        });
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragOffset]);
+
+  const currentFilters = searchMode === "company" ? companyFilters : peopleFilters;
+  const groupedFilters = currentFilters.reduce((acc, filter) => {
+    if (!acc[filter.category]) acc[filter.category] = [];
+    acc[filter.category].push(filter);
+    return acc;
+  }, {} as Record<string, FilterItem[]>);
 
   return (
-    <LockedPageLayout 
-      featureName="Find Leads" 
-      requiredPlan="pro"
-    >
-      <div className="flex h-[calc(100vh-6.5rem)] relative">
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col">
-        {/* Top Control Bar */}
-        <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border">
-          {/* Company/People Toggle */}
-          <div className="flex bg-muted/50 rounded-lg p-1">
-            <button
-              onClick={() => setSearchType("company")}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                searchType === "company"
-                  ? "bg-white text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Company
-            </button>
-            <button
-              onClick={() => setSearchType("people")}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                searchType === "people"
-                  ? "bg-white text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              People
-            </button>
-          </div>
-
-          {/* Filter Toggle Button */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className="gap-2"
-          >
-            <SlidersHorizontal className="h-4 w-4" />
-            Filters
-            {activeFilters.length > 0 && (
-              <span className="px-1.5 py-0.5 rounded-full bg-primary text-white text-xs font-semibold">
-                {activeFilters.length}
-              </span>
-            )}
-          </Button>
-
-          {/* AI Prompt Button */}
-          <LockedButton variant="outline" size="sm" className="gap-2" requiredPlan="pro" tooltipText="Upgrade to Pro to use AI-powered search">
-            <Sparkles className="h-4 w-4" />
-            AI Prompt
-          </LockedButton>
-
-          {/* Active Filter Chips */}
-          {activeFilters.length > 0 && (
-            <div className="flex items-center gap-2 flex-1 overflow-x-auto">
-              {activeFilters.map((filter, idx) => (
-                <span
-                  key={idx}
-                  className="px-2.5 py-1 rounded-full bg-accent text-accent-foreground text-xs font-medium flex items-center gap-1.5 whitespace-nowrap"
-                >
-                  {filter}
-                  <button className="hover:text-foreground">
-                    <X className="h-3 w-3" />
-                  </button>
-                </span>
-              ))}
+    <LockedPageLayout featureName="Find Leads" requiredPlan="pro">
+      <div className="flex h-[calc(100vh-6.5rem)]">
+        {/* Left: Filter Navigation Sidebar */}
+        <div className="w-[260px] border-r border-border bg-white flex flex-col">
+          {/* Mode Toggle */}
+          <div className="p-3 border-b border-border">
+            <div className="h-9 bg-[#F3F4F6] rounded-md p-0.5 flex gap-0.5">
+              <button
+                onClick={() => setSearchMode("company")}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-1 rounded text-[13px] font-medium transition-all",
+                  searchMode === "company"
+                    ? "bg-white text-[#111827] shadow-sm"
+                    : "text-[#6B7280]"
+                )}
+              >
+                <Building2 className="h-3.5 w-3.5 opacity-70" />
+                Company
+              </button>
+              <button
+                onClick={() => setSearchMode("people")}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-1 rounded text-[13px] font-medium transition-all",
+                  searchMode === "people"
+                    ? "bg-white text-[#111827] shadow-sm"
+                    : "text-[#6B7280]"
+                )}
+              >
+                <Users className="h-3.5 w-3.5 opacity-70" />
+                People
+              </button>
             </div>
-          )}
-
-          {/* Clear Filters */}
-          {activeFilters.length > 0 && (
-            <Button variant="ghost" size="sm" className="text-muted-foreground">
-              Clear All
-            </Button>
-          )}
-        </div>
-
-        {/* Results Area Placeholder */}
-        <div className="flex-1 flex items-center justify-center text-muted-foreground">
-          <div className="text-center">
-            <Search className="h-12 w-12 mx-auto mb-3 opacity-20" />
-            <p className="text-sm">Apply filters to see results</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Filter Drawer */}
-      <div
-        className={`fixed right-0 top-14 h-[calc(100vh-3.5rem)] bg-white border-l border-border shadow-xl transition-transform duration-300 z-40 ${
-          isFilterOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-        style={{ width: "400px" }}
-      >
-        <div className="flex flex-col h-full">
-          {/* Drawer Header */}
-          <div className="flex items-center justify-between p-4 border-b border-border">
-            <h2 className="text-sm font-bold text-foreground">Filters</h2>
-            <button
-              onClick={() => setIsFilterOpen(false)}
-              className="p-1 hover:bg-muted rounded-md transition-colors"
-            >
-              <X className="h-4 w-4 text-muted-foreground" />
-            </button>
           </div>
 
-          {/* Scrollable Filter Content */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {/* Company Profile Section */}
-            <FilterSection title="Company Profile" defaultOpen>
-              <div className="space-y-3">
-                <FilterGroup title="Sector">
-                  <InclusionExclusionField label="Major Sector" />
-                  <InclusionExclusionField label="Group Sector" />
-                  <InclusionExclusionField label="Sub Sector" />
-                  <InclusionExclusionField label="SIC Code" />
-                </FilterGroup>
-
-                <FilterGroup title="Company Size & Revenue">
-                  <div>
-                    <label className="text-xs font-medium text-foreground mb-1.5 block">Employee Count</label>
-                    <div className="flex gap-2">
-                      <Input placeholder="Min" className="h-8 text-sm" />
-                      <Input placeholder="Max" className="h-8 text-sm" />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-foreground mb-1.5 block">Annual Revenue</label>
-                    <div className="flex gap-2">
-                      <Input placeholder="Min" className="h-8 text-sm" />
-                      <Input placeholder="Max" className="h-8 text-sm" />
-                    </div>
-                  </div>
-                </FilterGroup>
-
-                <FilterGroup title="Location">
-                  <InclusionExclusionField label="Country" />
-                  <InclusionExclusionField label="County" />
-                  <InclusionExclusionField label="Town" />
-                  <InclusionExclusionField label="Postcode" />
-                </FilterGroup>
+          {/* Smart Search */}
+          <div className="px-3 pb-3 border-b border-border">
+            <div className="flex items-center gap-1.5 mt-1.5">
+              <div className="relative flex-1">
+                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#9CA3AF]" />
+                <Input
+                  placeholder="Quick search filters..."
+                  className="pl-7 pr-2.5 h-9 text-[13px] bg-[#F9FAFB] border-[#E5E7EB] rounded-md focus:bg-white focus:border-[#FF4D4F]"
+                />
               </div>
-            </FilterSection>
+              <button className="text-xs font-medium text-[#6B7280] hover:text-[#111827] hover:bg-[#F3F4F6] px-1.5 h-9 rounded transition-colors flex items-center">
+                Clear All
+              </button>
+            </div>
+          </div>
 
-            {/* Engagement Section */}
-            <FilterSection title="Engagement">
-              <div className="space-y-3">
-                <FilterGroup title="Marketing Touchpoints">
-                  <InclusionExclusionField label="Technology Stack" />
-                  <InclusionExclusionField label="Social Presence" />
-                </FilterGroup>
-              </div>
-            </FilterSection>
-
-            {/* Data Control Section */}
-            <FilterSection title="Data Control">
-              <div className="space-y-3">
-                <FilterGroup title="Suppression Rules">
-                  <div className="border-2 border-dashed border-border rounded-lg p-4 text-center">
-                    <Shield className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-xs text-muted-foreground mb-2">Upload suppression file</p>
-                    <Button variant="outline" size="sm" className="text-xs h-7">Choose File</Button>
-                  </div>
-                </FilterGroup>
-              </div>
-            </FilterSection>
-
-            {/* People Profile Section */}
-            {searchType === "people" && (
-              <FilterSection title="People Profile">
-                <div className="space-y-3">
-                  <FilterGroup title="Job Information">
-                    <InclusionExclusionField label="Job Title" />
-                    <InclusionExclusionField label="Seniority" />
-                    <InclusionExclusionField label="Department" />
-                  </FilterGroup>
-
-                  <FilterGroup title="Personal Information">
-                    <div>
-                      <label className="text-xs font-medium text-foreground mb-1.5 block">First Name</label>
-                      <Input placeholder="Enter first name" className="h-8 text-sm" />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-foreground mb-1.5 block">Last Name</label>
-                      <Input placeholder="Enter last name" className="h-8 text-sm" />
-                    </div>
-                  </FilterGroup>
+          {/* Filter Navigation */}
+          <div className="flex-1 overflow-y-auto">
+            {Object.entries(groupedFilters).map(([category, filters]) => (
+              <div key={category}>
+                <div className="px-3 py-2 text-[11px] font-bold text-[#FF3030] uppercase tracking-wider">
+                  {category}
                 </div>
-              </FilterSection>
-            )}
+                {filters.map((filter) => (
+                  <button
+                    key={filter.id}
+                    onClick={() => handleFilterClick(filter.id)}
+                    className={cn(
+                      "w-full flex items-center justify-between px-3 py-2.5 text-[13px] transition-all min-h-[40px]",
+                      selectedFilter === filter.id
+                        ? "bg-[#F9FAFB] text-foreground border-l-3 border-l-[#FF3030] font-semibold"
+                        : "text-muted-foreground hover:bg-[#FAFAFA] hover:text-foreground font-normal"
+                    )}
+                  >
+                    <span className="flex items-center gap-2">
+                      {filter.label}
+                      {filter.count && (
+                        <span className="px-1.5 py-0.5 rounded-full bg-[#FF3030] text-white text-[10px] font-semibold">
+                          {filter.count}
+                        </span>
+                      )}
+                    </span>
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </button>
+                ))}
+              </div>
+            ))}
           </div>
 
           {/* Sticky Footer */}
-          <div className="p-4 border-t border-border bg-white">
-            <div className="flex gap-2">
-              <LockedButton className="flex-1" size="sm" requiredPlan="pro" tooltipText="Upgrade to Pro to apply filters">
-                Apply Filters
+          <div className="sticky bottom-0 p-3 pb-2.5 border-t border-[#E5E7EB] bg-white mb-[-40px]">
+            <LockedButton 
+              className="w-full h-11 rounded-lg text-[14px] font-semibold bg-gradient-to-r from-[#FF4D4F] to-[#D9363E] hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] transition-all shadow-[0_4px_12px_rgba(255,77,79,0.25)]" 
+              size="sm" 
+              requiredPlan="pro"
+            >
+              Apply Filters
+            </LockedButton>
+          </div>
+        </div>
+
+        {/* Middle: Filter Detail Panel - Removed */}
+
+        {/* Floating Filter Popup */}
+        {selectedFilter && (
+          <div
+            ref={popupRef}
+            className="fixed bg-white rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.12)] overflow-hidden"
+            style={{
+              left: `${popupPosition.x}px`,
+              top: `${popupPosition.y}px`,
+              width: '420px',
+              maxHeight: '75vh',
+              zIndex: 1000,
+              minWidth: '360px',
+              maxWidth: '520px'
+            }}
+          >
+            {/* Draggable Header */}
+            <div
+              className="sticky top-0 flex items-center justify-between px-4 py-3 border-b border-[#E5E7EB] bg-white cursor-move select-none z-10"
+              onMouseDown={handleMouseDown}
+            >
+              <div className="flex items-center gap-2">
+                <GripVertical className="h-4 w-4 text-[#9CA3AF]" />
+                <h3 className="text-[14px] font-semibold text-foreground capitalize">
+                  {selectedFilter.replace(/([A-Z])/g, ' $1').trim()}
+                </h3>
+              </div>
+              <button
+                onClick={() => setSelectedFilter(null)}
+                className="p-1 hover:bg-[#F3F4F6] rounded transition-colors"
+              >
+                <X className="h-4 w-4 text-[#6B7280]" />
+              </button>
+            </div>
+
+            {/* AI Assisted Layer */}
+            <div className="p-3 border-b border-[#E5E7EB] bg-gradient-to-br from-[#FFF9F5] to-white">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="h-3.5 w-3.5 text-[#FF3030]" />
+                <span className="text-[12px] font-bold text-foreground">AI Assisted Filter</span>
+              </div>
+              <Input
+                placeholder="e.g., Tech companies in London"
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                className="h-8 text-[12px] bg-white"
+              />
+            </div>
+
+            {/* Scrollable Content */}
+            <div className="overflow-y-auto p-3" style={{ maxHeight: 'calc(75vh - 140px)' }}>
+              <FilterDetailContent filterId={selectedFilter} />
+            </div>
+          </div>
+        )}
+
+        {/* Right: Results Area */}
+        <div className="flex-1 flex flex-col overflow-auto bg-[#FAFBFC]">
+          {/* Top Bar */}
+          <div className="flex items-center justify-between p-4 bg-white border-b border-border">
+            <div className="flex items-center gap-2">
+              <LockedButton variant="outline" size="sm" className="gap-2 h-9 text-[13px] font-medium" requiredPlan="pro">
+                <Sparkles className="h-4 w-4" />
+                AI Prompt Search
               </LockedButton>
-              <Button variant="ghost" size="sm" className="text-muted-foreground">
-                Clear
-              </Button>
+            </div>
+            <div className="text-[13px] text-muted-foreground font-medium">
+              0 results found
+            </div>
+          </div>
+
+          {/* Results Placeholder */}
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <Search className="h-12 w-12 mx-auto mb-3 text-muted-foreground opacity-20" />
+              <p className="text-[13px] text-muted-foreground font-medium">Apply filters to see results</p>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Overlay */}
-      {isFilterOpen && (
-        <div
-          className="fixed inset-0 bg-black/20 z-30"
-          onClick={() => setIsFilterOpen(false)}
-        />
-      )}
       </div>
     </LockedPageLayout>
   );
 }
 
-function FilterSection({
-  title,
-  children,
-  defaultOpen = false,
-}: {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-}) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+function FilterDetailContent({ filterId }: { filterId: FilterCategory }) {
+  const renderContent = () => {
+    switch (filterId) {
+      case "sector":
+        return (
+          <div className="space-y-4">
+            <FilterField label="Major Sector" aiSuggested />
+            <FilterField label="Group Sector" />
+            <FilterField label="Sub Sector" />
+            <FilterField label="SIC Code" />
+          </div>
+        );
+      case "companySize":
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="text-[13px] font-semibold text-foreground mb-2 block">Employee Count</label>
+              <div className="flex gap-2">
+                <Input placeholder="Min" className="h-9 text-[13px]" />
+                <Input placeholder="Max" className="h-9 text-[13px]" />
+              </div>
+            </div>
+            <div>
+              <label className="text-[13px] font-semibold text-foreground mb-2 block">Annual Revenue (USD)</label>
+              <div className="flex gap-2">
+                <Input placeholder="Min" className="h-9 text-[13px]" />
+                <Input placeholder="Max" className="h-9 text-[13px]" />
+              </div>
+            </div>
+          </div>
+        );
+      case "location":
+        return (
+          <div className="space-y-4">
+            <FilterField label="Country" aiSuggested />
+            <FilterField label="State/Region" />
+            <FilterField label="City" />
+            <FilterField label="Postal Code" />
+          </div>
+        );
+      case "jobInfo":
+        return (
+          <div className="space-y-4">
+            <FilterField label="Job Title" />
+            <FilterField label="Seniority Level" />
+            <FilterField label="Department" />
+            <FilterField label="Job Function" />
+          </div>
+        );
+      default:
+        return (
+          <div className="text-sm text-muted-foreground">
+            Select filter options
+          </div>
+        );
+    }
+  };
 
-  return (
-    <div className="border border-border rounded-lg bg-white">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
-      >
-        <h3 className="text-xs font-bold text-foreground uppercase tracking-wide">{title}</h3>
-        <ChevronDown
-          className={`h-4 w-4 text-muted-foreground transition-transform ${
-            isOpen ? "rotate-180" : ""
-          }`}
-        />
-      </button>
-      {isOpen && <div className="px-3 pb-3">{children}</div>}
-    </div>
-  );
+  return <div>{renderContent()}</div>;
 }
 
-function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-2">
-      <h4 className="text-xs font-semibold text-foreground">{title}</h4>
-      <div className="space-y-2">{children}</div>
-    </div>
-  );
-}
-
-function InclusionExclusionField({ label }: { label: string }) {
+function FilterField({ label, aiSuggested }: { label: string; aiSuggested?: boolean }) {
   const [mode, setMode] = useState<"include" | "exclude">("include");
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-1.5">
-        <label className="text-xs font-medium text-muted-foreground">{label}</label>
-        <div className="flex bg-muted rounded-md p-0.5">
+      <div className="flex items-center justify-between mb-2">
+        <label className="text-[13px] font-semibold text-foreground flex items-center gap-1.5">
+          {label}
+          {aiSuggested && (
+            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#FFE3D5] text-[#B71833]">
+              AI Suggested
+            </span>
+          )}
+        </label>
+        <div className="flex bg-[#F9FAFB] rounded p-0.5">
           <button
             onClick={() => setMode("include")}
-            className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
+            className={cn(
+              "px-2 py-1 rounded text-[11px] font-semibold transition-colors",
               mode === "include"
                 ? "bg-white text-foreground shadow-sm"
                 : "text-muted-foreground"
-            }`}
+            )}
           >
             Include
           </button>
           <button
             onClick={() => setMode("exclude")}
-            className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
+            className={cn(
+              "px-2 py-1 rounded text-[11px] font-semibold transition-colors",
               mode === "exclude"
                 ? "bg-white text-foreground shadow-sm"
                 : "text-muted-foreground"
-            }`}
+            )}
           >
             Exclude
           </button>
         </div>
       </div>
-      <Input placeholder={`Select ${label.toLowerCase()}...`} className="h-8 text-sm" />
+      <Input placeholder={`Select ${label.toLowerCase()}...`} className="h-9 text-[13px]" />
     </div>
   );
 }

@@ -14,7 +14,7 @@ const pageTitles: Record<string, string> = {
   "/custom-data": "Custom Data",
   "/validations/email": "Email Validation",
   "/validations/suppression": "Suppression",
-  "/settings": "Settings",
+  "/profile": "Profile",
 };
 
 export default function AppLayout() {
@@ -174,21 +174,25 @@ export default function AppLayout() {
           <button className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
             <Bell className="h-4.5 w-4.5" />
           </button>
-          <button 
-            onClick={() => navigate('/settings')}
-            className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
-            <Settings className="h-4.5 w-4.5" />
-          </button>
-          <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center cursor-pointer">
-            <span className="text-sm font-bold text-primary-foreground">N</span>
-          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div 
+                onClick={() => navigate('/profile')}
+                className="h-8 w-8 rounded-full bg-primary flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all"
+              >
+                <span className="text-sm font-bold text-primary-foreground">N</span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">Account Settings</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </header>
 
       <div className="flex flex-1 w-full pt-14">
         <AppSidebar />
-        <main className="flex-1 py-6 px-8 min-w-0 ml-[72px]">
+        <main className="flex-1 py-2 px-3 min-w-0 ml-[72px]">
           <Outlet />
         </main>
       </div>

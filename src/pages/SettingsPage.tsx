@@ -58,7 +58,7 @@ export default function SettingsPage() {
       {/* Left: Main Settings Content */}
       <div className="w-full">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground mb-1">Settings</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-1">Profile & Preferences</h1>
           <p className="text-sm text-muted-foreground">Manage your account preferences and plan</p>
         </div>
 

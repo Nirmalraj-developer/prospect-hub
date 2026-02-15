@@ -6,6 +6,7 @@ import { UpgradeModal } from "@/components/UpgradeModal";
 import { PlanTier, FEATURES, hasAccess, PLAN_INFO, PLAN_FEATURES } from "@/lib/plans";
 import { usePlan } from "@/contexts/PlanContext";
 import { AIInsightWidget } from "@/components/AIInsightWidget";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 const ICON_MAP: Record<string, any> = {
@@ -19,6 +20,8 @@ export default function HomePage2() {
     const [upgradeModal, setUpgradeModal] = useState<{ open: boolean; feature?: any }>({ open: false });
     const [credits, setCredits] = useState(0);
     const [bannerVisible, setBannerVisible] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
+    const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
     // Default to premium as requested in step 6
     // const [activeTier, setActiveTier] = useState('premium')
@@ -26,6 +29,7 @@ export default function HomePage2() {
     // Credits Animation
     useEffect(() => {
         const timer = setTimeout(() => {
+            setIsLoading(false);
             let count = 0;
             const target = 45207;
             const increment = target / 50;
@@ -38,7 +42,7 @@ export default function HomePage2() {
                     setCredits(Math.floor(count));
                 }
             }, 16);
-        }, 200);
+        }, 800);
         return () => clearTimeout(timer);
     }, []);
 
@@ -120,38 +124,71 @@ export default function HomePage2() {
 
             <div className="relative flex flex-col h-full">
                 {/* Workspace Overview Header */}
-                <div className="flex items-center justify-between mb-4">
-                    <div>
-                        <div className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase mb-1.5">Intelligence Workspace</div>
-                        <div className="flex items-center gap-2.5 mb-1.5">
-                            <h1 className="text-lg font-bold text-foreground">Welcome, <span className="text-primary">Nirmal Raj</span></h1>
-                            <span className="px-2 py-0.5 rounded-md bg-muted text-[10px] font-semibold text-foreground uppercase tracking-wide">
-                                {PLAN_INFO[currentPlan].name}
-                            </span>
-                            <div className="flex items-center gap-1.5">
-                                <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-                                <span className="text-[11px] text-muted-foreground">Active</span>
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-3">
+                            <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <h1 className="text-xl font-bold text-foreground">Welcome back, <span className="text-[#FF3030]">Nirmal Raj</span></h1>
+                                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide" style={{ backgroundColor: PLAN_INFO[currentPlan].bgColor.replace('bg-', ''), color: 'white' }}>
+                                        {PLAN_INFO[currentPlan].name}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                                        <span className="text-xs text-muted-foreground font-medium">Active Subscription</span>
+                                    </div>
+                                    <span className="text-xs text-muted-foreground">•</span>
+                                    <span className="text-xs text-muted-foreground">Last login: Today, 9:42 AM</span>
+                                </div>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 text-[11px]">
-                            <div className="flex items-center gap-1.5">
-                                <span className="font-semibold text-foreground count-up">{credits.toLocaleString()}</span>
-                                <span className="text-muted-foreground">Credits</span>
+                        
+                        {/* Stats Cards */}
+                        <div className="grid grid-cols-4 gap-3">
+                            <div className="bg-white border border-border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                <div className="flex items-center justify-between mb-1">
+                                    <span className="text-xs text-muted-foreground font-medium">Credits</span>
+                                    <div className="h-6 w-6 rounded-md bg-[#FFE3D5] flex items-center justify-center">
+                                        <Sparkles className="h-3.5 w-3.5 text-[#B71833]" />
+                                    </div>
+                                </div>
+                                <div className="text-xl font-bold text-foreground count-up">{credits.toLocaleString()}</div>
+                                <div className="text-[10px] text-green-600 font-medium mt-0.5">Available</div>
                             </div>
-                            <div className="h-3 w-px bg-border" />
-                            <div className="flex items-center gap-1.5">
-                                <span className="font-semibold text-foreground">3</span>
-                                <span className="text-muted-foreground">Searches</span>
+                            
+                            <div className="bg-white border border-border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                <div className="flex items-center justify-between mb-1">
+                                    <span className="text-xs text-muted-foreground font-medium">Searches</span>
+                                    <div className="h-6 w-6 rounded-md bg-blue-50 flex items-center justify-center">
+                                        <Search className="h-3.5 w-3.5 text-blue-600" />
+                                    </div>
+                                </div>
+                                <div className="text-xl font-bold text-foreground">3</div>
+                                <div className="text-[10px] text-muted-foreground font-medium mt-0.5">This month</div>
                             </div>
-                            <div className="h-3 w-px bg-border" />
-                            <div className="flex items-center gap-1.5">
-                                <span className="font-semibold text-foreground">1</span>
-                                <span className="text-muted-foreground">Export</span>
+                            
+                            <div className="bg-white border border-border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                <div className="flex items-center justify-between mb-1">
+                                    <span className="text-xs text-muted-foreground font-medium">Exports</span>
+                                    <div className="h-6 w-6 rounded-md bg-green-50 flex items-center justify-center">
+                                        <Download className="h-3.5 w-3.5 text-green-600" />
+                                    </div>
+                                </div>
+                                <div className="text-xl font-bold text-foreground">1</div>
+                                <div className="text-[10px] text-muted-foreground font-medium mt-0.5">Completed</div>
                             </div>
-                            <div className="h-3 w-px bg-border" />
-                            <div className="flex items-center gap-1.5">
-                                <span className="font-semibold text-foreground">8</span>
-                                <span className="text-muted-foreground">Saved Lists</span>
+                            
+                            <div className="bg-white border border-border rounded-lg p-3 hover:shadow-md transition-shadow">
+                                <div className="flex items-center justify-between mb-1">
+                                    <span className="text-xs text-muted-foreground font-medium">Saved Lists</span>
+                                    <div className="h-6 w-6 rounded-md bg-purple-50 flex items-center justify-center">
+                                        <Bookmark className="h-3.5 w-3.5 text-purple-600" />
+                                    </div>
+                                </div>
+                                <div className="text-xl font-bold text-foreground">8</div>
+                                <div className="text-[10px] text-muted-foreground font-medium mt-0.5">Total saved</div>
                             </div>
                         </div>
                     </div>
@@ -216,8 +253,20 @@ export default function HomePage2() {
 
                 {/* Feature Grid */}
                 <div className="flex-1 overflow-y-auto">
-                    {/* Grid Layout */}
-                    <div className="feature-grid grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4 pb-4 animate-in fade-in slide-in-from-bottom-1 duration-150" key={activeTier}>
+                    {isLoading ? (
+                        <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4 pb-4">
+                            {[...Array(6)].map((_, i) => (
+                                <div key={i} className="bg-white border border-black/[0.06] rounded-2xl p-6">
+                                    <Skeleton className="h-12 w-12 rounded-xl mb-4" />
+                                    <Skeleton className="h-5 w-3/4 mb-2" />
+                                    <Skeleton className="h-4 w-full mb-1" />
+                                    <Skeleton className="h-4 w-5/6 mb-4" />
+                                    <Skeleton className="h-9 w-32" />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="feature-grid grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4 pb-4 animate-in fade-in slide-in-from-bottom-1 duration-150" key={activeTier}>
                         {getFeaturesForTab(activeTier).map((feature, index) => {
                             const Icon = ICON_MAP[feature.icon];
 
@@ -237,19 +286,16 @@ export default function HomePage2() {
                                 <div
                                     key={feature.id}
                                     onClick={() => handleFeatureClick(feature, locked)}
-                                    className={`relative bg-white border border-black/[0.06] rounded-2xl p-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-200 cursor-pointer ${locked
-                                        ? 'opacity-75 cursor-not-allowed'
-                                        : 'hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]'
-                                        }`}
+                                    onMouseEnter={() => setHoveredCard(feature.id)}
+                                    onMouseLeave={() => setHoveredCard(null)}
+                                    className={cn(
+                                        "relative bg-white border rounded-2xl p-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-200 cursor-pointer",
+                                        locked ? 'opacity-75 cursor-not-allowed' : 'hover:shadow-[0_8px_16px_rgba(0,0,0,0.12)] hover:-translate-y-1',
+                                        hoveredCard === feature.id && !locked && 'scale-[1.02]'
+                                    )}
                                     style={{
                                         animationDelay: `${index * 50}ms`,
-                                        borderColor: !locked ? 'transparent' : undefined
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        if (!locked) e.currentTarget.style.borderColor = theme.light;
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        if (!locked) e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)';
+                                        borderColor: hoveredCard === feature.id && !locked ? theme.light : 'rgba(0,0,0,0.06)'
                                     }}
                                 >
                                     {locked && (
@@ -257,10 +303,11 @@ export default function HomePage2() {
                                     )}
 
                                     {/* Icon */}
-                                    <div className={`h-12 w-12 rounded-xl flex items-center justify-center mb-4 relative ${locked
-                                        ? 'bg-muted text-muted-foreground'
-                                        : 'bg-[#FFE3D5] text-[#B71833]'
-                                        }`}>
+                                    <div className={cn(
+                                        "h-12 w-12 rounded-xl flex items-center justify-center mb-4 relative transition-all duration-200",
+                                        locked ? 'bg-muted text-muted-foreground' : 'bg-[#FFE3D5] text-[#B71833]',
+                                        hoveredCard === feature.id && !locked && 'scale-110 rotate-3'
+                                    )}>
                                         <Icon className="h-6 w-6" />
                                     </div>
 
@@ -303,14 +350,15 @@ export default function HomePage2() {
                                                         e.stopPropagation();
                                                         setUpgradeModal({ open: true, feature });
                                                     }}
-                                                    className="text-xs font-medium"
+                                                    className="text-xs font-medium transition-all duration-200 hover:translate-x-1 inline-flex items-center gap-1"
                                                     style={{ color: theme.dark }}
                                                 >
-                                                    Upgrade to unlock {feature.name} →
+                                                    Upgrade to unlock {feature.name}
+                                                    <ArrowRight className="h-3 w-3" />
                                                 </button>
                                             ) : (
                                                 <button
-                                                    className="px-3 py-1.5 rounded-lg text-white text-xs font-medium transition-colors"
+                                                    className="px-3 py-1.5 rounded-lg text-white text-xs font-medium transition-all duration-200 hover:scale-105 active:scale-95"
                                                     style={{ backgroundColor: theme.default }}
                                                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = theme.dark}
                                                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = theme.default}
@@ -324,6 +372,7 @@ export default function HomePage2() {
                             );
                         })}
                     </div>
+                    )}
                 </div>
             </div>
 

@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { PlanProvider } from "@/contexts/PlanContext";
 import AppLayout from "@/components/AppLayout";
 import HomePage from "@/pages/HomePage";
@@ -34,7 +34,8 @@ const App = () => (
               <Route path="/custom-data" element={<CustomDataPage />} />
               <Route path="/validations/email" element={<EmailValidationPage />} />
               <Route path="/validations/suppression" element={<SuppressionPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/profile" element={<SettingsPage />} />
+              <Route path="/settings" element={<Navigate to="/profile" replace />} />
               <Route path="/subscription" element={<SubscriptionPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
