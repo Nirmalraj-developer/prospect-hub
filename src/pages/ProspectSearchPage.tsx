@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, Sparkles, Building2, Users, MapPin, DollarSign, Briefcase, Target, Shield, ChevronRight, X, Info, GripVertical, Maximize2, ChevronDown, Plus, Minus, Bookmark, Eye, EyeOff, Mail, Phone, Linkedin } from "lucide-react";
+import { Search, Sparkles, Building2, Users, MapPin, DollarSign, Briefcase, Target, Shield, ChevronRight, X, Info, GripVertical, Maximize2, ChevronDown, Plus, Minus, Bookmark, Eye, EyeOff, Mail, Phone, Linkedin, Download, BarChart3, User, Megaphone, FolderCheck, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LockedPageLayout, LockedButton } from "@/components/LockedPageLayout";
@@ -14,6 +14,7 @@ interface FilterItem {
   count?: number;
   category: string;
   hasAI?: boolean;
+  icon?: any;
 }
 
 interface Prospect {
@@ -34,22 +35,22 @@ interface Prospect {
 }
 
 const companyFilters: FilterItem[] = [
-  { id: "sector", label: "Sector", category: "COMPANY PROFILE", hasAI: true },
-  { id: "companySize", label: "Company Size & Revenue", category: "COMPANY PROFILE" },
-  { id: "companyInfo", label: "Company Information", category: "COMPANY PROFILE" },
-  { id: "location", label: "Location", category: "COMPANY PROFILE" },
-  { id: "marketing", label: "Marketing Touchpoints", category: "ENGAGEMENT" },
-  { id: "dataControl", label: "Inclusion / Exclusion", category: "DATA CONTROL" },
+  { id: "sector", label: "Sector", category: "COMPANY PROFILE", hasAI: true, icon: Layers },
+  { id: "companySize", label: "Company Size & Revenue", category: "COMPANY PROFILE", icon: BarChart3 },
+  { id: "companyInfo", label: "Company Information", category: "COMPANY PROFILE", icon: Info },
+  { id: "location", label: "Location", category: "COMPANY PROFILE", icon: MapPin },
+  { id: "marketing", label: "Marketing Touchpoints", category: "ENGAGEMENT", icon: Megaphone },
+  { id: "dataControl", label: "Inclusion / Exclusion", category: "DATA CONTROL", icon: FolderCheck },
 ];
 
 const peopleFilters: FilterItem[] = [
-  { id: "jobInfo", label: "Job Information", category: "PEOPLE PROFILE", hasAI: true },
-  { id: "personalInfo", label: "Personal Information", category: "PEOPLE PROFILE" },
-  { id: "location", label: "Location", category: "PEOPLE PROFILE" },
-  { id: "sector", label: "Sector", category: "COMPANY PROFILE", hasAI: true },
-  { id: "companySize", label: "Company Size & Revenue", category: "COMPANY PROFILE" },
-  { id: "companyInfo", label: "Company Information", category: "COMPANY PROFILE" },
-  { id: "dataControl", label: "Inclusion / Exclusion", category: "DATA CONTROL" },
+  { id: "jobInfo", label: "Job Information", category: "PEOPLE PROFILE", hasAI: true, icon: Briefcase },
+  { id: "personalInfo", label: "Personal Information", category: "PEOPLE PROFILE", icon: User },
+  { id: "location", label: "Location", category: "PEOPLE PROFILE", icon: MapPin },
+  { id: "sector", label: "Sector", category: "COMPANY PROFILE", hasAI: true, icon: Layers },
+  { id: "companySize", label: "Company Size & Revenue", category: "COMPANY PROFILE", icon: BarChart3 },
+  { id: "companyInfo", label: "Company Information", category: "COMPANY PROFILE", icon: Info },
+  { id: "dataControl", label: "Inclusion / Exclusion", category: "DATA CONTROL", icon: FolderCheck },
 ];
 
 const MOCK_PROSPECTS: Prospect[] = [
@@ -120,6 +121,13 @@ export default function ProspectSearchPage() {
     setCurrentPage(1);
     setDisplayedProspects(MOCK_PROSPECTS.slice(0, RESULTS_PER_PAGE));
     setHasMore(MOCK_PROSPECTS.length > RESULTS_PER_PAGE);
+  };
+
+  const handleTryAISearch = () => {
+    setShowResults(false);
+    setDisplayedProspects([]);
+    setCurrentPage(1);
+    setAiPrompt("");
   };
 
   const loadPage = (page: number) => {
@@ -237,18 +245,21 @@ export default function ProspectSearchPage() {
                 <div className="px-3 py-2 text-[11px] font-bold text-[#FF3030] uppercase tracking-wider">
                   {category}
                 </div>
-                {filters.map((filter) => (
+                {filters.map((filter) => {
+                  const IconComponent = filter.icon;
+                  return (
                   <button
                     key={filter.id}
                     onClick={() => handleFilterClick(filter.id)}
                     className={cn(
-                      "w-full flex items-center justify-between px-3 py-2.5 text-[13px] transition-all min-h-[40px]",
+                      "w-full flex items-center justify-between px-3 py-2.5 text-[13px] transition-all h-9",
                       selectedFilter === filter.id
                         ? "bg-[#F9FAFB] text-foreground border-l-3 border-l-[#FF3030] font-semibold"
                         : "text-muted-foreground hover:bg-[#FAFAFA] hover:text-foreground font-normal"
                     )}
                   >
                     <span className="flex items-center gap-2">
+                      {IconComponent && <IconComponent className="h-3 w-3 text-[#111827] opacity-80" strokeWidth={1.8} />}
                       {filter.label}
                       {filter.count && (
                         <span className="px-1.5 py-0.5 rounded-full bg-[#FF3030] text-white text-[10px] font-semibold">
@@ -272,7 +283,8 @@ export default function ProspectSearchPage() {
                       <ChevronRight className="h-3.5 w-3.5" />
                     </div>
                   </button>
-                ))}
+                  );
+                })}
               </div>
             ))}
           </div>
@@ -345,29 +357,33 @@ export default function ProspectSearchPage() {
 
         {/* Right: Results Area */}
         <div className="flex-1 flex flex-col bg-[#FAFBFC]">
-          {/* Top Bar */}
-          <div className="flex items-center justify-between px-3 py-2 bg-white border-b border-border">
-            <div className="flex items-center gap-2">
-              <span className="text-[14px] font-semibold text-[#1F2937]">
-                Prospects Found :
-              </span>
-              <span className="text-[18px] font-bold text-[#FF4D4F]">
-                {showResults ? MOCK_PROSPECTS.length.toLocaleString() : '0'}
-              </span>
+          {/* Top Bar - Only show when results are loaded */}
+          {showResults && displayedProspects.length > 0 && (
+            <div className="flex items-center justify-between px-3 py-2 bg-white border-b border-border">
+              <div className="flex items-center gap-2">
+                <span className="text-[13px] font-semibold text-[#1F2937]">
+                  Prospects Found :
+                </span>
+                <span className="text-[15px] font-bold text-[#FF4D4F]">
+                  {MOCK_PROSPECTS.length.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={handleTryAISearch} className="gap-2 h-8 text-[12px] font-medium px-2.5 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md inline-flex items-center justify-center transition-colors">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Try AI Search
+                </button>
+                <button className="h-8 px-2.5 text-[12px] font-medium bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#374151] rounded-md transition-colors flex items-center gap-1.5">
+                  <BarChart3 className="h-3.5 w-3.5" />
+                  Data Insights
+                </button>
+                <button className="h-8 px-3 text-[12px] font-semibold bg-gradient-to-r from-[#FF4D4F] to-[#E53935] hover:shadow-lg text-white rounded-md transition-all flex items-center gap-1.5">
+                  <Download className="h-3.5 w-3.5" />
+                  Export
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <LockedButton variant="outline" size="sm" className="gap-2 h-8 text-[12px] font-medium px-2.5" requiredPlan="pro">
-                <Sparkles className="h-3.5 w-3.5" />
-                AI Prompt Search
-              </LockedButton>
-              <button className="h-8 px-2.5 text-[12px] font-medium bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#374151] rounded-md transition-colors">
-                Data Insights
-              </button>
-              <button className="h-8 px-3 text-[12px] font-semibold bg-gradient-to-r from-[#FF4D4F] to-[#E53935] hover:shadow-lg text-white rounded-md transition-all">
-                Export
-              </button>
-            </div>
-          </div>
+          )}
 
           {/* Results */}
           {showResults ? (
