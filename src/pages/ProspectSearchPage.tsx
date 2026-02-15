@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, Sparkles, Building2, Users, MapPin, DollarSign, Briefcase, Target, Shield, ChevronRight, X, Info, GripVertical, Maximize2 } from "lucide-react";
+import { Search, Sparkles, Building2, Users, MapPin, DollarSign, Briefcase, Target, Shield, ChevronRight, X, Info, GripVertical, Maximize2, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LockedPageLayout, LockedButton } from "@/components/LockedPageLayout";
@@ -13,10 +13,11 @@ interface FilterItem {
   label: string;
   count?: number;
   category: string;
+  hasAI?: boolean;
 }
 
 const companyFilters: FilterItem[] = [
-  { id: "sector", label: "Sector", category: "COMPANY PROFILE" },
+  { id: "sector", label: "Sector", category: "COMPANY PROFILE", hasAI: true },
   { id: "companySize", label: "Company Size & Revenue", category: "COMPANY PROFILE" },
   { id: "companyInfo", label: "Company Information", category: "COMPANY PROFILE" },
   { id: "location", label: "Location", category: "COMPANY PROFILE" },
@@ -25,10 +26,10 @@ const companyFilters: FilterItem[] = [
 ];
 
 const peopleFilters: FilterItem[] = [
-  { id: "jobInfo", label: "Job Information", category: "PEOPLE PROFILE" },
+  { id: "jobInfo", label: "Job Information", category: "PEOPLE PROFILE", hasAI: true },
   { id: "personalInfo", label: "Personal Information", category: "PEOPLE PROFILE" },
   { id: "location", label: "Location", category: "PEOPLE PROFILE" },
-  { id: "sector", label: "Sector", category: "COMPANY PROFILE" },
+  { id: "sector", label: "Sector", category: "COMPANY PROFILE", hasAI: true },
   { id: "companySize", label: "Company Size & Revenue", category: "COMPANY PROFILE" },
   { id: "companyInfo", label: "Company Information", category: "COMPANY PROFILE" },
   { id: "dataControl", label: "Inclusion / Exclusion", category: "DATA CONTROL" },
@@ -60,7 +61,7 @@ export default function ProspectSearchPage() {
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging) {
         setPopupPosition({
-          x: Math.max(0, Math.min(e.clientX - dragOffset.x, window.innerWidth - 420)),
+          x: Math.max(0, Math.min(e.clientX - dragOffset.x, window.innerWidth - 360)),
           y: Math.max(0, Math.min(e.clientY - dragOffset.y, window.innerHeight - 300))
         });
       }
@@ -165,7 +166,15 @@ export default function ProspectSearchPage() {
                         </span>
                       )}
                     </span>
-                    <ChevronRight className="h-3.5 w-3.5" />
+                    <div className="flex items-center gap-1">
+                      {filter.hasAI && (
+                        <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-gradient-to-r from-[#FF4D4F] to-[#FF7875] text-white text-[10px] font-semibold shadow-sm">
+                          <Sparkles className="h-2.5 w-2.5" />
+                          AI
+                        </span>
+                      )}
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </div>
                   </button>
                 ))}
               </div>
@@ -194,11 +203,11 @@ export default function ProspectSearchPage() {
             style={{
               left: `${popupPosition.x}px`,
               top: `${popupPosition.y}px`,
-              width: '420px',
+              width: '360px',
               maxHeight: '75vh',
               zIndex: 1000,
-              minWidth: '360px',
-              maxWidth: '520px'
+              minWidth: '320px',
+              maxWidth: '400px'
             }}
           >
             {/* Draggable Header */}
@@ -221,21 +230,23 @@ export default function ProspectSearchPage() {
             </div>
 
             {/* AI Assisted Layer */}
-            <div className="p-3 border-b border-[#E5E7EB] bg-gradient-to-br from-[#FFF9F5] to-white">
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="h-3.5 w-3.5 text-[#FF3030]" />
-                <span className="text-[12px] font-bold text-foreground">AI Assisted Filter</span>
+            {(selectedFilter === "sector" || selectedFilter === "jobInfo") && (
+              <div className="p-3 border-b border-[#E5E7EB] bg-gradient-to-br from-[#FFF9F5] to-white">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles className="h-3.5 w-3.5 text-[#FF3030]" />
+                  <span className="text-[12px] font-bold text-foreground">AI Assisted Filter</span>
+                </div>
+                <Input
+                  placeholder="e.g., Tech companies in London"
+                  value={aiPrompt}
+                  onChange={(e) => setAiPrompt(e.target.value)}
+                  className="h-8 text-[12px] bg-white"
+                />
               </div>
-              <Input
-                placeholder="e.g., Tech companies in London"
-                value={aiPrompt}
-                onChange={(e) => setAiPrompt(e.target.value)}
-                className="h-8 text-[12px] bg-white"
-              />
-            </div>
+            )}
 
             {/* Scrollable Content */}
-            <div className="overflow-y-auto p-3" style={{ maxHeight: 'calc(75vh - 140px)' }}>
+            <div className="overflow-y-auto overflow-x-hidden p-3" style={{ maxHeight: 'calc(75vh - 140px)' }}>
               <FilterDetailContent filterId={selectedFilter} />
             </div>
           </div>
@@ -275,10 +286,10 @@ function FilterDetailContent({ filterId }: { filterId: FilterCategory }) {
       case "sector":
         return (
           <div className="space-y-4">
-            <FilterField label="Major Sector" aiSuggested />
-            <FilterField label="Group Sector" />
-            <FilterField label="Sub Sector" />
-            <FilterField label="SIC Code" />
+            <FilterField label="Major Sector" aiSuggested filterId="sector" options={['Technology', 'Healthcare', 'Finance', 'Manufacturing', 'Retail']} />
+            <FilterField label="Group Sector" filterId="sector" options={['Software', 'Hardware', 'Services', 'Consulting']} />
+            <FilterField label="Sub Sector" filterId="sector" options={['SaaS', 'Cloud Computing', 'AI/ML', 'Cybersecurity']} />
+            <FilterField label="SIC Code" filterId="sector" options={['7372', '7373', '7374', '7375']} />
           </div>
         );
       case "companySize":
@@ -303,19 +314,36 @@ function FilterDetailContent({ filterId }: { filterId: FilterCategory }) {
       case "location":
         return (
           <div className="space-y-4">
-            <FilterField label="Country" aiSuggested />
-            <FilterField label="State/Region" />
-            <FilterField label="City" />
-            <FilterField label="Postal Code" />
+            <FilterField label="Country" filterId="location" options={['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany']} />
+            <FilterField label="State/Region" filterId="location" options={['California', 'New York', 'Texas', 'Florida', 'Illinois']} />
+            <FilterField label="City" filterId="location" options={['San Francisco', 'New York', 'Los Angeles', 'Chicago', 'Boston']} />
+          </div>
+        );
+      case "companyInfo":
+        return (
+          <div className="space-y-4">
+            <FilterField label="Company Name" filterId="companyInfo" options={['Google', 'Microsoft', 'Amazon', 'Apple', 'Meta']} />
+            <FilterField label="Website Domain" filterId="companyInfo" options={['google.com', 'microsoft.com', 'amazon.com']} />
+            <FilterField label="Year Founded" filterId="companyInfo" options={['2020-2024', '2015-2019', '2010-2014', '2000-2009']} />
+            <FilterField label="Company Type" filterId="companyInfo" options={['Public', 'Private', 'Startup', 'Non-Profit']} />
+          </div>
+        );
+      case "marketing":
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="text-[13px] font-semibold text-foreground mb-2 block">Contact Availability</label>
+              <MultiSelectDropdown options={['Mailable', 'Emailable', 'Phoneable']} placeholder="Select availability..." />
+            </div>
           </div>
         );
       case "jobInfo":
         return (
           <div className="space-y-4">
-            <FilterField label="Job Title" />
-            <FilterField label="Seniority Level" />
-            <FilterField label="Department" />
-            <FilterField label="Job Function" />
+            <FilterField label="Job Title" aiSuggested filterId="jobInfo" options={['CEO', 'CTO', 'VP Engineering', 'Director', 'Manager']} />
+            <FilterField label="Seniority Level" filterId="jobInfo" options={['C-Level', 'VP', 'Director', 'Manager', 'Individual Contributor']} />
+            <FilterField label="Department" filterId="jobInfo" options={['Engineering', 'Sales', 'Marketing', 'Operations', 'Finance']} />
+            <FilterField label="Job Function" filterId="jobInfo" options={['Leadership', 'Technical', 'Business Development', 'Operations']} />
           </div>
         );
       default:
@@ -330,46 +358,112 @@ function FilterDetailContent({ filterId }: { filterId: FilterCategory }) {
   return <div>{renderContent()}</div>;
 }
 
-function FilterField({ label, aiSuggested }: { label: string; aiSuggested?: boolean }) {
-  const [mode, setMode] = useState<"include" | "exclude">("include");
+function MultiSelectDropdown({ options, placeholder }: { options: string[]; placeholder?: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [search, setSearch] = useState("");
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredOptions = options.filter(opt => opt.toLowerCase().includes(search.toLowerCase()));
+  const allSelected = filteredOptions.length > 0 && filteredOptions.every(opt => selected.includes(opt));
+  const someSelected = filteredOptions.some(opt => selected.includes(opt)) && !allSelected;
+
+  const toggleAll = () => {
+    if (allSelected) {
+      setSelected(selected.filter(s => !filteredOptions.includes(s)));
+    } else {
+      setSelected([...new Set([...selected, ...filteredOptions])]);
+    }
+  };
+
+  const toggleOption = (option: string) => {
+    setSelected(prev => 
+      prev.includes(option) ? prev.filter(s => s !== option) : [...prev, option]
+    );
+  };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-2">
-        <label className="text-[13px] font-semibold text-foreground flex items-center gap-1.5">
-          {label}
-          {aiSuggested && (
-            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#FFE3D5] text-[#B71833]">
-              AI Suggested
-            </span>
-          )}
-        </label>
-        <div className="flex bg-[#F9FAFB] rounded p-0.5">
-          <button
-            onClick={() => setMode("include")}
-            className={cn(
-              "px-2 py-1 rounded text-[11px] font-semibold transition-colors",
-              mode === "include"
-                ? "bg-white text-foreground shadow-sm"
-                : "text-muted-foreground"
-            )}
-          >
-            Include
-          </button>
-          <button
-            onClick={() => setMode("exclude")}
-            className={cn(
-              "px-2 py-1 rounded text-[11px] font-semibold transition-colors",
-              mode === "exclude"
-                ? "bg-white text-foreground shadow-sm"
-                : "text-muted-foreground"
-            )}
-          >
-            Exclude
-          </button>
+    <div className="relative w-full" ref={dropdownRef}>
+      <input
+        type="text"
+        placeholder={selected.length === 0 ? (placeholder || "Select...") : `${selected.length} selected`}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        onFocus={() => setIsOpen(true)}
+        className="w-full h-9 px-3 text-[13px] border border-input rounded-md bg-white hover:border-[#9CA3AF] focus:outline-none focus:border-[#FF4D4F]"
+      />
+
+      {isOpen && (
+        <div className="w-full mt-1 bg-white border border-[#E5E7EB] rounded-md shadow-md overflow-hidden flex flex-col" style={{ maxHeight: '220px' }}>
+          <div className="overflow-y-auto flex-1" style={{ maxHeight: '180px' }}>
+            <label className="flex items-center gap-2 h-8 px-2 text-[13px] cursor-pointer hover:bg-[#F3F4F6] border-b border-[#E5E7EB]">
+              <input
+                type="checkbox"
+                checked={allSelected}
+                ref={(el) => el && (el.indeterminate = someSelected)}
+                onChange={toggleAll}
+                className="h-3.5 w-3.5 flex-shrink-0"
+              />
+              <span className="font-semibold">Select All</span>
+            </label>
+            {filteredOptions.map((option) => (
+              <label
+                key={option}
+                className={cn(
+                  "flex items-center gap-2 h-8 px-2 text-[13px] cursor-pointer hover:bg-[#F3F4F6]",
+                  selected.includes(option) && "bg-[#E6F0FF]"
+                )}
+              >
+                <input
+                  type="checkbox"
+                  checked={selected.includes(option)}
+                  onChange={() => toggleOption(option)}
+                  className="h-3.5 w-3.5 flex-shrink-0"
+                />
+                <span className="truncate">{option}</span>
+              </label>
+            ))}
+          </div>
+
+          <div className="bg-white border-t border-[#E5E7EB] px-2 py-1.5 flex items-center justify-between text-[12px] flex-shrink-0">
+            <span className="text-[#6B7280]">{selected.length} selected</span>
+            <button
+              onClick={() => setSelected([])} 
+              className="text-[#2563EB] font-medium hover:text-[#1D4ED8]"
+            >
+              Clear all
+            </button>
+          </div>
         </div>
-      </div>
-      <Input placeholder={`Select ${label.toLowerCase()}...`} className="h-9 text-[13px]" />
+      )}
+    </div>
+  );
+}
+
+function FilterField({ label, aiSuggested, filterId, options }: { label: string; aiSuggested?: boolean; filterId?: FilterCategory; options?: string[] }) {
+  const showAISuggested = aiSuggested && (filterId === "sector" || filterId === "jobInfo");
+  
+  return (
+    <div>
+      <label className="text-[13px] font-semibold text-foreground flex items-center gap-1.5 mb-2">
+        {label}
+        {showAISuggested && (
+          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#FFE3D5] text-[#B71833]">
+            AI Suggested
+          </span>
+        )}
+      </label>
+      <MultiSelectDropdown options={options || []} placeholder={`Select ${label.toLowerCase()}...`} />
     </div>
   );
 }
