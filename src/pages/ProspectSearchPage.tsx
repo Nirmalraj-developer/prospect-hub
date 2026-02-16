@@ -115,7 +115,7 @@ export default function ProspectSearchPage() {
   const [showInsights, setShowInsights] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [selectedFields, setSelectedFields] = useState<string[]>(['Company Email', 'Company Phone', 'Company Mobile']);
-  const [exportRecords, setExportRecords] = useState<number>(100);
+  const [exportRecords, setExportRecords] = useState<number>(50000);
   const [exportFileName, setExportFileName] = useState<string>('prospects_export');
   const [fieldSearch, setFieldSearch] = useState<string>('');
   const [availableCredits] = useState<number>(25000);
