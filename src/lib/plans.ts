@@ -48,12 +48,13 @@ export const FEATURES: Feature[] = [
   // ----------------------------
   {
     id: "find-leads",
-    name: "Prospect Search",
+    name: "AI Prospect discovery",
     description:
       "Prospect Search enables AI-driven discovery of ideal customers using job role, seniority, and firmographic filters.",
     route: "/prospect-search",
     icon: "Search",
     requiresPlan: "pro",
+    isAI: true,
     category: "prospecting",
   },
   {
@@ -90,18 +91,18 @@ export const FEATURES: Feature[] = [
   // ----------------------------
   // PRO – AI (Limited)
   // ----------------------------
-  {
-    id: "ai-lead-finder",
-    name: "AI Prospect Finder",
-    description:
-      "Use AI-powered targeting to discover prospects within specific sub-industries based on intent signals.",
-    route: "/prospect-search?ai=limited",
-    icon: "Sparkles",
-    requiresPlan: "pro",
-    isAI: true,
-    aiLevel: "limited",
-    category: "ai",
-  },
+  // {
+  //   id: "ai-lead-finder",
+  //   name: "AI Prospect Finder",
+  //   description:
+  //     "Use AI-powered targeting to discover prospects within specific sub-industries based on intent signals.",
+  //   route: "/prospect-search?ai=limited",
+  //   icon: "Sparkles",
+  //   requiresPlan: "pro",
+  //   isAI: true,
+  //   aiLevel: "limited",
+  //   category: "ai",
+  // },
 
   // ----------------------------
   // PREMIUM – Advanced AI & Data

@@ -236,7 +236,7 @@ export default function ProspectSearchPage() {
   }, {} as Record<string, FilterItem[]>);
 
   return (
-    <LockedPageLayout featureName="Find Leads" requiredPlan="pro">
+    <LockedPageLayout featureName="AI Prospect Discovery" requiredPlan="pro">
       <div className="flex h-[calc(100vh-6.5rem)]">
         {/* Left: Filter Navigation Sidebar */}
         <div className="w-[260px] border-r border-border bg-white flex flex-col">
@@ -360,7 +360,7 @@ export default function ProspectSearchPage() {
                 onClick={handleFindProspects}
                 className="flex-1 h-9 rounded-lg text-[13px] font-semibold bg-gradient-to-r from-[#FF4D4F] to-[#D9363E] hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] transition-all shadow-[0_4px_12px_rgba(255,77,79,0.25)] text-white"
               >
-                Find Prospects
+                AI Prospect Discovery
               </button>
               <LockedButton
                 variant="outline"
