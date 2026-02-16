@@ -57,16 +57,16 @@ export const FEATURES: Feature[] = [
     isAI: true,
     category: "prospecting",
   },
-  {
-    id: "saved-lists",
-    name: "Saved Lists",
-    description:
-      "Save and reuse your best-performing searches to accelerate recurring prospecting workflows.",
-    route: "/saved-search",
-    icon: "Bookmark",
-    requiresPlan: "pro",
-    category: "prospecting",
-  },
+  // {
+  //   id: "saved-lists",
+  //   name: "Saved Lists",
+  //   description:
+  //     "Save and reuse your best-performing searches to accelerate recurring prospecting workflows.",
+  //   route: "/saved-search",
+  //   icon: "Bookmark",
+  //   requiresPlan: "pro",
+  //   category: "prospecting",
+  // },
   {
     id: "request-custom-list",
     name: "Custom Data",
@@ -205,16 +205,16 @@ export const FEATURES: Feature[] = [
     requiresPlan: "enterprise",
     category: "enterprise",
   },
-  {
-    id: "team-access-10",
-    name: "Team Collaboration",
-    description:
-      "Team Collaboration enables shared search and controlled access across users (10 Users).",
-    route: "/team",
-    icon: "Users",
-    requiresPlan: "enterprise",
-    category: "enterprise",
-  },
+  // {
+  //   id: "team-access-10",
+  //   name: "Team Collaboration",
+  //   description:
+  //     "Team Collaboration enables shared search and controlled access across users (10 Users).",
+  //   route: "/team",
+  //   icon: "Users",
+  //   requiresPlan: "enterprise",
+  //   category: "enterprise",
+  // },
   {
     id: "shared-lists",
     name: "Shared Search",
