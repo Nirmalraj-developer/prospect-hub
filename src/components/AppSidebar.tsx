@@ -30,13 +30,46 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { title: "Home", path: "/", icon: Home, section: 'primary' },
-  { title: "Prospect Search", path: "/prospect-search", icon: Search, section: 'primary' },
-  { title: "Saved Search", path: "/saved-search", icon: Bookmark, section: 'primary' },
-  { title: "Data Enrichment", path: "/data-enrichment", icon: Database, requiresPlan: 'premium', section: 'ai' },
-  { title: "Custom Data", path: "/custom-data", icon: FileSpreadsheet, requiresPlan: 'premium', section: 'ai' },
-  { title: "Validations", path: "/validations/email", icon: ShieldCheck, section: 'primary' },
-  { title: "Team Collaboration", path: "/team", icon: Users, requiresPlan: 'enterprise', section: 'enterprise' },
+  { title: "Home", path: "/", icon: Home, section: "primary" },
+  {
+    title: "Prospect Search",
+    path: "/prospect-search",
+    icon: Search,
+    section: "primary",
+  },
+  {
+    title: "Saved Search",
+    path: "/saved-search",
+    icon: Bookmark,
+    section: "primary",
+  },
+  {
+    title: "Data Enhancement",
+    path: "/data-enrichment",
+    icon: Database,
+    requiresPlan: "premium",
+    section: "ai",
+  },
+  {
+    title: "Custom Data",
+    path: "/custom-data",
+    icon: FileSpreadsheet,
+    requiresPlan: "premium",
+    section: "ai",
+  },
+  {
+    title: "Validations",
+    path: "/validations/email",
+    icon: ShieldCheck,
+    section: "primary",
+  },
+  {
+    title: "Team Collaboration",
+    path: "/team",
+    icon: Users,
+    requiresPlan: "enterprise",
+    section: "enterprise",
+  },
 ];
 
 export function AppSidebar() {

@@ -6,24 +6,14 @@ import { usePlan } from "@/contexts/PlanContext";
 import { PLAN_INFO, PlanTier } from "@/lib/plans";
 
 const PLAN_CAPABILITIES = {
-  trial: [
-    "Prospect Search",
-    "Saved Lists",
-    "Custom Data",
-    "Export Data"
-  ],
-  pro: [
-    "Prospect Search",
-    "Saved Lists",
-    "Custom Data",
-    "Export Data"
-  ],
+  trial: ["Prospect Search", "Saved Lists", "Custom Data", "Export Data"],
+  pro: ["Prospect Search", "Saved Lists", "Custom Data", "Export Data"],
   premium: [
     "Prospect Search",
-    "Data Enrichment",
+    "Data Enhancement",
     "Data Validation",
     "Team Collaboration (5 Users)",
-    "Export Data"
+    "Export Data",
   ],
   enterprise: [
     "Prospect Search",
@@ -32,8 +22,8 @@ const PLAN_CAPABILITIES = {
     "Data Integrations",
     "Team Collaboration (10 Users)",
     "Shared Search",
-    "White Labelling"
-  ]
+    "White Labelling",
+  ],
 };
 
 const PLAN_CREDITS = {

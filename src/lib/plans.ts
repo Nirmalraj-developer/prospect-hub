@@ -133,7 +133,7 @@ export const FEATURES: Feature[] = [
   // },
   {
     id: "enrich-leads",
-    name: "Data Enrichment",
+    name: "Data Enhancement",
     description:
       "Data Enrichment enhances prospect and company data with verified attributes.",
     route: "/data-enrichment",
@@ -150,6 +150,26 @@ export const FEATURES: Feature[] = [
     icon: "CheckCircle",
     requiresPlan: "premium",
     category: "data",
+  },
+  {
+    id: "suppression-management",
+    name: "Data Compliance",
+    description:
+      "Data Compliance helps manage suppression and DNC lists across email, phone, domain, and LinkedIn.",
+    route: "/suppression",
+    icon: "ShieldOff",
+    requiresPlan: "enterprise",
+    category: "enterprise",
+  },
+  {
+    id: "crm-sync",
+    name: "Data Integrations",
+    description:
+      "Seamlessly sync prospect and company data with leading CRM platforms using automated field mapping.",
+    route: "/crm",
+    icon: "Database",
+    requiresPlan: "enterprise",
+    category: "enterprise",
   },
   {
     id: "advanced-targeting",
@@ -185,26 +205,7 @@ export const FEATURES: Feature[] = [
   //   requiresPlan: "enterprise",
   //   category: "enterprise",
   // },
-  {
-    id: "suppression-management",
-    name: "Data Compliance",
-    description:
-      "Data Compliance helps manage suppression and DNC lists across email, phone, domain, and LinkedIn.",
-    route: "/suppression",
-    icon: "ShieldOff",
-    requiresPlan: "enterprise",
-    category: "enterprise",
-  },
-  {
-    id: "crm-sync",
-    name: "Data Integrations",
-    description:
-      "Seamlessly sync prospect and company data with leading CRM platforms using automated field mapping.",
-    route: "/crm",
-    icon: "Database",
-    requiresPlan: "enterprise",
-    category: "enterprise",
-  },
+
   // {
   //   id: "team-access-10",
   //   name: "Team Collaboration",
@@ -215,16 +216,16 @@ export const FEATURES: Feature[] = [
   //   requiresPlan: "enterprise",
   //   category: "enterprise",
   // },
-  {
-    id: "shared-lists",
-    name: "Shared Search",
-    description:
-      "Share saved lists across your organization with structured access controls and governance.",
-    route: "/saved-search",
-    icon: "Share2",
-    requiresPlan: "enterprise",
-    category: "enterprise",
-  },
+  // {
+  //   id: "shared-lists",
+  //   name: "Shared Search",
+  //   description:
+  //     "Share saved lists across your organization with structured access controls and governance.",
+  //   route: "/saved-search",
+  //   icon: "Share2",
+  //   requiresPlan: "enterprise",
+  //   category: "enterprise",
+  // },
   {
     id: "white-label-platform",
     name: "White Labelling",

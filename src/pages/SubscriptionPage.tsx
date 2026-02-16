@@ -11,22 +11,34 @@ const PLAN_DETAILS = {
     yearlyPrice: 990,
     credits: "5,000",
     icon: Zap,
-    features: ["Prospect Search", "Saved Lists", "Custom Data", "Export Data"]
+    features: ["Prospect Search", "Saved Lists", "Custom Data", "Export Data"],
   },
   premium: {
     monthlyPrice: 299,
     yearlyPrice: 2990,
     credits: "15,000",
     icon: Sparkles,
-    features: ["Everything in Pro", "Data Enrichment", "Data Validation", "Team Collaboration (5 Users)"]
+    features: [
+      "Everything in Pro",
+      "Data Enhancement",
+      "Data Validation",
+      "Team Collaboration (5 Users)",
+    ],
   },
   enterprise: {
     monthlyPrice: null,
     yearlyPrice: null,
     credits: "Unlimited",
     icon: Crown,
-    features: ["Everything in Premium", "Bulk Email Validation", "Data Compliance", "Data Integrations", "Team Collaboration (10 Users)", "White Labelling"]
-  }
+    features: [
+      "Everything in Premium",
+      "Bulk Email Validation",
+      "Data Compliance",
+      "Data Integrations",
+      "Team Collaboration (10 Users)",
+      "White Labelling",
+    ],
+  },
 };
 
 const ADDON_CREDITS = [

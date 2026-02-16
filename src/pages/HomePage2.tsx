@@ -101,7 +101,7 @@ export default function HomePage2() {
 
     const getTierInheritanceBanner = () => {
         if (activeTier === 'pro') return 'Everything in Pro';
-        if (activeTier === 'premium') return 'Everything in Pro + Data Enrichment, Data Validation & Team Collaboration';
+        if (activeTier === 'premium') return "Everything in Pro + Data Enhancement, Data Validation & Team Collaboration";
         if (activeTier === 'enterprise') return 'Everything in Premium + Data Compliance, Data Integrations & White Labelling';
         return '';
     };
