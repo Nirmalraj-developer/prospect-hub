@@ -173,6 +173,12 @@ export default function HomePage1() {
                     </p>
                 </div>
 
+                {/* Action Heading */}
+                <div className="flex flex-col items-center mb-4">
+                    <h2 className="text-[18px] font-semibold text-[#111827] mb-1">What would you like to do today?</h2>
+                    <p className="text-[13px] text-[#6B7280]">Choose an intelligence workflow to begin your prospecting task.</p>
+                </div>
+
                 {/* Feature Grid - Single Scrollable Container */}
                 <div className="flex-1 overflow-y-auto">
                     <div className="grid grid-cols-3 gap-3 pb-4">

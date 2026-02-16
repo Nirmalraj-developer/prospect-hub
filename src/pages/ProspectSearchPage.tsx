@@ -260,7 +260,7 @@ export default function ProspectSearchPage() {
                   "flex-1 flex items-center justify-center gap-1 rounded text-[13px] font-medium transition-all",
                   searchMode === "company"
                     ? "bg-white text-[#111827] shadow-sm"
-                    : "text-[#6B7280]"
+                    : "text-[#6B7280]",
                 )}
               >
                 <Building2 className="h-3.5 w-3.5 opacity-70" />
@@ -272,7 +272,7 @@ export default function ProspectSearchPage() {
                   "flex-1 flex items-center justify-center gap-1 rounded text-[13px] font-medium transition-all",
                   searchMode === "people"
                     ? "bg-white text-[#111827] shadow-sm"
-                    : "text-[#6B7280]"
+                    : "text-[#6B7280]",
                 )}
               >
                 <Users className="h-3.5 w-3.5 opacity-70" />
@@ -291,7 +291,7 @@ export default function ProspectSearchPage() {
                   className="pl-7 pr-2.5 h-9 text-[13px] bg-[#F9FAFB] border-[#E5E7EB] rounded-md focus:bg-white focus:border-[#FF4D4F]"
                 />
               </div>
-              <button 
+              <button
                 onClick={() => setActiveFilters([])}
                 className="text-xs font-medium text-[#6B7280] hover:text-[#111827] hover:bg-[#F3F4F6] px-1.5 h-9 rounded transition-colors flex items-center"
               >
@@ -309,55 +309,82 @@ export default function ProspectSearchPage() {
                 </div>
                 {filters.map((filter) => {
                   const IconComponent = filter.icon;
-                  const selectedCount = activeFilters.filter(f => {
+                  const selectedCount = activeFilters.filter((f) => {
                     const categoryMap: Record<FilterCategory, string[]> = {
-                      sector: ['Major Sector', 'Group Sector', 'Sub Sector', 'SIC Code'],
-                      companySize: ['Employee Count', 'Annual Revenue (USD)'],
-                      companyInfo: ['Company Name', 'Website Domain', 'Year Founded', 'Company Type'],
-                      location: ['Country', 'State/Region', 'City'],
-                      marketing: ['Contact Availability'],
-                      dataControl: ['Inclusion / Exclusion'],
-                      jobInfo: ['Job Title', 'Seniority Level', 'Department', 'Job Function'],
-                      personalInfo: ['Personal Information']
+                      sector: [
+                        "Major Sector",
+                        "Group Sector",
+                        "Sub Sector",
+                        "SIC Code",
+                      ],
+                      companySize: ["Employee Count", "Annual Revenue (USD)"],
+                      companyInfo: [
+                        "Company Name",
+                        "Website Domain",
+                        "Year Founded",
+                        "Company Type",
+                      ],
+                      location: ["Country", "State/Region", "City"],
+                      marketing: ["Contact Availability"],
+                      dataControl: ["Inclusion / Exclusion"],
+                      jobInfo: [
+                        "Job Title",
+                        "Seniority Level",
+                        "Department",
+                        "Job Function",
+                      ],
+                      personalInfo: ["Personal Information"],
                     };
                     return categoryMap[filter.id]?.includes(f.category);
                   }).length;
                   return (
-                  <button
-                    key={filter.id}
-                    onClick={() => handleFilterClick(filter.id)}
-                    className={cn(
-                      "w-full flex items-center justify-between px-3 py-2.5 text-[13px] transition-all h-9",
-                      selectedFilter === filter.id
-                        ? "bg-[#F9FAFB] text-foreground border-l-3 border-l-[#FF3030] font-semibold"
-                        : "text-muted-foreground hover:bg-[#FAFAFA] hover:text-foreground font-normal"
-                    )}
-                  >
-                    <span className="flex items-center gap-2">
-                      {IconComponent && <IconComponent className="h-3 w-3 text-[#111827] opacity-80" strokeWidth={1.8} />}
-                      {filter.label}
-                      {selectedCount > 0 && (
-                        <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-[#FF3030] text-white text-[11px] font-semibold inline-flex items-center justify-center">
-                          {selectedCount}
-                        </span>
+                    <button
+                      key={filter.id}
+                      onClick={() => handleFilterClick(filter.id)}
+                      className={cn(
+                        "w-full flex items-center justify-between px-3 py-2.5 text-[13px] transition-all h-9",
+                        selectedFilter === filter.id
+                          ? "bg-[#F9FAFB] text-foreground border-l-3 border-l-[#FF3030] font-semibold"
+                          : "text-muted-foreground hover:bg-[#FAFAFA] hover:text-foreground font-normal",
                       )}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      {filter.hasAI && (
-                        <span 
-                          onClick={() => setShowAIAnimation(false)}
-                          className={cn(
-                            "flex items-center gap-1 px-1.5 py-0.5 rounded bg-gradient-to-r from-[#FF4D4F] to-[#FF7875] text-white text-[10px] font-semibold shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer",
-                            showAIAnimation && "animate-[aiPulse_1.2s_ease-in-out_3]"
-                          )}
-                        >
-                          <Sparkles className={cn("h-2.5 w-2.5", showAIAnimation && "animate-[sparkleMove_1s_ease-in-out_3]")} />
-                          AI
-                        </span>
-                      )}
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    </div>
-                  </button>
+                    >
+                      <span className="flex items-center gap-2">
+                        {IconComponent && (
+                          <IconComponent
+                            className="h-3 w-3 text-[#111827] opacity-80"
+                            strokeWidth={1.8}
+                          />
+                        )}
+                        {filter.label}
+                        {selectedCount > 0 && (
+                          <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-[#FF3030] text-white text-[11px] font-semibold inline-flex items-center justify-center">
+                            {selectedCount}
+                          </span>
+                        )}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        {filter.hasAI && (
+                          <span
+                            onClick={() => setShowAIAnimation(false)}
+                            className={cn(
+                              "flex items-center gap-1 px-1.5 py-0.5 rounded bg-gradient-to-r from-[#FF4D4F] to-[#FF7875] text-white text-[10px] font-semibold shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer",
+                              showAIAnimation &&
+                                "animate-[aiPulse_1.2s_ease-in-out_3]",
+                            )}
+                          >
+                            <Sparkles
+                              className={cn(
+                                "h-2.5 w-2.5",
+                                showAIAnimation &&
+                                  "animate-[sparkleMove_1s_ease-in-out_3]",
+                              )}
+                            />
+                            AI
+                          </span>
+                        )}
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </div>
+                    </button>
                   );
                 })}
               </div>
@@ -395,11 +422,11 @@ export default function ProspectSearchPage() {
             style={{
               left: `${popupPosition.x}px`,
               top: `${popupPosition.y}px`,
-              width: '360px',
-              maxHeight: '75vh',
+              width: "360px",
+              maxHeight: "75vh",
               zIndex: 1000,
-              minWidth: '320px',
-              maxWidth: '400px'
+              minWidth: "320px",
+              maxWidth: "400px",
             }}
           >
             {/* Draggable Header */}
@@ -410,7 +437,7 @@ export default function ProspectSearchPage() {
               <div className="flex items-center gap-2">
                 <GripVertical className="h-4 w-4 text-[#9CA3AF]" />
                 <h3 className="text-[14px] font-semibold text-foreground capitalize">
-                  {selectedFilter.replace(/([A-Z])/g, ' $1').trim()}
+                  {selectedFilter.replace(/([A-Z])/g, " $1").trim()}
                 </h3>
               </div>
               <button
@@ -424,16 +451,23 @@ export default function ProspectSearchPage() {
             {/* AI Assisted Layer - Hidden */}
 
             {/* Scrollable Content */}
-            <div className="overflow-y-auto overflow-x-hidden p-3 pr-1 [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#D1D5DB] [&::-webkit-scrollbar-thumb]:rounded-md [&::-webkit-scrollbar-thumb:hover]:bg-[#9CA3AF] [scrollbar-width:thin] [scrollbar-color:#D1D5DB_transparent]" style={{ maxHeight: 'calc(75vh - 140px)' }}>
-              <FilterDetailContent 
-                filterId={selectedFilter} 
+            <div
+              className="overflow-y-auto overflow-x-hidden p-3 pr-1 [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#D1D5DB] [&::-webkit-scrollbar-thumb]:rounded-md [&::-webkit-scrollbar-thumb:hover]:bg-[#9CA3AF] [scrollbar-width:thin] [scrollbar-color:#D1D5DB_transparent]"
+              style={{ maxHeight: "calc(75vh - 140px)" }}
+            >
+              <FilterDetailContent
+                filterId={selectedFilter}
                 activeFilters={activeFilters}
                 onFilterChange={(category, selected) => {
-                  setActiveFilters(prev => [
-                    ...prev.filter(f => f.category !== category),
-                    ...selected.map(s => ({ category, value: s.value, mode: s.mode }))
+                  setActiveFilters((prev) => [
+                    ...prev.filter((f) => f.category !== category),
+                    ...selected.map((s) => ({
+                      category,
+                      value: s.value,
+                      mode: s.mode,
+                    })),
                   ]);
-                }} 
+                }}
               />
             </div>
           </div>
@@ -453,18 +487,21 @@ export default function ProspectSearchPage() {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <button onClick={handleTryAISearch} className="gap-2 h-8 text-[12px] font-medium px-2.5 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md inline-flex items-center justify-center transition-colors">
+                <button
+                  onClick={handleTryAISearch}
+                  className="gap-2 h-8 text-[12px] font-medium px-2.5 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md inline-flex items-center justify-center transition-colors"
+                >
                   <Sparkles className="h-3.5 w-3.5" />
                   Try AI Search
                 </button>
-                <button 
+                <button
                   onClick={() => setShowInsights(true)}
                   className="h-8 px-2.5 text-[12px] font-medium bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#374151] rounded-md transition-colors flex items-center gap-1.5"
                 >
                   <BarChart3 className="h-3.5 w-3.5" />
                   Data Insights
                 </button>
-                <button 
+                <button
                   onClick={() => setShowExportModal(true)}
                   className="h-8 px-3 text-[12px] font-semibold bg-gradient-to-r from-[#FF4D4F] to-[#E53935] hover:shadow-lg text-white rounded-md transition-all flex items-center gap-1.5"
                 >
@@ -479,10 +516,14 @@ export default function ProspectSearchPage() {
           {showCustomForm ? (
             <div className="flex-1 flex flex-col bg-white overflow-y-auto">
               <div className="p-3 border-b border-[#E5E7EB]">
-                <h2 className="text-[15px] font-bold text-[#111827]">Custom Data Order</h2>
-                <p className="text-[12px] text-[#6B7280] mt-0.5">Submit your requirements for a tailored prospect list</p>
+                <h2 className="text-[15px] font-bold text-[#111827]">
+                  Custom Data Order
+                </h2>
+                <p className="text-[12px] text-[#6B7280] mt-0.5">
+                  Submit your requirements for a tailored prospect list
+                </p>
               </div>
-              
+
               <div className="flex-1 p-3 space-y-3">
                 {/* Top Row - 4 Columns */}
                 <div className="grid grid-cols-4 gap-2">
@@ -490,28 +531,30 @@ export default function ProspectSearchPage() {
                     <label className="text-[11px] font-semibold text-[#374151] mb-1 block">
                       Order Name <span className="text-[#FF4D4F]">*</span>
                     </label>
-                    <Input 
-                      placeholder="e.g., Q1 Tech Leads" 
+                    <Input
+                      placeholder="e.g., Q1 Tech Leads"
                       value={orderName}
                       onChange={(e) => setOrderName(e.target.value)}
-                      className="h-9 text-[13px]" 
+                      className="h-9 text-[13px]"
                     />
                   </div>
                   <div>
-                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">Target Lead Volume</label>
-                    <Input 
-                      placeholder="e.g., 500" 
+                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">
+                      Target Lead Volume
+                    </label>
+                    <Input
+                      placeholder="e.g., 500"
                       type="number"
                       value={leadVolume}
                       onChange={(e) => setLeadVolume(e.target.value)}
-                      className="h-9 text-[13px]" 
+                      className="h-9 text-[13px]"
                     />
                   </div>
                   <div>
                     <label className="text-[11px] font-semibold text-[#374151] mb-1 block">
                       Request Type <span className="text-[#FF4D4F]">*</span>
                     </label>
-                    <select 
+                    <select
                       value={requestType}
                       onChange={(e) => setRequestType(e.target.value as any)}
                       className="w-full h-9 px-3 text-[13px] border border-input rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#FF4D4F] focus:border-transparent"
@@ -526,73 +569,112 @@ export default function ProspectSearchPage() {
                     <label className="text-[11px] font-semibold text-[#374151] mb-1 block">
                       Delivery Email <span className="text-[#FF4D4F]">*</span>
                     </label>
-                    <Input 
-                      placeholder="your@email.com" 
+                    <Input
+                      placeholder="your@email.com"
                       type="email"
                       value={deliveryEmail}
                       onChange={(e) => setDeliveryEmail(e.target.value)}
-                      className="h-9 text-[13px]" 
+                      className="h-9 text-[13px]"
                     />
                   </div>
                 </div>
 
                 {/* Credit Debit Info */}
-                {requestType === 'order' && leadVolume && parseInt(leadVolume) > 0 && (
-                  <div className="bg-[#FFF7E6] border border-[#FFD591] rounded-md p-2 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <svg className="h-4 w-4 text-[#F57C00]" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                      </svg>
-                      <span className="text-[12px] font-semibold text-[#F57C00]">Credit Debit Information</span>
+                {requestType === "order" &&
+                  leadVolume &&
+                  parseInt(leadVolume) > 0 && (
+                    <div className="bg-[#FFF7E6] border border-[#FFD591] rounded-md p-2 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <svg
+                          className="h-4 w-4 text-[#F57C00]"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span className="text-[12px] font-semibold text-[#F57C00]">
+                          Credit Debit Information
+                        </span>
+                      </div>
+                      <div className="text-[12px] font-bold text-[#F57C00]">
+                        {parseInt(leadVolume).toLocaleString()} leads × 1 credit
+                        = {parseInt(leadVolume).toLocaleString()} credits will
+                        be debited
+                      </div>
                     </div>
-                    <div className="text-[12px] font-bold text-[#F57C00]">
-                      {parseInt(leadVolume).toLocaleString()} leads × 1 credit = {parseInt(leadVolume).toLocaleString()} credits will be debited
-                    </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Current Search Criteria - Always Visible */}
-                <div className={`rounded-md p-2 border ${
-                  activeFilters.length === 0
-                    ? 'bg-[#FEF2F2] border-[#FCA5A5]'
-                    : 'bg-[#F9FAFB] border-[#E5E7EB]'
-                }`}>
-                  <label className={`text-[11px] font-semibold mb-1.5 block ${
-                    activeFilters.length === 0 ? 'text-[#B91C1C]' : 'text-[#374151]'
-                  }`}>Selected Filters:</label>
+                <div
+                  className={`rounded-md p-2 border ${
+                    activeFilters.length === 0
+                      ? "bg-[#FEF2F2] border-[#FCA5A5]"
+                      : "bg-[#F9FAFB] border-[#E5E7EB]"
+                  }`}
+                >
+                  <label
+                    className={`text-[11px] font-semibold mb-1.5 block ${
+                      activeFilters.length === 0
+                        ? "text-[#B91C1C]"
+                        : "text-[#374151]"
+                    }`}
+                  >
+                    Selected Filters:
+                  </label>
                   {activeFilters.length === 0 ? (
                     <div className="flex items-center gap-1.5 text-[#B91C1C]">
                       <span className="text-[14px]">⚠</span>
-                      <span className="text-[12px]">Please select at least one filter to proceed</span>
+                      <span className="text-[12px]">
+                        Please select at least one filter to proceed
+                      </span>
                     </div>
                   ) : (
                     <div className="space-y-2">
                       {Object.entries(
-                        activeFilters.reduce((acc, filter) => {
-                          if (!acc[filter.category]) acc[filter.category] = [];
-                          acc[filter.category].push(filter);
-                          return acc;
-                        }, {} as Record<string, typeof activeFilters>)
+                        activeFilters.reduce(
+                          (acc, filter) => {
+                            if (!acc[filter.category])
+                              acc[filter.category] = [];
+                            acc[filter.category].push(filter);
+                            return acc;
+                          },
+                          {} as Record<string, typeof activeFilters>,
+                        ),
                       ).map(([category, filters]) => {
                         const displayFilters = filters.slice(0, 2);
                         const overflowCount = filters.length - 2;
                         return (
                           <div key={category}>
-                            <span className="text-[10px] font-semibold text-[#6B7280] uppercase tracking-wide block mb-1">{category}:</span>
+                            <span className="text-[10px] font-semibold text-[#6B7280] uppercase tracking-wide block mb-1">
+                              {category}:
+                            </span>
                             <div className="flex flex-wrap gap-1">
                               {displayFilters.map((filter, idx) => (
                                 <span
                                   key={idx}
                                   className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border ${
-                                    filter.mode === 'include'
-                                      ? 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]'
-                                      : 'bg-[#FEF2F2] border-[#FECACA] text-[#B91C1C]'
+                                    filter.mode === "include"
+                                      ? "bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]"
+                                      : "bg-[#FEF2F2] border-[#FECACA] text-[#B91C1C]"
                                   }`}
                                 >
                                   {filter.value}
-                                  <span className="text-[9px] opacity-70">{filter.mode === 'include' ? '✔' : '✖'}</span>
+                                  <span className="text-[9px] opacity-70">
+                                    {filter.mode === "include" ? "✔" : "✖"}
+                                  </span>
                                   <button
-                                    onClick={() => setActiveFilters(prev => prev.filter((_, i) => i !== activeFilters.indexOf(filter)))}
+                                    onClick={() =>
+                                      setActiveFilters((prev) =>
+                                        prev.filter(
+                                          (_, i) =>
+                                            i !== activeFilters.indexOf(filter),
+                                        ),
+                                      )
+                                    }
                                     className="hover:opacity-70"
                                   >
                                     <X className="h-2.5 w-2.5" />
@@ -615,44 +697,74 @@ export default function ProspectSearchPage() {
                 {/* Middle Section - 2 Columns */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">Upload Suppression List</label>
+                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">
+                      Upload Suppression List
+                    </label>
                     <div className="h-40 border border-dashed border-[#E5E7EB] rounded-md flex flex-col items-center justify-center gap-2 bg-[#FAFBFC] hover:bg-[#F5F5F5] transition-colors cursor-pointer">
-                      <svg className="h-8 w-8 text-[#9CA3AF]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      <svg
+                        className="h-8 w-8 text-[#9CA3AF]"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.5}
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                        />
                       </svg>
-                      <span className="text-[12px] text-[#6B7280] font-medium">Click to upload CSV</span>
-                      <span className="text-[10px] text-[#9CA3AF]">Max 10MB</span>
+                      <span className="text-[12px] text-[#6B7280] font-medium">
+                        Click to upload CSV
+                      </span>
+                      <span className="text-[10px] text-[#9CA3AF]">
+                        Max 10MB
+                      </span>
                     </div>
                   </div>
                   <div>
-                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">Additional Notes</label>
+                    <label className="text-[11px] font-semibold text-[#374151] mb-1 block">
+                      Additional Notes
+                    </label>
                     <div className="border border-input rounded-md bg-white">
                       <div className="flex items-center gap-1 p-1 border-b border-[#E5E7EB] bg-[#F9FAFB]">
                         <button
-                          onClick={() => document.execCommand('bold')}
+                          onClick={() => document.execCommand("bold")}
                           className="p-1 hover:bg-[#E5E7EB] rounded text-[#374151]"
                           title="Bold"
                         >
-                          <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M11 3H6v14h5.5c2.5 0 4.5-2 4.5-4.5 0-1.5-.7-2.8-1.8-3.7C15.3 7.8 16 6.5 16 5c0-2.5-2-5-5-5zm-1 6V5h1c1.1 0 2 .9 2 2s-.9 2-2 2h-1zm0 2h1.5c1.4 0 2.5 1.1 2.5 2.5S12.9 16 11.5 16H10v-5z"/>
+                          <svg
+                            className="h-3.5 w-3.5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M11 3H6v14h5.5c2.5 0 4.5-2 4.5-4.5 0-1.5-.7-2.8-1.8-3.7C15.3 7.8 16 6.5 16 5c0-2.5-2-5-5-5zm-1 6V5h1c1.1 0 2 .9 2 2s-.9 2-2 2h-1zm0 2h1.5c1.4 0 2.5 1.1 2.5 2.5S12.9 16 11.5 16H10v-5z" />
                           </svg>
                         </button>
                         <button
-                          onClick={() => document.execCommand('italic')}
+                          onClick={() => document.execCommand("italic")}
                           className="p-1 hover:bg-[#E5E7EB] rounded text-[#374151]"
                           title="Italic"
                         >
-                          <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/>
+                          <svg
+                            className="h-3.5 w-3.5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z" />
                           </svg>
                         </button>
                         <button
-                          onClick={() => document.execCommand('underline')}
+                          onClick={() => document.execCommand("underline")}
                           className="p-1 hover:bg-[#E5E7EB] rounded text-[#374151]"
                           title="Underline"
                         >
-                          <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 18c3.3 0 6-2.7 6-6V3h-2v9c0 2.2-1.8 4-4 4s-4-1.8-4-4V3H4v9c0 3.3 2.7 6 6 6zm-6 2h12v2H4v-2z"/>
+                          <svg
+                            className="h-3.5 w-3.5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M10 18c3.3 0 6-2.7 6-6V3h-2v9c0 2.2-1.8 4-4 4s-4-1.8-4-4V3H4v9c0 3.3 2.7 6 6 6zm-6 2h12v2H4v-2z" />
                           </svg>
                         </button>
                         <div className="w-px h-4 bg-[#E5E7EB] mx-1"></div>
@@ -661,28 +773,44 @@ export default function ProspectSearchPage() {
                           value={notesColor}
                           onChange={(e) => {
                             setNotesColor(e.target.value);
-                            document.execCommand('foreColor', false, e.target.value);
+                            document.execCommand(
+                              "foreColor",
+                              false,
+                              e.target.value,
+                            );
                           }}
                           className="w-6 h-6 rounded cursor-pointer"
                           title="Text Color"
                         />
                         <div className="w-px h-4 bg-[#E5E7EB] mx-1"></div>
                         <button
-                          onClick={() => document.execCommand('insertUnorderedList')}
+                          onClick={() =>
+                            document.execCommand("insertUnorderedList")
+                          }
                           className="p-1 hover:bg-[#E5E7EB] rounded text-[#374151]"
                           title="Bullet List"
                         >
-                          <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M4 4h2v2H4V4zm4 0h10v2H8V4zM4 9h2v2H4V9zm4 0h10v2H8V9zm-4 5h2v2H4v-2zm4 0h10v2H8v-2z"/>
+                          <svg
+                            className="h-3.5 w-3.5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M4 4h2v2H4V4zm4 0h10v2H8V4zM4 9h2v2H4V9zm4 0h10v2H8V9zm-4 5h2v2H4v-2zm4 0h10v2H8v-2z" />
                           </svg>
                         </button>
                         <button
-                          onClick={() => document.execCommand('insertOrderedList')}
+                          onClick={() =>
+                            document.execCommand("insertOrderedList")
+                          }
                           className="p-1 hover:bg-[#E5E7EB] rounded text-[#374151]"
                           title="Numbered List"
                         >
-                          <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M3 4h1v4H3V4zm1 6H3v1h1v1H3v1h2V9H4v1zm-1 4h1.8L3 16.1v.9h3v-1H4.2L6 13.9V13H3v1zm5-10h10v2H8V4zm0 5h10v2H8V9zm0 5h10v2H8v-2z"/>
+                          <svg
+                            className="h-3.5 w-3.5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M3 4h1v4H3V4zm1 6H3v1h1v1H3v1h2V9H4v1zm-1 4h1.8L3 16.1v.9h3v-1H4.2L6 13.9V13H3v1zm5-10h10v2H8V4zm0 5h10v2H8V9zm0 5h10v2H8v-2z" />
                           </svg>
                         </button>
                       </div>
@@ -691,11 +819,11 @@ export default function ProspectSearchPage() {
                         className="w-full h-32 px-3 py-2 text-[12px] overflow-y-auto focus:outline-none [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-thumb]:bg-[#D1D5DB] [&::-webkit-scrollbar-thumb]:rounded"
                         data-placeholder="Specify any custom requirements..."
                         style={{
-                          minHeight: '128px',
+                          minHeight: "128px",
                         }}
                         onInput={(e) => {
-                          if (e.currentTarget.textContent === '') {
-                            e.currentTarget.innerHTML = '';
+                          if (e.currentTarget.textContent === "") {
+                            e.currentTarget.innerHTML = "";
                           }
                         }}
                       />
@@ -705,28 +833,44 @@ export default function ProspectSearchPage() {
 
                 {/* Included Data Attributes */}
                 <div className="pt-2 border-t border-[#E5E7EB]">
-                  <label className="text-[11px] font-semibold text-[#374151] block mb-1">Included Data Attributes</label>
+                  <label className="text-[11px] font-semibold text-[#374151] block mb-1">
+                    Included Data Attributes
+                  </label>
                   <div className="flex flex-wrap gap-1">
-                    <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">Email</span>
-                    <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">Phone</span>
-                    <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">LinkedIn</span>
-                    <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">Company</span>
-                    <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">Title</span>
+                    <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">
+                      Email
+                    </span>
+                    <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">
+                      Phone
+                    </span>
+                    <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">
+                      LinkedIn
+                    </span>
+                    <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">
+                      Company
+                    </span>
+                    <span className="px-2 py-0.5 bg-[#F3F4F6] text-[#374151] text-[11px] rounded">
+                      Title
+                    </span>
                   </div>
                 </div>
               </div>
 
               {/* Sticky Submit CTA */}
               <div className="sticky bottom-0 bg-white border-t border-[#E5E7EB] p-2 flex gap-2">
-                <button 
-                  disabled={activeFilters.length === 0 || !orderName.trim() || !deliveryEmail.trim()}
+                <button
+                  disabled={
+                    activeFilters.length === 0 ||
+                    !orderName.trim() ||
+                    !deliveryEmail.trim()
+                  }
                   className="flex-1 h-9 rounded-md text-[13px] font-semibold bg-gradient-to-r from-[#FF4D4F] to-[#E53935] hover:shadow-lg text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                 >
                   Submit Custom Order
                 </button>
-                <button 
+                <button
                   onClick={() => {
-                    localStorage.setItem('showCustomForm', 'false');
+                    localStorage.setItem("showCustomForm", "false");
                     setShowCustomForm(false);
                   }}
                   className="px-4 h-9 rounded-md text-[13px] font-medium bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#374151] transition-colors"
@@ -741,92 +885,172 @@ export default function ProspectSearchPage() {
                 {/* Content */}
                 <div className="flex-1 overflow-y-auto p-4">
                   {/* Top Section: 2 Columns Grid */}
-                  <div className="grid gap-3 mb-3" style={{ gridTemplateColumns: '1fr 1.4fr' }}>
+                  <div
+                    className="grid gap-3 mb-3"
+                    style={{ gridTemplateColumns: "1fr 1.4fr" }}
+                  >
                     {/* Overall Count Card */}
                     <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-md p-3 flex flex-col">
-                      <h3 className="text-[12px] font-semibold text-[#111827] mb-2.5">Overall Count</h3>
+                      <h3 className="text-[12px] font-semibold text-[#111827] mb-2.5">
+                        Stats Count
+                      </h3>
                       <div className="grid grid-cols-1 gap-2.5">
                         <div className="bg-white border border-[#E5E7EB] rounded-md p-3 flex justify-between items-center">
-                          <span className="text-[13px] text-[#6B7280] font-medium">Companies</span>
-                          <span className="text-[15px] text-[#111827] font-bold">4,092,817</span>
+                          <span className="text-[13px] text-[#6B7280] font-medium">
+                            Companies
+                          </span>
+                          <span className="text-[15px] text-[#111827] font-bold">
+                            4,092,817
+                          </span>
                         </div>
                         <div className="bg-white border border-[#E5E7EB] rounded-md p-3 flex justify-between items-center">
-                          <span className="text-[13px] text-[#6B7280] font-medium">Contacts</span>
-                          <span className="text-[15px] text-[#111827] font-bold">18,344,446</span>
+                          <span className="text-[13px] text-[#6B7280] font-medium">
+                            Contacts
+                          </span>
+                          <span className="text-[15px] text-[#111827] font-bold">
+                            18,344,446
+                          </span>
                         </div>
                       </div>
                     </div>
 
                     {/* Marketability Breakdown Card */}
                     <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-md p-3 flex flex-col">
-                      <h3 className="text-[12px] font-semibold text-[#111827] mb-2.5">Marketability Breakdown</h3>
+                      <h3 className="text-[12px] font-semibold text-[#111827] mb-2.5">
+                        Marketability Breakdown
+                      </h3>
                       <div className="grid grid-cols-3 gap-2.5">
                         <div className="bg-white border border-[#E5E7EB] rounded-md p-2.5 flex flex-col justify-between">
-                          <span className="text-[12px] text-[#6B7280] font-semibold mb-2">Mailable</span>
+                          <span className="text-[12px] text-[#6B7280] font-semibold mb-2">
+                            Mailable
+                          </span>
                           <div className="space-y-1">
                             <div className="flex justify-between items-center">
-                              <span className="text-[11px] text-[#9CA3AF]">Company</span>
-                              <span className="text-[11px] text-[#111827] font-semibold">3,892,456</span>
+                              <span className="text-[11px] text-[#9CA3AF]">
+                                Company
+                              </span>
+                              <span className="text-[11px] text-[#111827] font-semibold">
+                                3,892,456
+                              </span>
                             </div>
                             <div className="flex justify-between items-center">
-                              <span className="text-[11px] text-[#9CA3AF]">People</span>
-                              <span className="text-[11px] text-[#111827] font-semibold">16,234,892</span>
+                              <span className="text-[11px] text-[#9CA3AF]">
+                                People
+                              </span>
+                              <span className="text-[11px] text-[#111827] font-semibold">
+                                16,234,892
+                              </span>
                             </div>
                           </div>
                         </div>
                         <div className="bg-white border border-[#E5E7EB] rounded-md p-2.5 flex flex-col justify-between">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-[12px] text-[#6B7280] font-semibold">Phoneable</span>
-                            <div className="inline-flex rounded-md overflow-hidden" style={{ height: '24px' }}>
+                            <span className="text-[12px] text-[#6B7280] font-semibold">
+                              Phoneable
+                            </span>
+                            <div
+                              className="inline-flex rounded-md overflow-hidden"
+                              style={{ height: "24px" }}
+                            >
                               <button
-                                onClick={() => setPhoneType('directDial')}
+                                onClick={() => setPhoneType("directDial")}
                                 title="Direct Dial"
                                 className={`px-2 cursor-pointer transition-colors flex items-center justify-center ${
-                                  phoneType === 'directDial' ? 'bg-[#22C55E] text-white border border-[#22C55E]' : 'bg-white text-[#6B7280] border border-dashed border-[#D1D5DB]'
+                                  phoneType === "directDial"
+                                    ? "bg-[#22C55E] text-white border border-[#22C55E]"
+                                    : "bg-white text-[#6B7280] border border-dashed border-[#D1D5DB]"
                                 }`}
                               >
-                                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                <svg
+                                  className="h-3.5 w-3.5"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                  strokeWidth={2}
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                                  />
                                 </svg>
                               </button>
                               <button
-                                onClick={() => setPhoneType('landline')}
+                                onClick={() => setPhoneType("landline")}
                                 title="Landline"
                                 className={`px-2 cursor-pointer transition-colors flex items-center justify-center border-l-0 ${
-                                  phoneType === 'landline' ? 'bg-[#22C55E] text-white border border-[#22C55E]' : 'bg-white text-[#6B7280] border border-dashed border-[#D1D5DB]'
+                                  phoneType === "landline"
+                                    ? "bg-[#22C55E] text-white border border-[#22C55E]"
+                                    : "bg-white text-[#6B7280] border border-dashed border-[#D1D5DB]"
                                 }`}
                               >
-                                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                <svg
+                                  className="h-3.5 w-3.5"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                  strokeWidth={2}
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                                  />
                                 </svg>
                               </button>
                             </div>
                           </div>
-                          <div className="space-y-1" style={{ minHeight: '36px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                          <div
+                            className="space-y-1"
+                            style={{
+                              minHeight: "36px",
+                              display: "flex",
+                              flexDirection: "column",
+                              justifyContent: "center",
+                            }}
+                          >
                             <div className="flex justify-between items-center">
-                              <span className="text-[11px] text-[#9CA3AF]">Company</span>
+                              <span className="text-[11px] text-[#9CA3AF]">
+                                Company
+                              </span>
                               <span className="text-[11px] text-[#111827] font-semibold">
-                                {phoneType === 'directDial' ? '1,892,345' : '564,778'}
+                                {phoneType === "directDial"
+                                  ? "1,892,345"
+                                  : "564,778"}
                               </span>
                             </div>
                             <div className="flex justify-between items-center">
-                              <span className="text-[11px] text-[#9CA3AF]">People</span>
+                              <span className="text-[11px] text-[#9CA3AF]">
+                                People
+                              </span>
                               <span className="text-[11px] text-[#111827] font-semibold">
-                                {phoneType === 'directDial' ? '8,456,123' : '4,436,222'}
+                                {phoneType === "directDial"
+                                  ? "8,456,123"
+                                  : "4,436,222"}
                               </span>
                             </div>
                           </div>
                         </div>
                         <div className="bg-white border border-[#E5E7EB] rounded-md p-2.5 flex flex-col justify-between">
-                          <span className="text-[12px] text-[#6B7280] font-semibold mb-2">Emailable</span>
+                          <span className="text-[12px] text-[#6B7280] font-semibold mb-2">
+                            Emailable
+                          </span>
                           <div className="space-y-1">
                             <div className="flex justify-between items-center">
-                              <span className="text-[11px] text-[#9CA3AF]">Company</span>
-                              <span className="text-[11px] text-[#111827] font-semibold">3,234,567</span>
+                              <span className="text-[11px] text-[#9CA3AF]">
+                                Company
+                              </span>
+                              <span className="text-[11px] text-[#111827] font-semibold">
+                                3,234,567
+                              </span>
                             </div>
                             <div className="flex justify-between items-center">
-                              <span className="text-[11px] text-[#9CA3AF]">People</span>
-                              <span className="text-[11px] text-[#111827] font-semibold">14,567,234</span>
+                              <span className="text-[11px] text-[#9CA3AF]">
+                                People
+                              </span>
+                              <span className="text-[11px] text-[#111827] font-semibold">
+                                14,567,234
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -837,7 +1061,9 @@ export default function ProspectSearchPage() {
                   {/* Column & Row Filter Section */}
                   <div className="flex justify-center gap-4 my-2.5">
                     <div className="flex items-center gap-2">
-                      <label className="text-[12px] font-medium text-[#6B7280]">Column Filter</label>
+                      <label className="text-[12px] font-medium text-[#6B7280]">
+                        Column Filter
+                      </label>
                       <select className="h-8 px-3 text-[12px] border border-[#E5E7EB] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#FF4D4F] focus:border-transparent">
                         <option>Country</option>
                         <option>Region</option>
@@ -845,7 +1071,9 @@ export default function ProspectSearchPage() {
                       </select>
                     </div>
                     <div className="flex items-center gap-2">
-                      <label className="text-[12px] font-medium text-[#6B7280]">Row Filter</label>
+                      <label className="text-[12px] font-medium text-[#6B7280]">
+                        Row Filter
+                      </label>
                       <select className="h-8 px-3 text-[12px] border border-[#E5E7EB] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#FF4D4F] focus:border-transparent">
                         <option>Major Sector</option>
                         <option>Sub Sector</option>
@@ -856,102 +1084,263 @@ export default function ProspectSearchPage() {
 
                   {/* Insights Breakdown Table */}
                   <div className="mt-2">
-                    <h3 className="text-[12px] font-semibold text-[#111827] mb-2">Insights Breakdown</h3>
+                    <h3 className="text-[12px] font-semibold text-[#111827] mb-2">
+                      Insights Breakdown
+                    </h3>
                     <div className="border border-[#E5E7EB] rounded-md overflow-hidden">
-                      <div className="overflow-y-auto" style={{ maxHeight: '280px' }}>
-                        <table className="w-full text-[12px]" style={{ tableLayout: 'fixed', borderCollapse: 'collapse' }}>
+                      <div
+                        className="overflow-y-auto"
+                        style={{ maxHeight: "280px" }}
+                      >
+                        <table
+                          className="w-full text-[12px]"
+                          style={{
+                            tableLayout: "fixed",
+                            borderCollapse: "collapse",
+                          }}
+                        >
                           <thead className="bg-[#F3F4F6] sticky top-0">
                             <tr>
-                              <th className="px-3 py-2 text-left font-semibold text-[#374151]" style={{ width: '200px' }}>Sector</th>
-                              <th className="px-3 py-2 text-right font-semibold text-[#374151]" style={{ width: '120px' }}>England</th>
-                              <th className="px-3 py-2 text-right font-semibold text-[#374151]" style={{ width: '140px' }}>Northern Ireland</th>
-                              <th className="px-3 py-2 text-right font-semibold text-[#374151]" style={{ width: '120px' }}>Scotland</th>
-                              <th className="px-3 py-2 text-right font-semibold text-[#374151]" style={{ width: '120px' }}>Wales</th>
-                              <th className="px-3 py-2 text-right font-semibold text-[#374151]" style={{ width: '120px' }}>UK</th>
+                              <th
+                                className="px-3 py-2 text-left font-semibold text-[#374151]"
+                                style={{ width: "200px" }}
+                              >
+                                Sector
+                              </th>
+                              <th
+                                className="px-3 py-2 text-right font-semibold text-[#374151]"
+                                style={{ width: "120px" }}
+                              >
+                                England
+                              </th>
+                              <th
+                                className="px-3 py-2 text-right font-semibold text-[#374151]"
+                                style={{ width: "140px" }}
+                              >
+                                Northern Ireland
+                              </th>
+                              <th
+                                className="px-3 py-2 text-right font-semibold text-[#374151]"
+                                style={{ width: "120px" }}
+                              >
+                                Scotland
+                              </th>
+                              <th
+                                className="px-3 py-2 text-right font-semibold text-[#374151]"
+                                style={{ width: "120px" }}
+                              >
+                                Wales
+                              </th>
+                              <th
+                                className="px-3 py-2 text-right font-semibold text-[#374151]"
+                                style={{ width: "120px" }}
+                              >
+                                UK
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr className="hover:bg-[#F9FAFB] transition-colors">
-                              <td className="px-3 py-2 text-[#374151]">Agriculture & Farming</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">45,234</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">3,456</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">8,923</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">5,678</td>
-                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">63,291</td>
+                              <td className="px-3 py-2 text-[#374151]">
+                                Agriculture & Farming
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                45,234
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                3,456
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                8,923
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                5,678
+                              </td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">
+                                63,291
+                              </td>
                             </tr>
                             <tr className="hover:bg-[#F9FAFB] transition-colors">
-                              <td className="px-3 py-2 text-[#374151]">Automotive</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">89,456</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">4,567</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">12,345</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">7,890</td>
-                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">114,258</td>
+                              <td className="px-3 py-2 text-[#374151]">
+                                Automotive
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                89,456
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                4,567
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                12,345
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                7,890
+                              </td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">
+                                114,258
+                              </td>
                             </tr>
                             <tr className="hover:bg-[#F9FAFB] transition-colors">
-                              <td className="px-3 py-2 text-[#374151]">Construction & Materials</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">156,789</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">8,901</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">23,456</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">12,345</td>
-                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">201,491</td>
+                              <td className="px-3 py-2 text-[#374151]">
+                                Construction & Materials
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                156,789
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                8,901
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                23,456
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                12,345
+                              </td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">
+                                201,491
+                              </td>
                             </tr>
                             <tr className="hover:bg-[#F9FAFB] transition-colors">
-                              <td className="px-3 py-2 text-[#374151]">Consumer Goods & Services</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">234,567</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">12,345</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">34,567</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">18,901</td>
-                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">300,380</td>
+                              <td className="px-3 py-2 text-[#374151]">
+                                Consumer Goods & Services
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                234,567
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                12,345
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                34,567
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                18,901
+                              </td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">
+                                300,380
+                              </td>
                             </tr>
                             <tr className="hover:bg-[#F9FAFB] transition-colors">
-                              <td className="px-3 py-2 text-[#374151]">Education</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">178,901</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">9,876</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">28,901</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">15,678</td>
-                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">233,356</td>
+                              <td className="px-3 py-2 text-[#374151]">
+                                Education
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                178,901
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                9,876
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                28,901
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                15,678
+                              </td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">
+                                233,356
+                              </td>
                             </tr>
                             <tr className="hover:bg-[#F9FAFB] transition-colors">
-                              <td className="px-3 py-2 text-[#374151]">Financial Services</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">456,789</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">23,456</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">67,890</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">34,567</td>
-                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">582,702</td>
+                              <td className="px-3 py-2 text-[#374151]">
+                                Financial Services
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                456,789
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                23,456
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                67,890
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                34,567
+                              </td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">
+                                582,702
+                              </td>
                             </tr>
                             <tr className="hover:bg-[#F9FAFB] transition-colors">
-                              <td className="px-3 py-2 text-[#374151]">Healthcare</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">892,345</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">45,678</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">123,456</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">67,890</td>
-                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">1,129,369</td>
+                              <td className="px-3 py-2 text-[#374151]">
+                                Healthcare
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                892,345
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                45,678
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                123,456
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                67,890
+                              </td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">
+                                1,129,369
+                              </td>
                             </tr>
                             <tr className="hover:bg-[#F9FAFB] transition-colors">
-                              <td className="px-3 py-2 text-[#374151]">Technology</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">678,901</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">34,567</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">89,012</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">45,678</td>
-                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">848,158</td>
+                              <td className="px-3 py-2 text-[#374151]">
+                                Technology
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                678,901
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                34,567
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                89,012
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                45,678
+                              </td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">
+                                848,158
+                              </td>
                             </tr>
                             <tr className="hover:bg-[#F9FAFB] transition-colors">
-                              <td className="px-3 py-2 text-[#374151]">Manufacturing</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">345,678</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">18,901</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">56,789</td>
-                              <td className="px-3 py-2 text-right text-[#374151]">28,901</td>
-                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">450,269</td>
+                              <td className="px-3 py-2 text-[#374151]">
+                                Manufacturing
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                345,678
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                18,901
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                56,789
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#374151]">
+                                28,901
+                              </td>
+                              <td className="px-3 py-2 text-right font-semibold text-[#111827]">
+                                450,269
+                              </td>
                             </tr>
                           </tbody>
                           <tfoot className="sticky bottom-0 bg-[#F3F4F6]">
                             <tr>
-                              <td className="px-3 py-2 text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">Total</td>
-                              <td className="px-3 py-2 text-right text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">3,078,660</td>
-                              <td className="px-3 py-2 text-right text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">161,747</td>
-                              <td className="px-3 py-2 text-right text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">445,339</td>
-                              <td className="px-3 py-2 text-right text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">237,528</td>
-                              <td className="px-3 py-2 text-right text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">3,923,274</td>
+                              <td className="px-3 py-2 text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">
+                                Total
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">
+                                3,078,660
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">
+                                161,747
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">
+                                445,339
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">
+                                237,528
+                              </td>
+                              <td className="px-3 py-2 text-right text-[#111827] font-semibold border-t-2 border-[#E5E7EB]">
+                                3,923,274
+                              </td>
                             </tr>
                           </tfoot>
                         </table>
@@ -961,86 +1350,141 @@ export default function ProspectSearchPage() {
                 </div>
               </div>
             ) : (
-            <div className="flex-1 flex flex-col min-h-0">
-              {/* Scrollable Table */}
-              <div className="flex-1 overflow-y-auto min-h-0">
-                {/* Table Header */}
-                <div className="sticky top-0 bg-[#F9FAFB] border-b-2 border-[#E5E7EB] z-10">
-                  <div className="grid grid-cols-[2fr_1.2fr_1.5fr_1fr_1fr_1.8fr] gap-4 px-5 py-2.5">
-                    <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">{searchMode === 'company' ? 'Company' : 'Name'}</div>
-                    <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">Contact</div>
-                    <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">{searchMode === 'company' ? 'Sub Sector' : 'Company'}</div>
-                    <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">City</div>
-                    <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">Country</div>
-                    <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">{searchMode === 'company' ? 'Company Size' : 'Job Title'}</div>
+              <div className="flex-1 flex flex-col min-h-0">
+                {/* Scrollable Table */}
+                <div className="flex-1 overflow-y-auto min-h-0">
+                  {/* Table Header */}
+                  <div className="sticky top-0 bg-[#F9FAFB] border-b-2 border-[#E5E7EB] z-10">
+                    <div className="grid grid-cols-[2fr_1.2fr_1.5fr_1fr_1fr_1.8fr] gap-4 px-5 py-2.5">
+                      <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">
+                        {searchMode === "company" ? "Company" : "Name"}
+                      </div>
+                      <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">
+                        Contact
+                      </div>
+                      <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">
+                        {searchMode === "company" ? "Sub Sector" : "Company"}
+                      </div>
+                      <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">
+                        City
+                      </div>
+                      <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">
+                        Country
+                      </div>
+                      <div className="text-[11px] font-bold text-[#374151] uppercase tracking-wide">
+                        {searchMode === "company"
+                          ? "Company Size"
+                          : "Job Title"}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Table Body */}
+                  <div>
+                    {displayedProspects.map((prospect) => (
+                      <ProspectCard
+                        key={prospect.id}
+                        prospect={prospect}
+                        searchMode={searchMode}
+                      />
+                    ))}
                   </div>
                 </div>
-                
-                {/* Table Body */}
-                <div>
-                  {displayedProspects.map((prospect) => (
-                    <ProspectCard key={prospect.id} prospect={prospect} searchMode={searchMode} />
-                  ))}
+
+                {/* Fixed Pagination Footer */}
+                <div className="flex-shrink-0 border-t border-[#E5E7EB] bg-white px-4 py-2 flex items-center justify-between shadow-[0_-2px_8px_rgba(0,0,0,0.06)] z-20">
+                  <div className="text-[13px] text-[#6B7280]">
+                    Showing {(currentPage - 1) * RESULTS_PER_PAGE + 1}-
+                    {Math.min(
+                      currentPage * RESULTS_PER_PAGE,
+                      MOCK_PROSPECTS.length,
+                    )}{" "}
+                    of {MOCK_PROSPECTS.length}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => loadPage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="px-3 py-1.5 text-[13px] font-medium text-[#6B7280] hover:bg-[#F3F4F6] rounded disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      Previous
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => {
+                        const hasAccess =
+                          userPlan === "premium" ||
+                          userPlan === "enterprise" ||
+                          userPlan === "pro";
+                        const isLocked = !hasAccess && page > 1;
+                        return (
+                          <button
+                            key={page}
+                            onClick={() => !isLocked && loadPage(page)}
+                            disabled={isLocked}
+                            title={
+                              isLocked
+                                ? "Upgrade to Pro to access more results"
+                                : ""
+                            }
+                            className={cn(
+                              "relative w-9 h-9 text-[13px] rounded transition-all",
+                              currentPage === page
+                                ? "bg-[#FF3030] text-white font-bold"
+                                : isLocked
+                                  ? "text-[#6B7280] cursor-not-allowed font-bold"
+                                  : "text-[#6B7280] hover:bg-[#F3F4F6] font-medium",
+                            )}
+                          >
+                            <span className={isLocked ? "opacity-0" : ""}>
+                              {page}
+                            </span>
+                            {isLocked && (
+                              <div className="absolute inset-0 flex items-center justify-center gap-0.5 bg-white/95 rounded">
+                                <span className="text-[13px] font-bold text-[#6B7280]">
+                                  {page}
+                                </span>
+                                <svg
+                                  className="w-3 h-3 text-[#9CA3AF]"
+                                  fill="currentColor"
+                                  viewBox="0 0 20 20"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </div>
+                            )}
+                          </button>
+                        );
+                      },
+                    )}
+                    <button
+                      onClick={() => loadPage(currentPage + 1)}
+                      disabled={
+                        !hasMore || (userPlan === "trial" && currentPage >= 1)
+                      }
+                      className="px-3 py-1.5 text-[13px] font-medium text-[#6B7280] hover:bg-[#F3F4F6] rounded disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      Next
+                    </button>
+                  </div>
                 </div>
               </div>
-              
-              {/* Fixed Pagination Footer */}
-              <div className="flex-shrink-0 border-t border-[#E5E7EB] bg-white px-4 py-2 flex items-center justify-between shadow-[0_-2px_8px_rgba(0,0,0,0.06)] z-20">
-                <div className="text-[13px] text-[#6B7280]">
-                  Showing {((currentPage - 1) * RESULTS_PER_PAGE) + 1}-{Math.min(currentPage * RESULTS_PER_PAGE, MOCK_PROSPECTS.length)} of {MOCK_PROSPECTS.length}
-                </div>
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => loadPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className="px-3 py-1.5 text-[13px] font-medium text-[#6B7280] hover:bg-[#F3F4F6] rounded disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    Previous
-                  </button>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                    const hasAccess = userPlan === 'premium' || userPlan === 'enterprise' || userPlan === 'pro';
-                    const isLocked = !hasAccess && page > 1;
-                    return (
-                      <button
-                        key={page}
-                        onClick={() => !isLocked && loadPage(page)}
-                        disabled={isLocked}
-                        title={isLocked ? "Upgrade to Pro to access more results" : ""}
-                        className={cn(
-                          "relative w-9 h-9 text-[13px] rounded transition-all",
-                          currentPage === page
-                            ? "bg-[#FF3030] text-white font-bold"
-                            : isLocked
-                            ? "text-[#6B7280] cursor-not-allowed font-bold"
-                            : "text-[#6B7280] hover:bg-[#F3F4F6] font-medium"
-                        )}
-                      >
-                        <span className={isLocked ? "opacity-0" : ""}>{page}</span>
-                        {isLocked && (
-                          <div className="absolute inset-0 flex items-center justify-center gap-0.5 bg-white/95 rounded">
-                            <span className="text-[13px] font-bold text-[#6B7280]">{page}</span>
-                            <svg className="w-3 h-3 text-[#9CA3AF]" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                  <button
-                    onClick={() => loadPage(currentPage + 1)}
-                    disabled={!hasMore || (userPlan === 'trial' && currentPage >= 1)}
-                    className="px-3 py-1.5 text-[13px] font-medium text-[#6B7280] hover:bg-[#F3F4F6] rounded disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            </div>
             )
           ) : (
-            <div className="flex-1 flex items-center justify-center" style={{ background: 'linear-gradient(to bottom, #ffffff, #fafafa)' }}>
-              <AIDiscoveryPanel aiPrompt={aiPrompt} setAiPrompt={setAiPrompt} currentPlaceholder={placeholders[currentPlaceholder]} />
+            <div
+              className="flex-1 flex items-center justify-center"
+              style={{
+                background: "linear-gradient(to bottom, #ffffff, #fafafa)",
+              }}
+            >
+              <AIDiscoveryPanel
+                aiPrompt={aiPrompt}
+                setAiPrompt={setAiPrompt}
+                currentPlaceholder={placeholders[currentPlaceholder]}
+              />
             </div>
           )}
         </div>
@@ -1048,28 +1492,37 @@ export default function ProspectSearchPage() {
 
       {/* Export Configuration Modal */}
       {showExportModal && (
-        <div 
-          className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 overflow-y-auto animate-in fade-in duration-200" 
-          style={{ paddingTop: '80px' }}
+        <div
+          className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 overflow-y-auto animate-in fade-in duration-200"
+          style={{ paddingTop: "80px" }}
           onClick={() => setShowExportModal(false)}
         >
-          <div 
-            className="bg-white rounded-lg shadow-2xl w-[900px] flex flex-col animate-in zoom-in-95 slide-in-from-top-4 duration-300" 
+          <div
+            className="bg-white rounded-lg shadow-2xl w-[900px] flex flex-col animate-in zoom-in-95 slide-in-from-top-4 duration-300"
             onClick={(e) => e.stopPropagation()}
-            style={{ maxHeight: 'calc(100vh - 120px)' }}
+            style={{ maxHeight: "calc(100vh - 120px)" }}
           >
             {/* Header */}
             <div className="px-5 py-4 border-b border-[#E5E7EB]">
-              <h2 className="text-[15px] font-bold text-[#111827]">Configure Export</h2>
-              <p className="text-[12px] text-[#6B7280] mt-1">Select fields and configure your export settings</p>
+              <h2 className="text-[15px] font-bold text-[#111827]">
+                Configure Export
+              </h2>
+              <p className="text-[12px] text-[#6B7280] mt-1">
+                Select fields and configure your export settings
+              </p>
             </div>
 
             {/* 3-Panel Layout */}
             <div className="flex-1 overflow-hidden p-5">
-              <div className="grid gap-3" style={{ gridTemplateColumns: '1fr 1.2fr 1fr', height: '100%' }}>
+              <div
+                className="grid gap-3"
+                style={{ gridTemplateColumns: "1fr 1.2fr 1fr", height: "100%" }}
+              >
                 {/* Left Panel - Fields List */}
                 <div className="border border-[#E5E7EB] rounded-md p-3 flex flex-col">
-                  <h3 className="text-[12px] font-semibold text-[#111827] mb-2">Available Fields</h3>
+                  <h3 className="text-[12px] font-semibold text-[#111827] mb-2">
+                    Available Fields
+                  </h3>
                   <input
                     type="text"
                     placeholder="Search fields..."
@@ -1083,68 +1536,125 @@ export default function ProspectSearchPage() {
                       checked={selectedFields.length === 15}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedFields(['Email Status', 'Blog', 'Company Phone', 'Company Mobile', 'Company Email', 'Job Title', 'Full Name', 'City', 'Country', 'LinkedIn', 'Website', 'Company Size', 'Industry', 'Revenue', 'Specialty']);
+                          setSelectedFields([
+                            "Email Status",
+                            "Blog",
+                            "Company Phone",
+                            "Company Mobile",
+                            "Company Email",
+                            "Job Title",
+                            "Full Name",
+                            "City",
+                            "Country",
+                            "LinkedIn",
+                            "Website",
+                            "Company Size",
+                            "Industry",
+                            "Revenue",
+                            "Specialty",
+                          ]);
                         } else {
-                          setSelectedFields(['Company Email', 'Company Phone', 'Company Mobile']);
+                          setSelectedFields([
+                            "Company Email",
+                            "Company Phone",
+                            "Company Mobile",
+                          ]);
                         }
                       }}
                       className="h-3.5 w-3.5"
                     />
                     <span className="font-semibold">Select All</span>
                   </label>
-                  <div className="flex-1 overflow-y-auto space-y-1" style={{ maxHeight: '260px' }}>
+                  <div
+                    className="flex-1 overflow-y-auto space-y-1"
+                    style={{ maxHeight: "260px" }}
+                  >
                     {[
-                      { name: 'Email Status', credits: 0 },
-                      { name: 'Blog', credits: 0 },
-                      { name: 'Company Phone', credits: 2 },
-                      { name: 'Company Mobile', credits: 2 },
-                      { name: 'Company Email', credits: 5 },
-                      { name: 'Job Title', credits: 0 },
-                      { name: 'Full Name', credits: 0 },
-                      { name: 'City', credits: 0 },
-                      { name: 'Country', credits: 0 },
-                      { name: 'LinkedIn', credits: 3 },
-                      { name: 'Website', credits: 0 },
-                      { name: 'Company Size', credits: 0 },
-                      { name: 'Industry', credits: 0 },
-                      { name: 'Revenue', credits: 4 },
-                      { name: 'Specialty', credits: 0 }
-                    ].filter(f => f.name.toLowerCase().includes(fieldSearch.toLowerCase())).map((field) => (
-                      <label key={field.name} className="flex items-center gap-2 text-[12px] text-[#374151] cursor-pointer hover:bg-[#F9FAFB] p-1.5 rounded">
-                        <input
-                          type="checkbox"
-                          checked={selectedFields.includes(field.name)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedFields([...selectedFields, field.name]);
-                            } else {
-                              setSelectedFields(selectedFields.filter(f => f !== field.name));
-                            }
-                          }}
-                          className="h-3.5 w-3.5"
-                        />
-                        <span className="flex-1">{field.name}</span>
-                        {field.credits > 0 && <span className="text-[11px] text-[#FF4D4F]">🪙 {field.credits}</span>}
-                      </label>
-                    ))}
+                      { name: "Email Status", credits: 0 },
+                      { name: "Blog", credits: 0 },
+                      { name: "Company Phone", credits: 2 },
+                      { name: "Company Mobile", credits: 2 },
+                      { name: "Company Email", credits: 5 },
+                      { name: "Job Title", credits: 0 },
+                      { name: "Full Name", credits: 0 },
+                      { name: "City", credits: 0 },
+                      { name: "Country", credits: 0 },
+                      { name: "LinkedIn", credits: 3 },
+                      { name: "Website", credits: 0 },
+                      { name: "Company Size", credits: 0 },
+                      { name: "Industry", credits: 0 },
+                      { name: "Revenue", credits: 4 },
+                      { name: "Specialty", credits: 0 },
+                    ]
+                      .filter((f) =>
+                        f.name
+                          .toLowerCase()
+                          .includes(fieldSearch.toLowerCase()),
+                      )
+                      .map((field) => (
+                        <label
+                          key={field.name}
+                          className="flex items-center gap-2 text-[12px] text-[#374151] cursor-pointer hover:bg-[#F9FAFB] p-1.5 rounded"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedFields.includes(field.name)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedFields([
+                                  ...selectedFields,
+                                  field.name,
+                                ]);
+                              } else {
+                                setSelectedFields(
+                                  selectedFields.filter(
+                                    (f) => f !== field.name,
+                                  ),
+                                );
+                              }
+                            }}
+                            className="h-3.5 w-3.5"
+                          />
+                          <span className="flex-1">{field.name}</span>
+                          {field.credits > 0 && (
+                            <span className="text-[11px] text-[#FF4D4F]">
+                              🪙 {field.credits}
+                            </span>
+                          )}
+                        </label>
+                      ))}
                   </div>
                 </div>
 
                 {/* Middle Panel - Selected Fields + Inputs */}
                 <div className="border border-[#E5E7EB] rounded-md p-3 flex flex-col">
-                  <h3 className="text-[12px] font-semibold text-[#111827] mb-2">Selected Fields ({selectedFields.length})</h3>
-                  <div className="flex flex-wrap gap-1.5 mb-3 overflow-y-auto" style={{ maxHeight: '180px' }}>
+                  <h3 className="text-[12px] font-semibold text-[#111827] mb-2">
+                    Selected Fields ({selectedFields.length})
+                  </h3>
+                  <div
+                    className="flex flex-wrap gap-1.5 mb-3 overflow-y-auto"
+                    style={{ maxHeight: "180px" }}
+                  >
                     {selectedFields.map((field) => (
-                      <span key={field} className="inline-flex items-center gap-1 px-2 py-1 bg-[#F3F4F6] text-[#374151] text-[11px] rounded border border-[#E5E7EB]">
+                      <span
+                        key={field}
+                        className="inline-flex items-center gap-1 px-2 py-1 bg-[#F3F4F6] text-[#374151] text-[11px] rounded border border-[#E5E7EB]"
+                      >
                         {field}
                         <X
                           className="h-3 w-3 cursor-pointer hover:text-[#FF4D4F]"
-                          onClick={() => setSelectedFields(selectedFields.filter(f => f !== field))}
+                          onClick={() =>
+                            setSelectedFields(
+                              selectedFields.filter((f) => f !== field),
+                            )
+                          }
                         />
                       </span>
                     ))}
                     {selectedFields.length === 0 && (
-                      <p className="text-[11px] text-[#9CA3AF] italic">No fields selected</p>
+                      <p className="text-[11px] text-[#9CA3AF] italic">
+                        No fields selected
+                      </p>
                     )}
                   </div>
 
@@ -1165,7 +1675,8 @@ export default function ProspectSearchPage() {
                   {/* Records Count */}
                   <div>
                     <label className="text-[11px] font-semibold text-[#374151] block mb-1">
-                      No of Records to Download <span className="text-[#FF4D4F]">*</span>
+                      No of Records to Download{" "}
+                      <span className="text-[#FF4D4F]">*</span>
                     </label>
                     <input
                       type="number"
@@ -1184,65 +1695,103 @@ export default function ProspectSearchPage() {
                 {/* Right Panel - Credit Calculation */}
                 <div className="border border-[#E5E7EB] rounded-md flex flex-col relative">
                   <div className="p-3 pb-0">
-                    <h3 className="text-[12px] font-semibold text-[#111827] mb-2">Credit Calculation</h3>
+                    <h3 className="text-[12px] font-semibold text-[#111827] mb-2">
+                      Credit Calculation
+                    </h3>
                   </div>
-                  <div className="flex-1 overflow-y-auto px-3 space-y-2" style={{ maxHeight: '200px' }}>
+                  <div
+                    className="flex-1 overflow-y-auto px-3 space-y-2"
+                    style={{ maxHeight: "200px" }}
+                  >
                     {(() => {
                       const creditFields = [
-                        { name: 'Company Phone', credits: 2 },
-                        { name: 'Company Mobile', credits: 2 },
-                        { name: 'Company Email', credits: 5 },
-                        { name: 'LinkedIn', credits: 3 },
-                        { name: 'Revenue', credits: 4 }
-                      ].filter(f => selectedFields.includes(f.name));
-                      
+                        { name: "Company Phone", credits: 2 },
+                        { name: "Company Mobile", credits: 2 },
+                        { name: "Company Email", credits: 5 },
+                        { name: "LinkedIn", credits: 3 },
+                        { name: "Revenue", credits: 4 },
+                      ].filter((f) => selectedFields.includes(f.name));
+
                       return (
                         <>
                           {creditFields.map((field) => (
-                            <div key={field.name} className="text-[11px] text-[#374151] flex justify-between">
-                              <span>{exportRecords.toLocaleString()} × {field.credits} ({field.name})</span>
-                              <span className="font-semibold">{(exportRecords * field.credits).toLocaleString()}</span>
+                            <div
+                              key={field.name}
+                              className="text-[11px] text-[#374151] flex justify-between"
+                            >
+                              <span>
+                                {exportRecords.toLocaleString()} ×{" "}
+                                {field.credits} ({field.name})
+                              </span>
+                              <span className="font-semibold">
+                                {(
+                                  exportRecords * field.credits
+                                ).toLocaleString()}
+                              </span>
                             </div>
                           ))}
                           {creditFields.length === 0 && (
-                            <p className="text-[11px] text-[#9CA3AF] italic">No premium fields selected</p>
+                            <p className="text-[11px] text-[#9CA3AF] italic">
+                              No premium fields selected
+                            </p>
                           )}
                         </>
                       );
                     })()}
                   </div>
-                  <div className="exportCreditsFooter bg-white pt-1.5 px-3 pb-3 border-t border-[#E5E7EB]" style={{ position: 'sticky', bottom: '52px', zIndex: 2 }}>
+                  <div
+                    className="exportCreditsFooter bg-white pt-1.5 px-3 pb-3 border-t border-[#E5E7EB]"
+                    style={{ position: "sticky", bottom: "52px", zIndex: 2 }}
+                  >
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-[12px] font-semibold text-[#111827]">Total Credits:</span>
+                      <span className="text-[12px] font-semibold text-[#111827]">
+                        Total Credits:
+                      </span>
                       <span className="text-[14px] font-bold text-[#FF4D4F]">
                         {(() => {
                           const creditFields = [
-                            { name: 'Company Phone', credits: 2 },
-                            { name: 'Company Mobile', credits: 2 },
-                            { name: 'Company Email', credits: 5 },
-                            { name: 'LinkedIn', credits: 3 },
-                            { name: 'Revenue', credits: 4 }
-                          ].filter(f => selectedFields.includes(f.name));
-                          return creditFields.reduce((sum, f) => sum + (exportRecords * f.credits), 0).toLocaleString();
+                            { name: "Company Phone", credits: 2 },
+                            { name: "Company Mobile", credits: 2 },
+                            { name: "Company Email", credits: 5 },
+                            { name: "LinkedIn", credits: 3 },
+                            { name: "Revenue", credits: 4 },
+                          ].filter((f) => selectedFields.includes(f.name));
+                          return creditFields
+                            .reduce(
+                              (sum, f) => sum + exportRecords * f.credits,
+                              0,
+                            )
+                            .toLocaleString();
                         })()}
                       </span>
                     </div>
                     {(() => {
                       const creditFields = [
-                        { name: 'Company Phone', credits: 2 },
-                        { name: 'Company Mobile', credits: 2 },
-                        { name: 'Company Email', credits: 5 },
-                        { name: 'LinkedIn', credits: 3 },
-                        { name: 'Revenue', credits: 4 }
-                      ].filter(f => selectedFields.includes(f.name));
-                      const totalCredits = creditFields.reduce((sum, f) => sum + (exportRecords * f.credits), 0);
+                        { name: "Company Phone", credits: 2 },
+                        { name: "Company Mobile", credits: 2 },
+                        { name: "Company Email", credits: 5 },
+                        { name: "LinkedIn", credits: 3 },
+                        { name: "Revenue", credits: 4 },
+                      ].filter((f) => selectedFields.includes(f.name));
+                      const totalCredits = creditFields.reduce(
+                        (sum, f) => sum + exportRecords * f.credits,
+                        0,
+                      );
                       const isInsufficient = totalCredits > availableCredits;
-                      
+
                       if (isInsufficient) {
                         return (
                           <div className="flex items-center gap-1.5 text-[11px] text-[#DC2626] font-semibold">
-                            <svg className="h-3.5 w-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                            <svg
+                              className="h-3.5 w-3.5 flex-shrink-0"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                clipRule="evenodd"
+                              />
                             </svg>
                             Insufficient Credits
                           </div>
@@ -1250,8 +1799,16 @@ export default function ProspectSearchPage() {
                       }
                       return (
                         <div className="flex items-center gap-1.5 text-[11px] text-[#22C55E] font-semibold">
-                          <svg className="h-3.5 w-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          <svg
+                            className="h-3.5 w-3.5 flex-shrink-0"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                           Sufficient Credits Available
                         </div>
@@ -1263,39 +1820,54 @@ export default function ProspectSearchPage() {
             </div>
 
             {/* Footer */}
-            <div className="px-5 py-3 border-t border-[#E5E7EB] flex items-center justify-end gap-2 bg-white" style={{ position: 'sticky', bottom: 0, zIndex: 3 }}>
+            <div
+              className="px-5 py-3 border-t border-[#E5E7EB] flex items-center justify-end gap-2 bg-white"
+              style={{ position: "sticky", bottom: 0, zIndex: 3 }}
+            >
               <button
                 onClick={() => setShowExportModal(false)}
                 className="px-4 h-9 text-[13px] font-medium text-[#6B7280] hover:bg-[#F3F4F6] rounded-md transition-colors"
               >
                 Cancel
               </button>
-              <button
-                className="px-4 h-9 text-[13px] font-medium border border-[#E5E7EB] hover:bg-[#F9FAFB] rounded-md transition-colors"
-              >
+              <button className="px-4 h-9 text-[13px] font-medium border border-[#E5E7EB] hover:bg-[#F9FAFB] rounded-md transition-colors">
                 Worksheet
               </button>
               {(() => {
                 const creditFields = [
-                  { name: 'Company Phone', credits: 2 },
-                  { name: 'Company Mobile', credits: 2 },
-                  { name: 'Company Email', credits: 5 },
-                  { name: 'LinkedIn', credits: 3 },
-                  { name: 'Revenue', credits: 4 }
-                ].filter(f => selectedFields.includes(f.name));
-                const totalCredits = creditFields.reduce((sum, f) => sum + (exportRecords * f.credits), 0);
+                  { name: "Company Phone", credits: 2 },
+                  { name: "Company Mobile", credits: 2 },
+                  { name: "Company Email", credits: 5 },
+                  { name: "LinkedIn", credits: 3 },
+                  { name: "Revenue", credits: 4 },
+                ].filter((f) => selectedFields.includes(f.name));
+                const totalCredits = creditFields.reduce(
+                  (sum, f) => sum + exportRecords * f.credits,
+                  0,
+                );
                 const isInsufficient = totalCredits > availableCredits;
-                
+
                 if (isInsufficient) {
                   return (
                     <button
                       onClick={() => {
-                        window.location.href = '/subscription?feature=export&plan=premium&returnUrl=/prospect-search';
+                        window.location.href =
+                          "/subscription?feature=export&plan=premium&returnUrl=/prospect-search";
                       }}
                       className="px-4 h-8 text-[13px] font-semibold rounded-md bg-[#F59E0B] text-white hover:shadow-lg transition-all flex items-center gap-1.5"
                     >
-                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                      <svg
+                        className="h-3.5 w-3.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 10l7-7m0 0l7 7m-7-7v18"
+                        />
                       </svg>
                       Upgrade Subscription
                     </button>
@@ -1306,14 +1878,17 @@ export default function ProspectSearchPage() {
               <button
                 onClick={() => {
                   const creditFields = [
-                    { name: 'Company Phone', credits: 2 },
-                    { name: 'Company Mobile', credits: 2 },
-                    { name: 'Company Email', credits: 5 },
-                    { name: 'LinkedIn', credits: 3 },
-                    { name: 'Revenue', credits: 4 }
-                  ].filter(f => selectedFields.includes(f.name));
-                  const totalCredits = creditFields.reduce((sum, f) => sum + (exportRecords * f.credits), 0);
-                  
+                    { name: "Company Phone", credits: 2 },
+                    { name: "Company Mobile", credits: 2 },
+                    { name: "Company Email", credits: 5 },
+                    { name: "LinkedIn", credits: 3 },
+                    { name: "Revenue", credits: 4 },
+                  ].filter((f) => selectedFields.includes(f.name));
+                  const totalCredits = creditFields.reduce(
+                    (sum, f) => sum + exportRecords * f.credits,
+                    0,
+                  );
+
                   if (totalCredits > availableCredits) {
                     return;
                   }
@@ -1322,14 +1897,21 @@ export default function ProspectSearchPage() {
                 }}
                 disabled={(() => {
                   const creditFields = [
-                    { name: 'Company Phone', credits: 2 },
-                    { name: 'Company Mobile', credits: 2 },
-                    { name: 'Company Email', credits: 5 },
-                    { name: 'LinkedIn', credits: 3 },
-                    { name: 'Revenue', credits: 4 }
-                  ].filter(f => selectedFields.includes(f.name));
-                  const totalCredits = creditFields.reduce((sum, f) => sum + (exportRecords * f.credits), 0);
-                  return selectedFields.length === 0 || !exportFileName.trim() || totalCredits > availableCredits;
+                    { name: "Company Phone", credits: 2 },
+                    { name: "Company Mobile", credits: 2 },
+                    { name: "Company Email", credits: 5 },
+                    { name: "LinkedIn", credits: 3 },
+                    { name: "Revenue", credits: 4 },
+                  ].filter((f) => selectedFields.includes(f.name));
+                  const totalCredits = creditFields.reduce(
+                    (sum, f) => sum + exportRecords * f.credits,
+                    0,
+                  );
+                  return (
+                    selectedFields.length === 0 ||
+                    !exportFileName.trim() ||
+                    totalCredits > availableCredits
+                  );
                 })()}
                 className="px-4 h-9 text-[13px] font-semibold rounded-md bg-[#FF4D4F] text-white hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
