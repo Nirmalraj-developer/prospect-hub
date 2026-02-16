@@ -77,16 +77,16 @@ export const FEATURES: Feature[] = [
     requiresPlan: "pro",
     category: "prospecting",
   },
-  {
-    id: "export-leads",
-    name: "Export Data",
-    description:
-      "Export verified contacts and company data in CSV format for CRM import and outbound campaigns.",
-    route: "/prospect-search",
-    icon: "Download",
-    requiresPlan: "pro",
-    category: "prospecting",
-  },
+  // {
+  //   id: "export-leads",
+  //   name: "Export Data",
+  //   description:
+  //     "Export verified contacts and company data in CSV format for CRM import and outbound campaigns.",
+  //   route: "/prospect-search",
+  //   icon: "Download",
+  //   requiresPlan: "pro",
+  //   category: "prospecting",
+  // },
 
   // ----------------------------
   // PRO – AI (Limited)
