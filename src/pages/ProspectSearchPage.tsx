@@ -113,13 +113,24 @@ export default function ProspectSearchPage() {
   const [deliveryEmail, setDeliveryEmail] = useState<string>('');
   const [displayedProspects, setDisplayedProspects] = useState<Prospect[]>([]);
   const [showInsights, setShowInsights] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [selectedFields, setSelectedFields] = useState<string[]>(['Company Email', 'Company Phone', 'Company Mobile']);
+  const [exportRecords, setExportRecords] = useState<number>(100);
+  const [exportFileName, setExportFileName] = useState<string>('prospects_export');
+  const [fieldSearch, setFieldSearch] = useState<string>('');
+  const [availableCredits] = useState<number>(25000);
+  const [phoneType, setPhoneType] = useState<'directDial' | 'landline'>('directDial');
 
   useEffect(() => {
-    const style = document.createElement('style');
-    style.textContent = `[contentEditable][data-placeholder]:empty:before{content:attr(data-placeholder);color:#9CA3AF;pointer-events:none;}`;
-    document.head.appendChild(style);
-    return () => document.head.removeChild(style);
-  }, []);
+    if (showExportModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [showExportModal]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [showCustomForm, setShowCustomForm] = useState(false);
@@ -453,7 +464,10 @@ export default function ProspectSearchPage() {
                   <BarChart3 className="h-3.5 w-3.5" />
                   Data Insights
                 </button>
-                <button className="h-8 px-3 text-[12px] font-semibold bg-gradient-to-r from-[#FF4D4F] to-[#E53935] hover:shadow-lg text-white rounded-md transition-all flex items-center gap-1.5">
+                <button 
+                  onClick={() => setShowExportModal(true)}
+                  className="h-8 px-3 text-[12px] font-semibold bg-gradient-to-r from-[#FF4D4F] to-[#E53935] hover:shadow-lg text-white rounded-md transition-all flex items-center gap-1.5"
+                >
                   <Download className="h-3.5 w-3.5" />
                   Export
                 </button>
@@ -724,93 +738,98 @@ export default function ProspectSearchPage() {
           ) : showResults ? (
             showInsights ? (
               <div className="flex-1 flex flex-col bg-white animate-[slideInRight_180ms_ease-in-out]">
-                {/* Header */}
-                <div className="flex items-center justify-between px-4 py-3 border-b border-[#E5E7EB]">
-                  <h2 className="text-[15px] font-bold text-[#111827]">Data Insights</h2>
-                  <button 
-                    onClick={() => setShowInsights(false)}
-                    className="px-3 py-1.5 text-[12px] font-medium text-[#6B7280] hover:bg-[#F3F4F6] rounded transition-colors flex items-center gap-1.5"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                    Back to Results
-                  </button>
-                </div>
-
                 {/* Content */}
                 <div className="flex-1 overflow-y-auto p-4">
-                  {/* Top Section: 3 Columns Grid */}
-                  <div className="grid gap-3 mb-3" style={{ gridTemplateColumns: '0.9fr 0.8fr 1.4fr' }}>
-                    {/* Selected Filters Card */}
-                    <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-md p-2.5 flex flex-col">
-                      <h3 className="text-[12px] font-semibold text-[#111827] mb-2">Selected Filters</h3>
-                      <div className="flex-1">
-                        {activeFilters.length === 0 ? (
-                          <p className="text-[11px] text-[#6B7280]">No Filters Selected</p>
-                        ) : (
-                          <div className="space-y-1">
-                            {Object.entries(
-                              activeFilters.reduce((acc, filter) => {
-                                if (!acc[filter.category]) acc[filter.category] = [];
-                                acc[filter.category].push(filter.value);
-                                return acc;
-                              }, {} as Record<string, string[]>)
-                            ).map(([category, values]) => (
-                              <div key={category} className="text-[11px] text-[#6B7280]">
-                                <span className="font-medium">{category}:</span> {values.join(', ')}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
+                  {/* Top Section: 2 Columns Grid */}
+                  <div className="grid gap-3 mb-3" style={{ gridTemplateColumns: '1fr 1.4fr' }}>
                     {/* Overall Count Card */}
-                    <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-md p-2.5 flex flex-col">
-                      <h3 className="text-[12px] font-semibold text-[#111827] mb-2">Overall Count</h3>
-                      <div className="flex-1 flex flex-col justify-center gap-1.5">
-                        <div className="text-[12px] text-[#374151]">
-                          <span className="font-medium">Company Count:</span> 4,092,817
+                    <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-md p-3 flex flex-col">
+                      <h3 className="text-[12px] font-semibold text-[#111827] mb-2.5">Overall Count</h3>
+                      <div className="grid grid-cols-1 gap-2.5">
+                        <div className="bg-white border border-[#E5E7EB] rounded-md p-3 flex justify-between items-center">
+                          <span className="text-[13px] text-[#6B7280] font-medium">Companies</span>
+                          <span className="text-[15px] text-[#111827] font-bold">4,092,817</span>
                         </div>
-                        <div className="text-[12px] text-[#374151]">
-                          <span className="font-medium">People Count:</span> 18,344,446
+                        <div className="bg-white border border-[#E5E7EB] rounded-md p-3 flex justify-between items-center">
+                          <span className="text-[13px] text-[#6B7280] font-medium">Contacts</span>
+                          <span className="text-[15px] text-[#111827] font-bold">18,344,446</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Marketability Breakdown Card */}
-                    <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-md p-2.5 flex flex-col" style={{ minWidth: '340px' }}>
-                      <h3 className="text-[12px] font-semibold text-[#111827] mb-2">Marketability Breakdown</h3>
-                      <div className="flex-1">
-                        <table className="w-full text-[12px]" style={{ borderCollapse: 'collapse' }}>
-                          <thead className="bg-[#F3F4F6]">
-                            <tr>
-                              <th className="px-2 py-1.5 text-left font-semibold text-[#374151]">Type</th>
-                              <th className="px-2 py-1.5 text-right font-semibold text-[#374151]" style={{ whiteSpace: 'nowrap' }}>Company</th>
-                              <th className="px-2 py-1.5 text-right font-semibold text-[#374151]" style={{ whiteSpace: 'nowrap' }}>People</th>
-                              <th className="px-2 py-1.5 text-right font-semibold text-[#374151]" style={{ whiteSpace: 'nowrap' }}>Ratio</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td className="px-2 py-1.5 text-[#374151]">Mailable</td>
-                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>3,892,456</td>
-                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>16,234,892</td>
-                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>4.2</td>
-                            </tr>
-                            <tr>
-                              <td className="px-2 py-1.5 text-[#374151]">Phoneable</td>
-                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>2,456,123</td>
-                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>12,892,345</td>
-                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>5.2</td>
-                            </tr>
-                            <tr>
-                              <td className="px-2 py-1.5 text-[#374151]">Emailable</td>
-                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>3,234,567</td>
-                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>14,567,234</td>
-                              <td className="px-2 py-1.5 text-right text-[#374151]" style={{ whiteSpace: 'nowrap' }}>4.5</td>
-                            </tr>
-                          </tbody>
-                        </table>
+                    <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-md p-3 flex flex-col">
+                      <h3 className="text-[12px] font-semibold text-[#111827] mb-2.5">Marketability Breakdown</h3>
+                      <div className="grid grid-cols-3 gap-2.5">
+                        <div className="bg-white border border-[#E5E7EB] rounded-md p-2.5 flex flex-col justify-between">
+                          <span className="text-[12px] text-[#6B7280] font-semibold mb-2">Mailable</span>
+                          <div className="space-y-1">
+                            <div className="flex justify-between items-center">
+                              <span className="text-[11px] text-[#9CA3AF]">Company</span>
+                              <span className="text-[11px] text-[#111827] font-semibold">3,892,456</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-[11px] text-[#9CA3AF]">People</span>
+                              <span className="text-[11px] text-[#111827] font-semibold">16,234,892</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="bg-white border border-[#E5E7EB] rounded-md p-2.5 flex flex-col justify-between">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-[12px] text-[#6B7280] font-semibold">Phoneable</span>
+                            <div className="inline-flex rounded-md overflow-hidden" style={{ height: '24px' }}>
+                              <button
+                                onClick={() => setPhoneType('directDial')}
+                                title="Direct Dial"
+                                className={`px-2 cursor-pointer transition-colors flex items-center justify-center ${
+                                  phoneType === 'directDial' ? 'bg-[#22C55E] text-white border border-[#22C55E]' : 'bg-white text-[#6B7280] border border-dashed border-[#D1D5DB]'
+                                }`}
+                              >
+                                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => setPhoneType('landline')}
+                                title="Landline"
+                                className={`px-2 cursor-pointer transition-colors flex items-center justify-center border-l-0 ${
+                                  phoneType === 'landline' ? 'bg-[#22C55E] text-white border border-[#22C55E]' : 'bg-white text-[#6B7280] border border-dashed border-[#D1D5DB]'
+                                }`}
+                              >
+                                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
+                          <div className="space-y-1" style={{ minHeight: '36px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                            <div className="flex justify-between items-center">
+                              <span className="text-[11px] text-[#9CA3AF]">Company</span>
+                              <span className="text-[11px] text-[#111827] font-semibold">
+                                {phoneType === 'directDial' ? '1,892,345' : '564,778'}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-[11px] text-[#9CA3AF]">People</span>
+                              <span className="text-[11px] text-[#111827] font-semibold">
+                                {phoneType === 'directDial' ? '8,456,123' : '4,436,222'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="bg-white border border-[#E5E7EB] rounded-md p-2.5 flex flex-col justify-between">
+                          <span className="text-[12px] text-[#6B7280] font-semibold mb-2">Emailable</span>
+                          <div className="space-y-1">
+                            <div className="flex justify-between items-center">
+                              <span className="text-[11px] text-[#9CA3AF]">Company</span>
+                              <span className="text-[11px] text-[#111827] font-semibold">3,234,567</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-[11px] text-[#9CA3AF]">People</span>
+                              <span className="text-[11px] text-[#111827] font-semibold">14,567,234</span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1026,6 +1045,300 @@ export default function ProspectSearchPage() {
           )}
         </div>
       </div>
+
+      {/* Export Configuration Modal */}
+      {showExportModal && (
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 overflow-y-auto animate-in fade-in duration-200" 
+          style={{ paddingTop: '80px' }}
+          onClick={() => setShowExportModal(false)}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-2xl w-[900px] flex flex-col animate-in zoom-in-95 slide-in-from-top-4 duration-300" 
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxHeight: 'calc(100vh - 120px)' }}
+          >
+            {/* Header */}
+            <div className="px-5 py-4 border-b border-[#E5E7EB]">
+              <h2 className="text-[15px] font-bold text-[#111827]">Configure Export</h2>
+              <p className="text-[12px] text-[#6B7280] mt-1">Select fields and configure your export settings</p>
+            </div>
+
+            {/* 3-Panel Layout */}
+            <div className="flex-1 overflow-hidden p-5">
+              <div className="grid gap-3" style={{ gridTemplateColumns: '1fr 1.2fr 1fr', height: '100%' }}>
+                {/* Left Panel - Fields List */}
+                <div className="border border-[#E5E7EB] rounded-md p-3 flex flex-col">
+                  <h3 className="text-[12px] font-semibold text-[#111827] mb-2">Available Fields</h3>
+                  <input
+                    type="text"
+                    placeholder="Search fields..."
+                    value={fieldSearch}
+                    onChange={(e) => setFieldSearch(e.target.value)}
+                    className="w-full h-8 px-2 text-[12px] border border-[#E5E7EB] rounded mb-2 focus:outline-none focus:ring-1 focus:ring-[#FF4D4F]"
+                  />
+                  <label className="flex items-center gap-2 text-[12px] text-[#374151] mb-2 pb-2 border-b border-[#E5E7EB] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedFields.length === 15}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedFields(['Email Status', 'Blog', 'Company Phone', 'Company Mobile', 'Company Email', 'Job Title', 'Full Name', 'City', 'Country', 'LinkedIn', 'Website', 'Company Size', 'Industry', 'Revenue', 'Specialty']);
+                        } else {
+                          setSelectedFields(['Company Email', 'Company Phone', 'Company Mobile']);
+                        }
+                      }}
+                      className="h-3.5 w-3.5"
+                    />
+                    <span className="font-semibold">Select All</span>
+                  </label>
+                  <div className="flex-1 overflow-y-auto space-y-1" style={{ maxHeight: '260px' }}>
+                    {[
+                      { name: 'Email Status', credits: 0 },
+                      { name: 'Blog', credits: 0 },
+                      { name: 'Company Phone', credits: 2 },
+                      { name: 'Company Mobile', credits: 2 },
+                      { name: 'Company Email', credits: 5 },
+                      { name: 'Job Title', credits: 0 },
+                      { name: 'Full Name', credits: 0 },
+                      { name: 'City', credits: 0 },
+                      { name: 'Country', credits: 0 },
+                      { name: 'LinkedIn', credits: 3 },
+                      { name: 'Website', credits: 0 },
+                      { name: 'Company Size', credits: 0 },
+                      { name: 'Industry', credits: 0 },
+                      { name: 'Revenue', credits: 4 },
+                      { name: 'Specialty', credits: 0 }
+                    ].filter(f => f.name.toLowerCase().includes(fieldSearch.toLowerCase())).map((field) => (
+                      <label key={field.name} className="flex items-center gap-2 text-[12px] text-[#374151] cursor-pointer hover:bg-[#F9FAFB] p-1.5 rounded">
+                        <input
+                          type="checkbox"
+                          checked={selectedFields.includes(field.name)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedFields([...selectedFields, field.name]);
+                            } else {
+                              setSelectedFields(selectedFields.filter(f => f !== field.name));
+                            }
+                          }}
+                          className="h-3.5 w-3.5"
+                        />
+                        <span className="flex-1">{field.name}</span>
+                        {field.credits > 0 && <span className="text-[11px] text-[#FF4D4F]">🪙 {field.credits}</span>}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Middle Panel - Selected Fields + Inputs */}
+                <div className="border border-[#E5E7EB] rounded-md p-3 flex flex-col">
+                  <h3 className="text-[12px] font-semibold text-[#111827] mb-2">Selected Fields ({selectedFields.length})</h3>
+                  <div className="flex flex-wrap gap-1.5 mb-3 overflow-y-auto" style={{ maxHeight: '180px' }}>
+                    {selectedFields.map((field) => (
+                      <span key={field} className="inline-flex items-center gap-1 px-2 py-1 bg-[#F3F4F6] text-[#374151] text-[11px] rounded border border-[#E5E7EB]">
+                        {field}
+                        <X
+                          className="h-3 w-3 cursor-pointer hover:text-[#FF4D4F]"
+                          onClick={() => setSelectedFields(selectedFields.filter(f => f !== field))}
+                        />
+                      </span>
+                    ))}
+                    {selectedFields.length === 0 && (
+                      <p className="text-[11px] text-[#9CA3AF] italic">No fields selected</p>
+                    )}
+                  </div>
+
+                  {/* Export Name */}
+                  <div className="mb-3">
+                    <label className="text-[11px] font-semibold text-[#374151] block mb-1">
+                      Export Name <span className="text-[#FF4D4F]">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={exportFileName}
+                      onChange={(e) => setExportFileName(e.target.value)}
+                      placeholder="e.g. UK Data"
+                      className="w-full h-9 px-3 text-[12px] border border-[#E5E7EB] rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF4D4F] focus:border-transparent"
+                    />
+                  </div>
+
+                  {/* Records Count */}
+                  <div>
+                    <label className="text-[11px] font-semibold text-[#374151] block mb-1">
+                      No of Records to Download <span className="text-[#FF4D4F]">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="50000"
+                      value={exportRecords}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value) || 1;
+                        setExportRecords(Math.min(Math.max(value, 1), 50000));
+                      }}
+                      className="w-full h-9 px-3 text-[12px] border border-[#E5E7EB] rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF4D4F] focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                {/* Right Panel - Credit Calculation */}
+                <div className="border border-[#E5E7EB] rounded-md flex flex-col relative">
+                  <div className="p-3 pb-0">
+                    <h3 className="text-[12px] font-semibold text-[#111827] mb-2">Credit Calculation</h3>
+                  </div>
+                  <div className="flex-1 overflow-y-auto px-3 space-y-2" style={{ maxHeight: '200px' }}>
+                    {(() => {
+                      const creditFields = [
+                        { name: 'Company Phone', credits: 2 },
+                        { name: 'Company Mobile', credits: 2 },
+                        { name: 'Company Email', credits: 5 },
+                        { name: 'LinkedIn', credits: 3 },
+                        { name: 'Revenue', credits: 4 }
+                      ].filter(f => selectedFields.includes(f.name));
+                      
+                      return (
+                        <>
+                          {creditFields.map((field) => (
+                            <div key={field.name} className="text-[11px] text-[#374151] flex justify-between">
+                              <span>{exportRecords.toLocaleString()} × {field.credits} ({field.name})</span>
+                              <span className="font-semibold">{(exportRecords * field.credits).toLocaleString()}</span>
+                            </div>
+                          ))}
+                          {creditFields.length === 0 && (
+                            <p className="text-[11px] text-[#9CA3AF] italic">No premium fields selected</p>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
+                  <div className="exportCreditsFooter bg-white pt-1.5 px-3 pb-3 border-t border-[#E5E7EB]" style={{ position: 'sticky', bottom: '52px', zIndex: 2 }}>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-[12px] font-semibold text-[#111827]">Total Credits:</span>
+                      <span className="text-[14px] font-bold text-[#FF4D4F]">
+                        {(() => {
+                          const creditFields = [
+                            { name: 'Company Phone', credits: 2 },
+                            { name: 'Company Mobile', credits: 2 },
+                            { name: 'Company Email', credits: 5 },
+                            { name: 'LinkedIn', credits: 3 },
+                            { name: 'Revenue', credits: 4 }
+                          ].filter(f => selectedFields.includes(f.name));
+                          return creditFields.reduce((sum, f) => sum + (exportRecords * f.credits), 0).toLocaleString();
+                        })()}
+                      </span>
+                    </div>
+                    {(() => {
+                      const creditFields = [
+                        { name: 'Company Phone', credits: 2 },
+                        { name: 'Company Mobile', credits: 2 },
+                        { name: 'Company Email', credits: 5 },
+                        { name: 'LinkedIn', credits: 3 },
+                        { name: 'Revenue', credits: 4 }
+                      ].filter(f => selectedFields.includes(f.name));
+                      const totalCredits = creditFields.reduce((sum, f) => sum + (exportRecords * f.credits), 0);
+                      const isInsufficient = totalCredits > availableCredits;
+                      
+                      if (isInsufficient) {
+                        return (
+                          <div className="flex items-center gap-1.5 text-[11px] text-[#DC2626] font-semibold">
+                            <svg className="h-3.5 w-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                            </svg>
+                            Insufficient Credits
+                          </div>
+                        );
+                      }
+                      return (
+                        <div className="flex items-center gap-1.5 text-[11px] text-[#22C55E] font-semibold">
+                          <svg className="h-3.5 w-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                          Sufficient Credits Available
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-5 py-3 border-t border-[#E5E7EB] flex items-center justify-end gap-2 bg-white" style={{ position: 'sticky', bottom: 0, zIndex: 3 }}>
+              <button
+                onClick={() => setShowExportModal(false)}
+                className="px-4 h-9 text-[13px] font-medium text-[#6B7280] hover:bg-[#F3F4F6] rounded-md transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 h-9 text-[13px] font-medium border border-[#E5E7EB] hover:bg-[#F9FAFB] rounded-md transition-colors"
+              >
+                Worksheet
+              </button>
+              {(() => {
+                const creditFields = [
+                  { name: 'Company Phone', credits: 2 },
+                  { name: 'Company Mobile', credits: 2 },
+                  { name: 'Company Email', credits: 5 },
+                  { name: 'LinkedIn', credits: 3 },
+                  { name: 'Revenue', credits: 4 }
+                ].filter(f => selectedFields.includes(f.name));
+                const totalCredits = creditFields.reduce((sum, f) => sum + (exportRecords * f.credits), 0);
+                const isInsufficient = totalCredits > availableCredits;
+                
+                if (isInsufficient) {
+                  return (
+                    <button
+                      onClick={() => {
+                        window.location.href = '/subscription?feature=export&plan=premium&returnUrl=/prospect-search';
+                      }}
+                      className="px-4 h-8 text-[13px] font-semibold rounded-md bg-[#F59E0B] text-white hover:shadow-lg transition-all flex items-center gap-1.5"
+                    >
+                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                      </svg>
+                      Upgrade Subscription
+                    </button>
+                  );
+                }
+                return null;
+              })()}
+              <button
+                onClick={() => {
+                  const creditFields = [
+                    { name: 'Company Phone', credits: 2 },
+                    { name: 'Company Mobile', credits: 2 },
+                    { name: 'Company Email', credits: 5 },
+                    { name: 'LinkedIn', credits: 3 },
+                    { name: 'Revenue', credits: 4 }
+                  ].filter(f => selectedFields.includes(f.name));
+                  const totalCredits = creditFields.reduce((sum, f) => sum + (exportRecords * f.credits), 0);
+                  
+                  if (totalCredits > availableCredits) {
+                    return;
+                  }
+                  // Export logic here
+                  setShowExportModal(false);
+                }}
+                disabled={(() => {
+                  const creditFields = [
+                    { name: 'Company Phone', credits: 2 },
+                    { name: 'Company Mobile', credits: 2 },
+                    { name: 'Company Email', credits: 5 },
+                    { name: 'LinkedIn', credits: 3 },
+                    { name: 'Revenue', credits: 4 }
+                  ].filter(f => selectedFields.includes(f.name));
+                  const totalCredits = creditFields.reduce((sum, f) => sum + (exportRecords * f.credits), 0);
+                  return selectedFields.length === 0 || !exportFileName.trim() || totalCredits > availableCredits;
+                })()}
+                className="px-4 h-9 text-[13px] font-semibold rounded-md bg-[#FF4D4F] text-white hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Export
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </LockedPageLayout>
   );
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Bell, Zap, Settings, Clock, X, Sparkles } from "lucide-react";
+import { Bell, Zap, Settings, Clock, X, Sparkles, Coins, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { usePlan } from "@/contexts/PlanContext";
@@ -27,8 +27,10 @@ export default function AppLayout() {
 
   const [timeLeft, setTimeLeft] = useState('');
   const [showTooltip, setShowTooltip] = useState(false);
+  const [showCreditDropdown, setShowCreditDropdown] = useState(false);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const badgeRef = useRef<HTMLDivElement>(null);
+  const creditDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (currentPlan === 'trial') {
@@ -74,11 +76,19 @@ export default function AppLayout() {
       ) {
         handleDismissTooltip();
       }
+      if (
+        showCreditDropdown &&
+        creditDropdownRef.current &&
+        !creditDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowCreditDropdown(false);
+      }
     };
 
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && showTooltip) {
-        handleDismissTooltip();
+      if (event.key === 'Escape') {
+        if (showTooltip) handleDismissTooltip();
+        if (showCreditDropdown) setShowCreditDropdown(false);
       }
     };
 
@@ -89,7 +99,7 @@ export default function AppLayout() {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscape);
     };
-  }, [showTooltip]);
+  }, [showTooltip, showCreditDropdown]);
 
   const handleDismissTooltip = () => {
     setShowTooltip(false);
@@ -115,23 +125,41 @@ export default function AppLayout() {
         </div>
 
         <div className="flex items-center gap-3">
-          {currentPlan !== 'enterprise' && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  onClick={() => navigate('/subscription')}
-                  size="sm"
-                  className="gap-2 bg-[#FF3030] hover:bg-[#B71833] text-white shadow-sm hover:shadow-md transition-all duration-200 rounded-md px-4 font-medium"
+          {/* Credits Dropdown */}
+          <div className="relative" ref={creditDropdownRef}>
+            <button
+              onClick={() => setShowCreditDropdown(!showCreditDropdown)}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#F9FAFB] border border-[#E5E7EB] hover:bg-[#F3F4F6] transition-colors"
+            >
+              <Coins className="h-4 w-4 text-[#FF4D4F]" />
+              <span className="text-sm font-semibold text-[#111827]">25,000</span>
+              <ChevronDown className="h-3.5 w-3.5 text-[#6B7280]" />
+            </button>
+            {showCreditDropdown && (
+              <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-[#E5E7EB] p-3 z-[1000] animate-in fade-in zoom-in-95 duration-200">
+                <h4 className="text-[12px] font-semibold text-[#111827] mb-2">Credit Usage</h4>
+                <div className="space-y-2 mb-3">
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="text-[#6B7280]">Email</span>
+                    <span className="font-semibold text-[#111827]">1 credit</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="text-[#6B7280]">Phone</span>
+                    <span className="font-semibold text-[#111827]">1 credit</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowCreditDropdown(false);
+                    navigate('/subscription');
+                  }}
+                  className="w-full h-8 text-[12px] font-semibold rounded-md bg-[#FF4D4F] text-white hover:bg-[#B71833] transition-colors"
                 >
-                  <Sparkles className="h-3.5 w-3.5" />
                   Upgrade
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-xs">Unlock Premium Intelligence Tools</p>
-              </TooltipContent>
-            </Tooltip>
-          )}
+                </button>
+              </div>
+            )}
+          </div>
           {currentPlan === 'trial' && (
             <div className="relative">
               <div 
